@@ -6,8 +6,7 @@ WORKDIR /app
 # Install dependencies
 FROM base AS deps
 COPY package.json bun.lock ./
-RUN --mount=type=cache,id=synapse-dashboard-bun-cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # Build
 FROM base AS builder
