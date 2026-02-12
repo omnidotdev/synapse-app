@@ -1,79 +1,142 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ExternalLinkIcon } from "lucide-react";
 
+import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
+import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
+import {
+  getBillingPortalUrl,
+  getSubscription,
+} from "@/server/functions/subscriptions";
 
 export const Route = createFileRoute("/_auth/organizations/$orgSlug/billing")({
+  loader: async ({ params }) => {
+    const { session, organizations } = await fetchSession();
+    if (!session?.user.identityProviderId) {
+      return {
+        subscription: null,
+        entitlements: null,
+        entityType: "organization",
+        entityId: "",
+      };
+    }
+
+    const org = organizations.find((o) => o.slug === params.orgSlug);
+    if (!org) {
+      return {
+        subscription: null,
+        entitlements: null,
+        entityType: "organization",
+        entityId: "",
+      };
+    }
+
+    const entityType = "organization";
+    const entityId = org.id;
+
+    const [subscription, entitlements] = await Promise.all([
+      getSubscription({ data: { entityType, entityId } }).catch(() => null),
+      getEntitlements({ data: { entityType, entityId } }).catch(() => null),
+    ]);
+
+    return { subscription, entitlements, entityType, entityId };
+  },
   component: OrgBillingPage,
 });
 
 /**
  * Organization billing page.
- * Placeholder for Aether integration.
- *
- * In production, this would integrate with:
- * - Aether for entitlements and subscription management
- * - Stripe for payment processing
  */
 function OrgBillingPage() {
   const { orgSlug } = Route.useParams();
   const { organizations } = useOrganization();
+  const { subscription, entitlements, entityType, entityId } =
+    Route.useLoaderData();
+  const navigate = useNavigate();
+
+  const { mutateAsync: openPortal, isPending: isPortalPending } = useMutation({
+    mutationFn: async () =>
+      await getBillingPortalUrl({ data: { entityType, entityId } }),
+    onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
+  });
 
   const org = organizations.find((o) => o.slug === orgSlug);
 
   if (!org) return null;
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="mb-6 font-bold text-2xl">Billing</h1>
-
-      <div className="space-y-6">
-        {/* Current Plan */}
-        <section className="rounded-lg border p-6">
-          <h2 className="mb-4 font-semibold text-lg">Current Plan</h2>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-bold text-2xl">Free</p>
-              <p className="text-muted-foreground text-sm">
-                Basic features for personal use
-              </p>
-            </div>
-            <Link
-              to="/pricing"
-              className="rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-            >
-              Upgrade Plan
-            </Link>
-          </div>
-        </section>
-
-        {/* Usage Placeholder */}
-        <section className="rounded-lg border p-6">
-          <h2 className="mb-4 font-semibold text-lg">Usage</h2>
-          <p className="text-muted-foreground text-sm">
-            Usage metrics will appear here once entitlements are configured via
-            Aether.
-          </p>
-        </section>
-
-        {/* Integration Note */}
-        <section className="rounded-lg border border-dashed p-6">
-          <h2 className="mb-2 font-semibold text-lg">Integration Guide</h2>
-          <p className="text-muted-foreground text-sm">
-            This page is a placeholder for organization billing. To enable full
-            billing functionality:
-          </p>
-          <ol className="mt-2 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
-            <li>Configure Aether for entitlement management</li>
-            <li>Set up Stripe for payment processing</li>
-            <li>
-              Implement subscription server functions in{" "}
-              <code className="rounded bg-muted px-1">
-                server/functions/subscriptions.ts
-              </code>
-            </li>
-          </ol>
-        </section>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="font-bold text-2xl">Billing</h1>
+        <p className="text-muted-foreground text-sm">
+          Manage subscription, payments, and entitlements for {org.slug}
+        </p>
       </div>
+
+      <div className="flex flex-col gap-4">
+        <h2 className="font-semibold text-lg">Subscription</h2>
+        {subscription ? (
+          <SubscriptionCard
+            subscription={subscription}
+            entityType={entityType}
+            entityId={entityId}
+          />
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">No active subscription</p>
+              <Link to="/pricing">
+                <Button variant="outline" className="mt-4">
+                  View Plans
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {entityId && (
+        <div>
+          <Button
+            variant="outline"
+            onClick={() => openPortal()}
+            disabled={isPortalPending}
+          >
+            <ExternalLinkIcon className="mr-2 h-4 w-4" />
+            Billing Portal
+          </Button>
+        </div>
+      )}
+
+      {entitlements?.entitlements && entitlements.entitlements.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <h2 className="font-semibold text-lg">Entitlements</h2>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Active Features</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="flex flex-col gap-2 text-sm">
+                {entitlements.entitlements.map((entitlement) => (
+                  <li
+                    key={entitlement.featureKey}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{entitlement.featureKey}</span>
+                    <span className="text-muted-foreground">
+                      {entitlement.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

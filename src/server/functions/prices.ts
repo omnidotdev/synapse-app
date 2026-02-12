@@ -11,6 +11,6 @@ import type { Price } from "@omnidotdev/providers";
  */
 export const getPrices = createServerFn().handler(
   async (): Promise<Price[]> => {
-    return billing.getPrices(app.name);
+    return (await billing.getPrices(app.name)) ?? [];
   },
 );
