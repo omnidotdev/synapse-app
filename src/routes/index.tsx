@@ -189,7 +189,7 @@ const RoutingDiagram = () => {
  */
 function HomePage() {
   return (
-    <div className="relative mx-auto max-w-6xl px-4 py-12 lg:py-20">
+    <div className="relative mx-auto max-w-6xl px-4 py-6 lg:py-10">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute top-0 left-1/4 size-[500px] rounded-full bg-primary/5 blur-[120px]" />
       <div className="pointer-events-none absolute right-1/4 bottom-1/3 size-[400px] rounded-full bg-secondary/5 blur-[120px]" />
@@ -201,7 +201,7 @@ function HomePage() {
           <p className="mb-3 font-mono text-muted-foreground text-xs uppercase tracking-widest">
             AI Router
           </p>
-          <h1 className="font-bold text-5xl text-shimmer sm:text-6xl">
+          <h1 className="pb-1 font-bold text-5xl text-shimmer sm:text-6xl">
             Synapse
           </h1>
           <p className="mt-3 text-lg text-muted-foreground">
