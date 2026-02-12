@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth/minimal";
+import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 
@@ -11,6 +11,37 @@ import {
 
 const { AUTH_SECRET } = process.env;
 
+// Build genericOAuth config array based on available credentials
+const oauthConfigs: Parameters<typeof genericOAuth>[0]["config"] = [];
+
+if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
+  oauthConfigs.push({
+    providerId: "omni",
+    clientId: AUTH_CLIENT_ID,
+    clientSecret: AUTH_CLIENT_SECRET,
+    discoveryUrl: `${AUTH_BASE_URL}/.well-known/openid-configuration`,
+    scopes: ["openid", "profile", "email", "offline_access"],
+    accessType: "offline",
+    pkce: true,
+    mapProfileToUser: (profile) => ({
+      name: profile.name,
+      email: profile.email,
+      emailVerified: profile.email_verified,
+      image: profile.picture,
+    }),
+  });
+}
+
+// Build plugins array
+const plugins = [];
+
+if (oauthConfigs.length > 0) {
+  plugins.push(genericOAuth({ config: oauthConfigs }));
+}
+
+// NB: must be the last plugin in the array
+plugins.push(tanstackStartCookies());
+
 /**
  * Auth server client.
  */
@@ -18,43 +49,32 @@ const auth = betterAuth({
   baseURL: BASE_URL,
   basePath: "/api/auth",
   secret: AUTH_SECRET,
+  trustedOrigins: BASE_URL ? [BASE_URL] : [],
   session: {
-    // extend session expiration to 30 days
+    // Extend session expiration to 30 days
     expiresIn: 60 * 60 * 24 * 30,
-    // refresh session if older than 1 day
+    // Refresh session if older than 1 day
     updateAge: 60 * 60 * 24,
-    // enable cookie caching for stateless session validation
+    // Enable cookie caching for stateless session validation
     cookieCache: {
       enabled: true,
-      // cache session in cookie for 7 days
+      // Cache session in cookie for 7 days
       maxAge: 60 * 60 * 24 * 7,
-      // use encrypted JWE for security
+      // Use encrypted JWE for security
       strategy: "jwe",
-      // auto-refresh cookie before expiry (critical for stateless mode)
+      // Auto-refresh cookie before expiry
       refreshCache: true,
     },
   },
   account: {
-    // store OAuth tokens (access token, refresh token) in a signed cookie for stateless mode to enable automatic token refresh without a database
+    // Store OAuth tokens in signed cookie for stateless mode
     storeAccountCookie: true,
   },
-  plugins: [
-    genericOAuth({
-      config: [
-        {
-          providerId: "omni",
-          clientId: AUTH_CLIENT_ID ?? "",
-          clientSecret: AUTH_CLIENT_SECRET ?? "",
-          discoveryUrl: `${AUTH_BASE_URL}/.well-known/openid-configuration`,
-          scopes: ["openid", "profile", "email", "offline_access"],
-          accessType: "offline",
-          pkce: true,
-        },
-      ],
-    }),
-    // NB: must be the last plugin in the array
-    tanstackStartCookies(),
-  ],
+  advanced: {
+    // Use custom cookie prefix to avoid collision with IDP cookies
+    cookiePrefix: "synapse",
+  },
+  plugins,
 });
 
 export default auth;
