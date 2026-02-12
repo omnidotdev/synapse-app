@@ -3,7 +3,7 @@ load("ext://dotenv", "dotenv")
 
 dotenv(fn=".env.local")
 
-project_name = "synapse-dashboard"
+project_name = "synapse-app"
 
 local_resource(
     "install-deps-%s" % project_name,

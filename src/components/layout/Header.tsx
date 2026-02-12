@@ -48,12 +48,12 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full border border-b bg-background shadow-sm blur-ms">
+    <header className="fixed top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-lg">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex gap-2">
             <InternalLink to="/" variant="unstyled" className="-ml-4">
-              <h1 className="font-bold text-xl">{app.name}</h1>
+              <h1 className="font-bold text-gradient text-xl">{app.name}</h1>
             </InternalLink>
 
             <InternalLink to="/pricing" variant="ghost">
@@ -72,7 +72,7 @@ const Header = () => {
 
             {auth ? (
               <MenuRootProvider value={accountMenu}>
-                <MenuTrigger className="rounded-full">
+                <MenuTrigger className="avatar-glow rounded-full">
                   <AvatarRoot>
                     <AvatarImage src={auth.user.image ?? undefined} />
                     <AvatarFallback>{auth.user.name.charAt(0)}</AvatarFallback>

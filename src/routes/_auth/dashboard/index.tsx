@@ -47,7 +47,7 @@ function DashboardOverview() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-bold text-2xl">Overview</h1>
+        <h1 className="font-bold text-2xl text-gradient">Overview</h1>
         <p className="text-muted-foreground text-sm">
           Monitor your Synapse usage and subscription at a glance
         </p>
@@ -82,9 +82,11 @@ function DashboardOverview() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           to="/dashboard/usage"
-          className="flex items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
         >
-          <BarChart3Icon className="h-5 w-5 text-muted-foreground" />
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <BarChart3Icon className="h-5 w-5" />
+          </div>
           <div>
             <p className="font-medium">Usage Details</p>
             <p className="text-muted-foreground text-sm">
@@ -94,9 +96,11 @@ function DashboardOverview() {
         </Link>
         <Link
           to="/dashboard/billing"
-          className="flex items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
         >
-          <CreditCardIcon className="h-5 w-5 text-muted-foreground" />
+          <div className="flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+            <CreditCardIcon className="h-5 w-5" />
+          </div>
           <div>
             <p className="font-medium">Billing</p>
             <p className="text-muted-foreground text-sm">

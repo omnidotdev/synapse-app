@@ -53,31 +53,33 @@ const DashboardSidebar = () => {
 
   return (
     <nav className="hidden w-48 shrink-0 md:block">
-      <ul className="flex flex-col gap-1">
-        {navItems.map(({ to, label, icon }) => {
-          const isActive =
-            to === "/dashboard"
-              ? matchRoute({ to, fuzzy: false })
-              : matchRoute({ to, fuzzy: true });
+      <div className="glass-panel rounded-xl p-2">
+        <ul className="flex flex-col gap-1">
+          {navItems.map(({ to, label, icon }) => {
+            const isActive =
+              to === "/dashboard"
+                ? matchRoute({ to, fuzzy: false })
+                : matchRoute({ to, fuzzy: true });
 
-          return (
-            <li key={to}>
-              <Link
-                to={to}
-                className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
-                  isActive
-                    ? "bg-accent font-medium text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
-                )}
-              >
-                {icon}
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+            return (
+              <li key={to}>
+                <Link
+                  to={to}
+                  className={cn(
+                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-200",
+                    isActive
+                      ? "bg-primary/10 font-medium text-primary shadow-[inset_2px_0_0_var(--primary)]"
+                      : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
+                  )}
+                >
+                  {icon}
+                  {label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 };

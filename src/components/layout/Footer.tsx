@@ -10,7 +10,7 @@ import app from "@/lib/config/app.config";
  * Layout footer.
  */
 const Footer = () => (
-  <footer className="flex w-full items-center justify-center gap-1 p-4 text-muted-foreground">
+  <footer className="glass-surface flex w-full items-center justify-center gap-1 border-border/50 border-t p-4 text-muted-foreground">
     <p className="px-3">
       &copy; {new Date().getFullYear()} {app.organization.name}
     </p>
@@ -25,11 +25,11 @@ const Footer = () => (
 
     <div className="flex items-center gap-1">
       <ExternalLink variant="ghost" href={app.socials.discord}>
-        <DiscordIcon className="size-5" />
+        <DiscordIcon className="size-5 transition-colors hover:text-primary" />
       </ExternalLink>
 
       <ExternalLink variant="ghost" href={app.socials.x}>
-        <XIcon className="size-5" />
+        <XIcon className="size-5 transition-colors hover:text-primary" />
       </ExternalLink>
     </div>
   </footer>

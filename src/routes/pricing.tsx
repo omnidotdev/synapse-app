@@ -39,8 +39,13 @@ const PricingPage = () => {
   );
 
   return (
-    <div className="flex h-full flex-col items-center px-4 py-8 text-center">
-      <h1 className="my-6 font-bold text-4xl">Simple, transparent pricing</h1>
+    <div className="relative flex h-full flex-col items-center px-4 py-8 text-center">
+      {/* Background glow orb */}
+      <div className="pointer-events-none absolute top-0 left-1/2 size-[500px] -translate-x-1/2 rounded-full bg-primary/5 blur-[120px]" />
+
+      <h1 className="relative my-6 font-bold text-4xl text-gradient">
+        Simple, transparent pricing
+      </h1>
 
       <h2 className="font-medium text-muted-foreground text-xl">
         Start for free. As your business grows, upgrade to fit your needs.
@@ -63,8 +68,8 @@ const PricingPage = () => {
             {/** Handling the free tier could be quite different across apps. For now, we disable the action for authenticated users. TODO: Implement downstream. */}
             <PriceCard price={FREE_PRICE} disableAction />
 
-            {filteredPrices.map((price) => (
-              <PriceCard key={price.id} price={price} />
+            {filteredPrices.map((price, idx) => (
+              <PriceCard key={price.id} price={price} featured={idx === 0} />
             ))}
           </TabsContent>
         )}

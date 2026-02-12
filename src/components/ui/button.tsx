@@ -21,6 +21,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-2 hover:underline",
         destructive:
           "bg-destructive text-background shadow-xs hover:bg-destructive/90 focus-visible:ring-red-500 aria-invalid:ring-red-500/20 dark:aria-invalid:ring-red-500/40",
+        gradient: "btn-gradient text-white shadow-xs",
+        glass: "glass-surface hover:glow-soft hover:border-primary/30",
         unstyled: "",
       },
       size: {

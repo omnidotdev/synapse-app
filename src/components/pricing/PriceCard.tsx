@@ -24,13 +24,20 @@ export type { Price };
 
 interface Props extends CardProps {
   price: Price;
+  featured?: boolean;
   disableAction?: boolean;
 }
 
 /**
  * Price card.
  */
-const PriceCard = ({ price, className, disableAction, ...rest }: Props) => {
+const PriceCard = ({
+  price,
+  featured,
+  className,
+  disableAction,
+  ...rest
+}: Props) => {
   const { auth } = useRouteContext({ strict: false });
   const navigate = useNavigate();
 
@@ -50,20 +57,31 @@ const PriceCard = ({ price, className, disableAction, ...rest }: Props) => {
     onError: (error) => toast.error(error.message),
   });
 
+  const buttonVariant = featured ? "gradient" : "solid";
+
   return (
     <CardRoot
       key={price.product.name}
       className={cn(
-        "size-full max-w-lg overflow-hidden lg:min-w-80",
+        "card-glow-hover size-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80",
+        featured && "glow-primary border-primary/30",
         className,
       )}
       {...rest}
     >
-      <CardHeader className="bg-muted pb-3 lg:min-h-50.5">
+      <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
-          <CardTitle className="text-lg">
-            {capitalizeFirstLetter(price.product.name)}
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg">
+              {capitalizeFirstLetter(price.product.name)}
+            </CardTitle>
+
+            {featured && (
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-shimmer text-xs">
+                Popular
+              </span>
+            )}
+          </div>
 
           <CardDescription className="mt-2 mb-4 flex-1">
             {price.product.description}
@@ -71,13 +89,15 @@ const PriceCard = ({ price, className, disableAction, ...rest }: Props) => {
 
           {price.unit_amount != null && (
             <p className="font-semibold text-lg">
-              <Format.Number
-                value={price.unit_amount / 100}
-                style="currency"
-                currency="USD"
-                notation="compact"
-                compactDisplay="short"
-              />
+              <span className="text-gradient">
+                <Format.Number
+                  value={price.unit_amount / 100}
+                  style="currency"
+                  currency="USD"
+                  notation="compact"
+                  compactDisplay="short"
+                />
+              </span>
 
               <span className="pl-1 font-normal text-muted-foreground text-sm">
                 /{price.recurring ? price.recurring.interval : "forever"}
@@ -87,11 +107,19 @@ const PriceCard = ({ price, className, disableAction, ...rest }: Props) => {
         </div>
 
         {auth ? (
-          <Button disabled={disableAction} onClick={() => checkout(price.id)}>
+          <Button
+            variant={buttonVariant}
+            disabled={disableAction}
+            onClick={() => checkout(price.id)}
+          >
             Get Started
           </Button>
         ) : (
-          <Button disabled={isSignInPending} onClick={() => signIn()}>
+          <Button
+            variant={buttonVariant}
+            disabled={isSignInPending}
+            onClick={() => signIn()}
+          >
             Get Started
           </Button>
         )}
