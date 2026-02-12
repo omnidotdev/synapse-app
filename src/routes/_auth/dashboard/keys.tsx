@@ -31,10 +31,7 @@ function KeysPage() {
               API key management is under development
             </p>
           </div>
-          <ExternalLink
-            href={app.docsUrl}
-            variant="link"
-          >
+          <ExternalLink href={app.docsUrl} variant="link">
             View current auth methods in docs
           </ExternalLink>
         </CardContent>
