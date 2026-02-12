@@ -66,15 +66,7 @@ const TabsIndicator = ({
   />
 );
 
-/**
- * @knipignore - Exported for downstream use.
- */
-export {
-  TabsRoot,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  TabsIndicator,
-  TabsProvider,
-  TabsContext,
-};
+export { TabsList, TabsTrigger, TabsContent };
+
+/** @knipignore */
+export { TabsRoot, TabsIndicator, TabsProvider, TabsContext };

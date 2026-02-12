@@ -27,29 +27,6 @@ interface UsageSummary {
 }
 
 /**
- * Fetch usage meters from Aether usage REST API.
- */
-export const getUsageMeters = createServerFn()
-  .middleware([authMiddleware])
-  .inputValidator((data) => entitySchema.parse(data))
-  .handler(async ({ data, context }): Promise<UsageMeter[]> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
-
-    const url = `${BILLING_BASE_URL}/usage/synapse/${data.entityType}/${data.entityId}`;
-
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    if (!res.ok) {
-      throw new Error(`Usage API error: ${res.status}`);
-    }
-
-    return res.json();
-  });
-
-/**
  * Find a meter value by key, defaulting to 0.
  */
 const findMeter = (meters: UsageMeter[], key: string) =>
@@ -91,4 +68,4 @@ export const getUsageSummary = createServerFn()
     };
   });
 
-export type { UsageMeter, UsageSummary };
+export type { UsageSummary };

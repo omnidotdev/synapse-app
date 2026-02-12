@@ -37,7 +37,6 @@ const knipConfig: KnipConfig = {
     "src/server/functions/entitlements.ts",
   ],
   ignoreDependencies: [
-    "@changesets/changelog-github",
     "@changesets/cli",
     "dotenv",
     "@faker-js/faker",

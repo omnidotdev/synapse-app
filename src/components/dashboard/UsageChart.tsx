@@ -35,7 +35,7 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
               border: "1px solid hsl(var(--border))",
               borderRadius: "0.5rem",
             }}
-            formatter={(value: number) => value.toLocaleString()}
+            formatter={(value?: number) => (value ?? 0).toLocaleString()}
           />
           <Bar
             dataKey="value"

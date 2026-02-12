@@ -192,26 +192,27 @@ const MenuItemShortcut = ({
   </span>
 );
 
-/**
- * @knipignore - Exported for downstream use.
- */
 export {
-  MenuArrow,
-  MenuArrowTip,
   MenuContent,
   MenuItem,
   MenuItemGroup,
   MenuItemGroupLabel,
+  MenuItemText,
+  MenuPositioner,
+  MenuSeparator,
+  MenuTrigger,
+};
+
+/** @knipignore */
+export {
+  MenuArrow,
+  MenuArrowTip,
   MenuCheckboxItem,
   MenuRadioItem,
   MenuRadioItemGroup,
-  MenuItemText,
   MenuItemIndicator,
-  MenuPositioner,
   MenuProvider,
   MenuRoot,
-  MenuSeparator,
-  MenuTrigger,
   MenuTriggerItem,
   MenuItemShortcut,
   PrimitiveMenuIndicator,
