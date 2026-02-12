@@ -33,7 +33,7 @@ function KeysPage() {
           </div>
           <ExternalLink
             href={app.docsUrl}
-            className="text-primary text-sm hover:underline"
+            variant="link"
           >
             View current auth methods in docs
           </ExternalLink>

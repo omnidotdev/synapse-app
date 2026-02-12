@@ -7,28 +7,20 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import { useEffect } from "react";
 import { Toaster, toast } from "sonner";
 
 import { ErrorBoundary, Footer, Header } from "@/components/layout";
-import auth from "@/lib/auth/auth";
 import app from "@/lib/config/app.config";
 import { isDevEnv } from "@/lib/config/env.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
+import { fetchSession } from "@/server/functions/auth";
 import { getThemeServerFn } from "@/server/functions/theme";
 
 import type { QueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
-
-const fetchSession = createServerFn().handler(async () => {
-  const headers = getRequestHeaders();
-
-  return await auth.api.getSession({ headers });
-});
 
 /**
  * Coming soon teaser page for production.
@@ -50,7 +42,7 @@ export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   beforeLoad: async () => {
-    const session = await fetchSession();
+    const { session } = await fetchSession();
 
     return { auth: session };
   },
