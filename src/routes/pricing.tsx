@@ -1,7 +1,16 @@
 import { TabsRootProvider, useTabs } from "@ark-ui/react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { CheckIcon } from "lucide-react";
 
 import { FrequentlyAskedQuestions, PriceCard } from "@/components/pricing";
+import { Button } from "@/components/ui/button";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPrices } from "@/server/functions/prices";
 
@@ -18,16 +27,64 @@ const FREE_PRICE: Price = {
     name: "Free",
     description: "Start for free.",
     marketing_features: [
-      { name: "Feature 1" },
-      { name: "Feature 2" },
-      { name: "Feature 3" },
+      { name: "20 requests per minute" },
+      { name: "500K tokens per month" },
+      { name: "Community support" },
     ],
   },
   metadata: {},
 };
 
 /**
- * Pricing page.
+ * Free tier card with auth-aware CTA
+ */
+const FreeTierCard = () => {
+  const { auth } = useRouteContext({ strict: false });
+  const price = FREE_PRICE;
+
+  return (
+    <CardRoot className="card-glow-hover size-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80">
+      <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
+        <div className="flex flex-1 flex-col">
+          <CardTitle className="text-lg">Free</CardTitle>
+
+          <CardDescription className="mt-2 mb-4 flex-1">
+            {price.product.description}
+          </CardDescription>
+
+          <p className="font-semibold text-lg">
+            <span className="text-gradient">$0</span>
+            <span className="pl-1 font-normal text-muted-foreground text-sm">
+              /forever
+            </span>
+          </p>
+        </div>
+
+        {auth ? (
+          <Button variant="solid" disabled>
+            Current plan
+          </Button>
+        ) : (
+          <Button variant="solid" asChild>
+            <a href="/login">Get Started</a>
+          </Button>
+        )}
+      </CardHeader>
+
+      <CardContent className="p-4">
+        {price.product.marketing_features.map((feature) => (
+          <div key={feature.name} className="flex items-center gap-2">
+            <CheckIcon className="size-4 text-primary" />
+            <p>{feature.name}</p>
+          </div>
+        ))}
+      </CardContent>
+    </CardRoot>
+  );
+};
+
+/**
+ * Pricing page
  */
 const PricingPage = () => {
   const { prices } = Route.useLoaderData();
@@ -65,8 +122,7 @@ const PricingPage = () => {
             value={tabs.value}
             className="flex flex-col items-center gap-4 lg:flex-row"
           >
-            {/** Handling the free tier could be quite different across apps. For now, we disable the action for authenticated users. TODO: Implement downstream. */}
-            <PriceCard price={FREE_PRICE} disableAction />
+            <FreeTierCard />
 
             {filteredPrices.map((price, idx) => (
               <PriceCard key={price.id} price={price} featured={idx === 0} />

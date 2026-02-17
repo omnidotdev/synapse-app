@@ -1,6 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { useWorkspace } from "@/lib/context";
+import { Button } from "@/components/ui/button";
+import { useOrganization } from "@/lib/context";
+import {
+  deleteWorkspace,
+  listWorkspaces,
+  updateWorkspace,
+} from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
   "/_auth/organizations/$orgSlug/workspaces/$workspaceSlug/settings",
@@ -9,15 +19,78 @@ export const Route = createFileRoute(
 });
 
 /**
- * Workspace settings page.
+ * Workspace settings page
  */
 function WorkspaceSettingsPage() {
-  const { workspaceSlug } = Route.useParams();
-  const { workspaces } = useWorkspace();
+  const { orgSlug, workspaceSlug } = Route.useParams();
+  const { organizations } = useOrganization();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const org = organizations.find((o) => o.slug === orgSlug);
+
+  const { data: workspaces = [] } = useQuery({
+    queryKey: ["workspaces", org?.id],
+    queryFn: () => listWorkspaces({ data: { organizationId: org?.id } }),
+    enabled: !!org,
+  });
 
   const workspace = workspaces.find((w) => w.slug === workspaceSlug);
 
-  if (!workspace) return null;
+  const [name, setName] = useState(workspace?.name ?? "");
+  const [slug, setSlug] = useState(workspace?.slug ?? "");
+  const [confirmSlug, setConfirmSlug] = useState("");
+  const [showDelete, setShowDelete] = useState(false);
+
+  // Sync local state when workspace loads
+  if (workspace && name === "" && slug === "") {
+    setName(workspace.name);
+    setSlug(workspace.slug);
+  }
+
+  const { mutateAsync: save, isPending: isSaving } = useMutation({
+    mutationFn: async () => {
+      if (!workspace) throw new Error("Workspace not found");
+      return await updateWorkspace({
+        data: { id: workspace.id, name, slug },
+      });
+    },
+    onSuccess: () => {
+      toast("Workspace updated");
+      queryClient.invalidateQueries({ queryKey: ["workspaces", org?.id] });
+      if (slug !== workspaceSlug) {
+        navigate({
+          to: "/organizations/$orgSlug/workspaces/$workspaceSlug/settings",
+          params: { orgSlug, workspaceSlug: slug },
+        });
+      }
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  const { mutateAsync: deleteWs, isPending: isDeleting } = useMutation({
+    mutationFn: async () => {
+      if (!workspace) throw new Error("Workspace not found");
+      return await deleteWorkspace({ data: { id: workspace.id } });
+    },
+    onSuccess: () => {
+      toast("Workspace deleted");
+      queryClient.invalidateQueries({ queryKey: ["workspaces", org?.id] });
+      navigate({
+        to: "/organizations/$orgSlug/workspaces",
+        params: { orgSlug },
+      });
+    },
+    onError: (error) => toast.error(error.message),
+  });
+
+  if (!workspace) {
+    return (
+      <div className="container mx-auto py-8">
+        <p className="text-muted-foreground">Workspace not found</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
@@ -37,8 +110,9 @@ function WorkspaceSettingsPage() {
               <input
                 id="workspace-name"
                 type="text"
-                defaultValue={workspace.name}
-                className="mt-1 w-full rounded-md border px-3 py-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 w-full rounded-md border bg-transparent px-3 py-2 outline-none focus:border-primary"
               />
             </div>
             <div>
@@ -51,13 +125,24 @@ function WorkspaceSettingsPage() {
               <input
                 id="workspace-slug"
                 type="text"
-                defaultValue={workspace.slug}
-                className="mt-1 w-full rounded-md border px-3 py-2"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                className="mt-1 w-full rounded-md border bg-transparent px-3 py-2 outline-none focus:border-primary"
               />
               <p className="mt-1 text-muted-foreground text-xs">
                 Used in URLs. Must be unique within the organization.
               </p>
             </div>
+            <Button
+              variant="solid"
+              disabled={isSaving || (!name.trim() && !slug.trim())}
+              onClick={() => save()}
+            >
+              {isSaving && (
+                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Save changes
+            </Button>
           </div>
         </section>
 
@@ -66,14 +151,47 @@ function WorkspaceSettingsPage() {
             Danger Zone
           </h2>
           <p className="mb-4 text-muted-foreground text-sm">
-            Permanently delete this workspace and all its data.
+            Permanently delete this workspace and all its data. This action
+            cannot be undone.
           </p>
-          <button
-            type="button"
-            className="rounded-lg bg-destructive px-4 py-2 text-destructive-foreground hover:bg-destructive/90"
-          >
-            Delete Workspace
-          </button>
+
+          {showDelete ? (
+            <div className="flex flex-col gap-3">
+              <p className="font-medium text-sm">
+                Type{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5">
+                  {workspace.slug}
+                </code>{" "}
+                to confirm
+              </p>
+              <input
+                type="text"
+                value={confirmSlug}
+                onChange={(e) => setConfirmSlug(e.target.value)}
+                placeholder={workspace.slug}
+                className="w-full rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:border-destructive"
+              />
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  disabled={confirmSlug !== workspace.slug || isDeleting}
+                  onClick={() => deleteWs()}
+                >
+                  {isDeleting && (
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Delete workspace
+                </Button>
+                <Button variant="ghost" onClick={() => setShowDelete(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button variant="destructive" onClick={() => setShowDelete(true)}>
+              Delete Workspace
+            </Button>
+          )}
         </section>
       </div>
     </div>
