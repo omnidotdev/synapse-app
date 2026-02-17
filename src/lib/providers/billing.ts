@@ -1,0 +1,21 @@
+import { createBillingProvider } from "@omnidotdev/providers";
+
+import { BILLING_BASE_URL } from "@/lib/config/env.config";
+
+import type { BillingProvider } from "@omnidotdev/providers";
+
+let instance: BillingProvider | undefined;
+
+/** Lazily instantiate the billing provider on first use */
+const getBilling = (): BillingProvider => {
+  if (!instance) {
+    instance = createBillingProvider({
+      baseUrl: BILLING_BASE_URL,
+      appId: "synapse",
+    });
+  }
+
+  return instance;
+};
+
+export default getBilling;

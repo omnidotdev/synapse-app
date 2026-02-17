@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import app from "@/lib/config/app.config";
-import { billing } from "@/lib/providers";
+import getBilling from "@/lib/providers/billing";
 
 import type { Price } from "@omnidotdev/providers";
 
@@ -11,6 +11,6 @@ import type { Price } from "@omnidotdev/providers";
  */
 export const getPrices = createServerFn().handler(
   async (): Promise<Price[]> => {
-    return (await billing.getPrices(app.name)) ?? [];
+    return (await getBilling().getPrices(app.name)) ?? [];
   },
 );

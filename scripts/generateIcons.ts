@@ -1,6 +1,6 @@
-import { existsSync, writeFileSync, mkdirSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "..");
@@ -22,7 +22,7 @@ const generatePlaceholderIcon = (size: number) => {
 };
 
 const generateIcons = () => {
-  console.log("Generating PWA icons...");
+  console.info("Generating PWA icons...");
 
   // Ensure icons directory exists
   if (!existsSync(iconsDir)) {
@@ -38,7 +38,7 @@ const generateIcons = () => {
     const iconPath = join(iconsDir, `icon-${size}x${size}.png`);
 
     if (existsSync(iconPath)) {
-      console.log(`Icon ${size}x${size} already exists, skipping...`);
+      console.info(`Icon ${size}x${size} already exists, skipping...`);
       continue;
     }
 
@@ -50,19 +50,19 @@ const generateIcons = () => {
 
     try {
       writeFileSync(placeholderPath, placeholder);
-      console.log(`Generated placeholder icon: ${size}x${size}`);
+      console.info(`Generated placeholder icon: ${size}x${size}`);
     } catch (error) {
       console.error(`Failed to generate icon ${size}x${size}:`, error);
     }
   }
 
-  console.log("Icon generation complete!");
-  console.log(
+  console.info("Icon generation complete!");
+  console.info(
     "Note: These are placeholder SVG icons. For production, you should:",
   );
-  console.log("1. Replace with proper PNG icons generated from your favicon");
-  console.log("2. Use a tool like sharp or jimp to properly resize images");
-  console.log("3. Optimize the icons for different devices and contexts");
+  console.info("1. Replace with proper PNG icons generated from your favicon");
+  console.info("2. Use a tool like sharp or jimp to properly resize images");
+  console.info("3. Optimize the icons for different devices and contexts");
 };
 
 generateIcons();

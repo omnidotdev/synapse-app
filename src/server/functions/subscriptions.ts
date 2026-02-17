@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import app from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
-import { billing } from "@/lib/providers";
+import getBilling from "@/lib/providers/billing";
 import { authMiddleware } from "@/server/middleware";
 
 const checkoutSchema = z.object({
@@ -33,7 +33,7 @@ export const getSubscription = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return billing.getSubscription(
+    return getBilling().getSubscription(
       data.entityType,
       data.entityId,
       requireAccessToken(context.session.accessToken),
@@ -47,13 +47,13 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => checkoutSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return billing.createCheckoutSession({
+    return getBilling().createCheckoutSession({
       priceId: data.priceId,
       successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
-      customerEmail: context.session.user.email!,
+      customerEmail: context.session.user.email ?? "",
       customerName: context.session.user.name ?? undefined,
       metadata: {
-        externalId: context.session.user.identityProviderId!,
+        externalId: context.session.user.identityProviderId ?? "",
         omniProduct: app.name.toLowerCase(),
       },
     });
@@ -66,7 +66,7 @@ export const getBillingPortalUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return billing.getBillingPortalUrl(
+    return getBilling().getBillingPortalUrl(
       data.entityType,
       data.entityId,
       app.name.toLowerCase(),
@@ -82,7 +82,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return billing.cancelSubscription(
+    return getBilling().cancelSubscription(
       data.entityType,
       data.entityId,
       requireAccessToken(context.session.accessToken),
@@ -97,7 +97,7 @@ export const renewSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return billing.renewSubscription(
+    return getBilling().renewSubscription(
       data.entityType,
       data.entityId,
       requireAccessToken(context.session.accessToken),
