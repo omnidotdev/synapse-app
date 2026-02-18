@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/lib/context";
 import {
-  deleteWorkspace,
+  removeWorkspace,
   listWorkspaces,
-  updateWorkspace,
+  patchWorkspace,
 } from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
@@ -51,7 +51,7 @@ function WorkspaceSettingsPage() {
   const { mutateAsync: save, isPending: isSaving } = useMutation({
     mutationFn: async () => {
       if (!workspace) throw new Error("Workspace not found");
-      return await updateWorkspace({
+      return await patchWorkspace({
         data: { id: workspace.id, name, slug },
       });
     },
@@ -71,7 +71,7 @@ function WorkspaceSettingsPage() {
   const { mutateAsync: deleteWs, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
       if (!workspace) throw new Error("Workspace not found");
-      return await deleteWorkspace({ data: { id: workspace.id } });
+      return await removeWorkspace({ data: { id: workspace.id } });
     },
     onSuccess: () => {
       toast("Workspace deleted");

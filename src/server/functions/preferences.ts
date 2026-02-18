@@ -51,10 +51,10 @@ export const getUserPreferences = createServerFn()
     const accessToken = context.session.accessToken;
     if (!accessToken) throw new Error("Access token required");
 
-    const data = await graphql<{ userPreferences: UserPreferences }>(
+    const data = await graphql<{ myPreferences: UserPreferences }>(
       accessToken,
       `query {
-        userPreferences {
+        myPreferences {
           defaultProvider
           notifyUsageThreshold
           notifyKeyExpiry
@@ -62,7 +62,7 @@ export const getUserPreferences = createServerFn()
       }`,
     );
 
-    return data.userPreferences;
+    return data.myPreferences;
   });
 
 const updateSchema = z.object({

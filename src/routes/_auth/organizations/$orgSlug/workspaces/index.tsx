@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
-import { createWorkspace, listWorkspaces } from "@/server/functions/workspaces";
+import { addWorkspace, listWorkspaces } from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
   "/_auth/organizations/$orgSlug/workspaces/",
@@ -42,7 +42,7 @@ function CreateWorkspaceForm({
 
   const { mutateAsync: create, isPending } = useMutation({
     mutationFn: async () =>
-      await createWorkspace({
+      await addWorkspace({
         data: {
           organizationId,
           name,

@@ -105,10 +105,10 @@ export const createApiKey = createServerFn()
     const accessToken = context.session.accessToken;
     if (!accessToken) throw new Error("Access token required");
 
-    const result = await graphql<{ createApiKey: CreateApiKeyResult }>(
+    const result = await graphql<{ generateApiKey: CreateApiKeyResult }>(
       accessToken,
-      `mutation CreateApiKey($input: CreateApiKeyInput!) {
-        createApiKey(input: $input) {
+      `mutation GenerateApiKey($input: GenerateApiKeyInput!) {
+        generateApiKey(input: $input) {
           rawKey
           apiKeyId
           keyHint
@@ -117,7 +117,7 @@ export const createApiKey = createServerFn()
       { input: { name: data.name, mode: data.mode } },
     );
 
-    return result.createApiKey;
+    return result.generateApiKey;
   });
 
 const revokeKeySchema = z.object({
