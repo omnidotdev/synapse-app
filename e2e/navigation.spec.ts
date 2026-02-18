@@ -9,10 +9,7 @@ test.describe("Navigation", () => {
 
   test("logo links to home page", async ({ homePage }) => {
     await homePage.goto();
-    const logoLink = homePage.page
-      .locator("header")
-      .getByRole("link")
-      .first();
+    const logoLink = homePage.page.locator("header").getByRole("link").first();
     await expect(logoLink).toHaveAttribute("href", "/");
   });
 
