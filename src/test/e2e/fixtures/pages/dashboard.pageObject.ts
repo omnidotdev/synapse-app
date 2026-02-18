@@ -11,7 +11,8 @@ const createDashboardPageObject = ({ page, context }: PageObjectContext) =>
     context,
     name: "Dashboard",
     baseUrl: "/dashboard",
-    getSidebar: () => page.locator("nav").filter({ has: page.getByText("Overview") }),
+    getSidebar: () =>
+      page.locator("nav").filter({ has: page.getByText("Overview") }),
     getOverviewHeading: () => page.getByRole("heading", { name: "Dashboard" }),
     getUsageLink: () => page.getByRole("link", { name: "Usage" }),
     getBillingLink: () => page.getByRole("link", { name: "Billing" }),

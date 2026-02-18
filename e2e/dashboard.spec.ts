@@ -9,13 +9,10 @@ authenticatedTest.describe("Dashboard", () => {
     },
   );
 
-  authenticatedTest(
-    "renders sidebar navigation",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await expect(dashboardPage.getSidebar()).toBeVisible();
-    },
-  );
+  authenticatedTest("renders sidebar navigation", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await expect(dashboardPage.getSidebar()).toBeVisible();
+  });
 
   authenticatedTest(
     "sidebar contains all nav links",
@@ -28,39 +25,27 @@ authenticatedTest.describe("Dashboard", () => {
     },
   );
 
-  authenticatedTest(
-    "navigates to usage page",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.getUsageLink().click();
-      await expect(dashboardPage.page).toHaveURL(/\/dashboard\/usage/);
-    },
-  );
+  authenticatedTest("navigates to usage page", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.getUsageLink().click();
+    await expect(dashboardPage.page).toHaveURL(/\/dashboard\/usage/);
+  });
 
-  authenticatedTest(
-    "navigates to API keys page",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.getKeysLink().click();
-      await expect(dashboardPage.page).toHaveURL(/\/dashboard\/keys/);
-    },
-  );
+  authenticatedTest("navigates to API keys page", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.getKeysLink().click();
+    await expect(dashboardPage.page).toHaveURL(/\/dashboard\/keys/);
+  });
 
-  authenticatedTest(
-    "navigates to billing page",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.getBillingLink().click();
-      await expect(dashboardPage.page).toHaveURL(/\/dashboard\/billing/);
-    },
-  );
+  authenticatedTest("navigates to billing page", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.getBillingLink().click();
+    await expect(dashboardPage.page).toHaveURL(/\/dashboard\/billing/);
+  });
 
-  authenticatedTest(
-    "navigates to settings page",
-    async ({ dashboardPage }) => {
-      await dashboardPage.goto();
-      await dashboardPage.getSettingsLink().click();
-      await expect(dashboardPage.page).toHaveURL(/\/dashboard\/settings/);
-    },
-  );
+  authenticatedTest("navigates to settings page", async ({ dashboardPage }) => {
+    await dashboardPage.goto();
+    await dashboardPage.getSettingsLink().click();
+    await expect(dashboardPage.page).toHaveURL(/\/dashboard\/settings/);
+  });
 });
