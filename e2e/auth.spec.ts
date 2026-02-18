@@ -6,17 +6,54 @@ test.describe("Authentication", () => {
     await expect(homePage.getSignInButton()).toBeVisible();
   });
 
-  test("sign in button triggers auth flow", async ({ homePage }) => {
+  test("sign in button is enabled and clickable", async ({ homePage }) => {
     await homePage.goto();
     const signInButton = homePage.getSignInButton();
 
-    // Clicking should trigger navigation or modal
+    await expect(signInButton).toBeEnabled();
+  });
+
+  test("sign in button triggers auth redirect", async ({ homePage }) => {
+    await homePage.goto();
+    const signInButton = homePage.getSignInButton();
+
+    // Capture the current URL before clicking
+    const urlBefore = homePage.page.url();
+
+    // Clicking initiates OAuth flow which redirects away from the app
     await signInButton.click();
 
-    // Wait for either redirect or auth modal
-    await homePage.page.waitForTimeout(500);
+    // The OAuth redirect should change the URL or show a loading state
+    await homePage.page.waitForURL((url) => url.toString() !== urlBefore, {
+      timeout: 5000,
+    }).catch(() => {
+      // If no redirect happens (auth provider unreachable), the button
+      // should at least show a pending/disabled state
+    });
 
-    // The button click should initiate OAuth flow
-    // In a real test environment, this would redirect to the auth provider
+    // After click, either we redirected or the button entered pending state
+    const currentUrl = homePage.page.url();
+    const buttonDisabled = await signInButton.isDisabled().catch(() => false);
+    const urlChanged = currentUrl !== urlBefore;
+
+    // At minimum one of these should be true: redirect happened or button
+    // entered loading state
+    expect(urlChanged || buttonDisabled).toBeTruthy();
+  });
+
+  test("dashboard link is not visible when unauthenticated", async ({
+    homePage,
+  }) => {
+    await homePage.goto();
+    await expect(
+      homePage.page.getByRole("link", { name: "Dashboard" }),
+    ).not.toBeVisible();
+  });
+
+  test("pricing link is always visible in header", async ({ homePage }) => {
+    await homePage.goto();
+    await expect(
+      homePage.page.getByRole("link", { name: "Pricing" }),
+    ).toBeVisible();
   });
 });

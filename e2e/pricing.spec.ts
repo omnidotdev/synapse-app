@@ -1,13 +1,17 @@
 import test, { expect } from "../src/test/e2e/util/test";
 
 test.describe("Pricing Page", () => {
-  // Note: Pricing page tests are skipped because they require valid Stripe API keys.
-  // The page loader fetches prices from Stripe, which fails without valid credentials.
-  // To run these tests, configure valid Stripe keys in .env.test or mock the API.
+  // Note: Full pricing tests require valid Stripe API keys. The page loader
+  // fetches prices from Stripe, which may fail without credentials.
+  // To run all tests, configure valid Stripe keys in .env.test.
 
-  test.skip("loads successfully", async ({ pricingPage }) => {
+  test("navigates to pricing page", async ({ pricingPage }) => {
     await pricingPage.goto();
     await expect(pricingPage.page).toHaveURL(/\/pricing/);
+  });
+
+  test.skip("displays pricing heading", async ({ pricingPage }) => {
+    await pricingPage.goto();
     await expect(pricingPage.getHeading()).toBeVisible();
   });
 

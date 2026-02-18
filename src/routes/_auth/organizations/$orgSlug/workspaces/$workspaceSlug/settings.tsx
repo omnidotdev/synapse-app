@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useOrganization } from "@/lib/context";
 import {
-  removeWorkspace,
   listWorkspaces,
   patchWorkspace,
+  removeWorkspace,
 } from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
