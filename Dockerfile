@@ -14,10 +14,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
 
-# TODO: Switch back to Bun runtime once module resolution is fixed
-# Bun doesn't properly resolve externalized Nitro packages (srvx, react-dom/server)
-# Error: Cannot find package 'srvx' from '/app/.output/server/chunks/virtual/entry.mjs'
-# Error: Cannot find module 'react-dom/server'
+# WORKAROUND: Bun runtime cannot resolve Nitro-externalized packages (srvx,
+# react-dom/server) at runtime. TanStack Start + Nitro bundle production deps
+# into .output but Bun's module resolver fails on the virtual entry chunk.
+# Using Node 22-alpine as the production runtime until Bun resolves this.
+# Track: https://github.com/oven-sh/bun/issues/16493
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
