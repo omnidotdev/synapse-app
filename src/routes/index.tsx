@@ -273,19 +273,19 @@ function HomePage() {
             <NodeChip id="node_01" label="metrics" />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
               <div>
-                <p className="font-bold text-4xl text-gradient">50+</p>
+                <p className="font-bold text-2xl text-gradient">50+</p>
                 <p className="mt-1 text-muted-foreground text-sm">
                   Models supported
                 </p>
               </div>
               <div>
-                <p className="font-bold text-4xl text-gradient">&lt;50ms</p>
+                <p className="font-bold text-2xl text-gradient">&lt;50ms</p>
                 <p className="mt-1 text-muted-foreground text-sm">
                   Routing overhead
                 </p>
               </div>
               <div>
-                <p className="font-bold text-4xl text-gradient">99.9%</p>
+                <p className="font-bold text-2xl text-gradient">99.9%</p>
                 <p className="mt-1 text-muted-foreground text-sm">Uptime SLA</p>
               </div>
             </div>
