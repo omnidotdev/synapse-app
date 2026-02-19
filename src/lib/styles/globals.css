@@ -237,6 +237,7 @@
   --glow-accent: 0 0 24px rgba(58, 168, 152, 0.35);
   --glow-soft: 0 0 60px rgba(99, 102, 241, 0.1);
 
+  /* Signal color - dark */
   --signal: oklch(0.9 0.16 200);
   --signal-glow: 0 0 16px oklch(0.9 0.16 200 / 0.7);
 
@@ -420,6 +421,7 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
     position: relative;
+    isolation: isolate;
   }
 
   .node-panel::before {
@@ -433,6 +435,7 @@
       oklch(0.68 0.13 175 / 0.1)
     );
     pointer-events: none;
+    z-index: -1;
   }
 
   /* Axon spine — vertical connecting line between below-fold sections */
@@ -468,7 +471,8 @@
 }
 
 @keyframes node-halo {
-  0%, 100% {
+  0%,
+  100% {
     r: 0;
     opacity: 0.5;
   }
@@ -488,7 +492,8 @@
 }
 
 @keyframes neural-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0);
   }
   33% {
