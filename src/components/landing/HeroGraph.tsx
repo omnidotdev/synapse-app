@@ -7,11 +7,7 @@ type SignalProps = {
 /** Animated signal dot traveling along a path. */
 function Signal({ path, dur, begin = "0s" }: SignalProps) {
   return (
-    <circle
-      r="3.5"
-      fill="var(--signal)"
-      style={{ filter: "drop-shadow(0 0 4px var(--signal))" }}
-    >
+    <circle r="3.5" className="signal-dot">
       <animateMotion
         dur={dur}
         begin={begin}
@@ -70,6 +66,7 @@ function GraphNode({ cx, cy, r, label, sublabel, color }: NodeProps) {
         stroke={color}
         strokeOpacity={0.5}
         strokeWidth={1.2}
+        className="satellite-glow"
       />
       {/* Label */}
       <text
@@ -151,7 +148,7 @@ function HeroGraph() {
           <Signal
             path={c.d}
             dur={c.dur}
-            begin={`${parseFloat(c.begin) + parseFloat(c.dur) / 2}s`}
+            begin={`${(parseFloat(c.begin) + parseFloat(c.dur) / 2).toFixed(2)}s`}
           />
         </g>
       ))}
