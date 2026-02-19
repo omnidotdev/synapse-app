@@ -470,27 +470,6 @@
   }
 }
 
-@keyframes node-halo {
-  0%,
-  100% {
-    r: 0;
-    opacity: 0.5;
-  }
-  50% {
-    r: 20;
-    opacity: 0;
-  }
-}
-
-@keyframes connection-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
 @keyframes neural-float {
   0%,
   100% {
