@@ -34,6 +34,7 @@ const knipConfig: KnipConfig = {
     "src/lib/providers/**",
     "src/server/functions/authorization.ts",
     "src/server/functions/entitlements.ts",
+    "src/server/functions/providerKeys.ts",
   ],
   ignoreDependencies: [
     "@changesets/cli",

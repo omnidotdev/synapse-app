@@ -26,7 +26,7 @@ function NodeChip({ id, label }: { id: string; label: string }) {
 }
 
 /** Animated SVG showing request routing through the Synapse hub. */
-const RoutingDiagram = () => {
+function RoutingDiagram() {
   const providers = [
     { cx: 240, cy: 40, label: "LLM" },
     { cx: 250, cy: 82, label: "MCP" },
@@ -184,14 +184,14 @@ const RoutingDiagram = () => {
       ))}
     </svg>
   );
-};
+}
 
 /**
  * Home page — neural network node graph layout.
  */
 function HomePage() {
   return (
-    <div className="relative" style={{ zIndex: 1 }}>
+    <div className="relative z-[1]">
       <NeuralBackground />
 
       {/* Hero: full-viewport neural graph */}
@@ -240,19 +240,21 @@ function HomePage() {
             fill="none"
             aria-hidden="true"
           >
-            <path
-              d="M8 4 L8 20 M4 16 L8 20 L12 16"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <animate
-              attributeName="opacity"
-              values="0.4;1;0.4"
-              dur="2s"
-              repeatCount="indefinite"
-            />
+            <g>
+              <path
+                d="M8 4 L8 20 M4 16 L8 20 L12 16"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <animate
+                attributeName="opacity"
+                values="0.4;1;0.4"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </g>
           </svg>
         </div>
       </section>
@@ -362,7 +364,7 @@ function HomePage() {
             <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <ZapIcon className="size-5" />
             </div>
-            <h3 className="font-semibold">Intelligent Routing</h3>
+            <h3 className="font-semibold">Auto Routing</h3>
             <p className="mt-1 text-muted-foreground text-sm">
               Auto-select the best model based on cost, latency, or capability.
               Built-in fallback chains

@@ -503,3 +503,19 @@
     transform: translate(-2px, 3px);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-dot,
+  .soma-ring,
+  .satellite-glow {
+    animation: none;
+    filter: none;
+  }
+
+  .text-shimmer {
+    animation: none;
+    background: var(--primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+}
