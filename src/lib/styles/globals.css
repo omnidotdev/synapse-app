@@ -180,6 +180,10 @@
   --glow-accent: 0 0 20px rgba(58, 168, 152, 0.25);
   --glow-soft: 0 0 40px rgba(99, 102, 241, 0.1);
 
+  /* Electric cyan for synapse signal pulses */
+  --signal: oklch(0.87 0.14 200);
+  --signal-glow: 0 0 12px oklch(0.87 0.14 200 / 0.6);
+
   /* Background gradient */
   --background-gradient: linear-gradient(135deg, #f0f2f8 0%, #e8ecf4 100%);
 }
@@ -232,6 +236,9 @@
   --glow-primary: 0 0 24px rgba(99, 102, 241, 0.35);
   --glow-accent: 0 0 24px rgba(58, 168, 152, 0.35);
   --glow-soft: 0 0 60px rgba(99, 102, 241, 0.1);
+
+  --signal: oklch(0.9 0.16 200);
+  --signal-glow: 0 0 16px oklch(0.9 0.16 200 / 0.7);
 
   /* Background gradient - deep space */
   --background-gradient: linear-gradient(
@@ -390,6 +397,53 @@
     background: var(--surface-elevated);
     box-shadow: inset 2px 0 0 var(--primary);
   }
+
+  /* Soma (hero) node ring */
+  .soma-ring {
+    filter: drop-shadow(0 0 12px oklch(0.66 0.19 264 / 0.5));
+  }
+
+  /* Satellite node glow */
+  .satellite-glow {
+    filter: drop-shadow(0 0 6px oklch(0.68 0.13 175 / 0.45));
+  }
+
+  /* Signal pulse dot */
+  .signal-dot {
+    fill: var(--signal);
+    filter: drop-shadow(0 0 4px var(--signal));
+  }
+
+  /* Node panel — glass card styled as a network node */
+  .node-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+  }
+
+  .node-panel::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      oklch(0.66 0.19 264 / 0.15),
+      oklch(0.68 0.13 175 / 0.1)
+    );
+    pointer-events: none;
+  }
+
+  /* Axon spine — vertical connecting line between below-fold sections */
+  .axon-spine {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.66 0.19 264 / 0.3),
+      oklch(0.68 0.13 175 / 0.2),
+      oklch(0.66 0.19 264 / 0.1)
+    );
+  }
 }
 
 @keyframes shimmer {
@@ -410,5 +464,37 @@
   50% {
     opacity: 1;
     box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+  }
+}
+
+@keyframes node-halo {
+  0%, 100% {
+    r: 0;
+    opacity: 0.5;
+  }
+  50% {
+    r: 20;
+    opacity: 0;
+  }
+}
+
+@keyframes connection-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes neural-float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(3px, -4px);
+  }
+  66% {
+    transform: translate(-2px, 3px);
   }
 }
