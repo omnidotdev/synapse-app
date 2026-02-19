@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ActivityIcon, ShieldCheckIcon, ZapIcon } from "lucide-react";
 
 import { InternalLink } from "@/components/core";
+import HeroGraph from "@/components/landing/HeroGraph";
 import NeuralBackground from "@/components/landing/NeuralBackground";
 import { Button } from "@/components/ui/button";
 
@@ -192,6 +193,7 @@ function HomePage() {
   return (
     <div className="relative mx-auto max-w-6xl px-4 py-6 lg:py-10">
       <NeuralBackground />
+      <HeroGraph />
       {/* Ambient glow */}
       <div className="pointer-events-none absolute top-0 left-1/4 size-[500px] rounded-full bg-primary/5 blur-[120px]" />
       <div className="pointer-events-none absolute right-1/4 bottom-1/3 size-[400px] rounded-full bg-secondary/5 blur-[120px]" />
