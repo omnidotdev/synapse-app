@@ -271,7 +271,7 @@ function HomePage() {
         <div className="mb-24 flex justify-end">
           <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
             <NodeChip id="node_01" label="metrics" />
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
               <div>
                 <p className="font-bold text-4xl text-gradient">50+</p>
                 <p className="mt-1 text-muted-foreground text-sm">

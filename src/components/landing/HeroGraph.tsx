@@ -98,9 +98,9 @@ function GraphNode({ cx, cy, r, label, sublabel, color }: NodeProps) {
 const CONNECTIONS = [
   { d: "M 131 280 L 380 280", dur: "1.8s", begin: "0s" },
   { d: "M 608 210 Q 720 160 794 150", dur: "2.2s", begin: "0.3s" },
-  { d: "M 608 340 Q 710 400 766 420", dur: "2.4s", begin: "0.6s" },
+  { d: "M 608 340 Q 710 388 766 407", dur: "2.4s", begin: "0.6s" },
   { d: "M 420 175 Q 380 130 342 100", dur: "2.0s", begin: "0.9s" },
-  { d: "M 400 370 Q 330 420 272 452", dur: "2.3s", begin: "1.2s" },
+  { d: "M 400 370 Q 330 408 272 427", dur: "2.3s", begin: "1.2s" },
   { d: "M 619 268 Q 750 265 862 282", dur: "2.1s", begin: "0.4s" },
   { d: "M 866 152 Q 900 200 888 262", dur: "1.9s", begin: "0.8s" },
 ];
@@ -212,7 +212,7 @@ function HeroGraph() {
       />
       <GraphNode
         cx={800}
-        cy={430}
+        cy={415}
         r={34}
         label="Router"
         sublabel="50+ models"
@@ -227,7 +227,7 @@ function HeroGraph() {
       />
       <GraphNode
         cx={250}
-        cy={460}
+        cy={435}
         r={30}
         label="Analytics"
         color="var(--secondary)"
