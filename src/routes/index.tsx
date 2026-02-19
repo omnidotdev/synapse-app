@@ -12,9 +12,20 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-/**
- * Animated SVG showing request routing through the Synapse hub.
- */
+/** Small label chip shown on each node section. */
+function NodeChip({ id, label }: { id: string; label: string }) {
+  return (
+    <div className="mb-4 inline-flex items-center gap-2">
+      <span className="font-mono text-primary/60 text-xs">{id}</span>
+      <span className="h-px w-8 bg-primary/20" />
+      <span className="font-mono text-muted-foreground text-xs uppercase tracking-widest">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+/** Animated SVG showing request routing through the Synapse hub. */
 const RoutingDiagram = () => {
   const providers = [
     { cx: 240, cy: 40, label: "LLM" },
@@ -33,12 +44,11 @@ const RoutingDiagram = () => {
   return (
     <svg
       viewBox="0 0 290 206"
-      className="h-auto w-full"
+      className="h-auto w-full max-w-xs"
       fill="none"
       role="img"
       aria-label="Diagram showing API requests routed through Synapse to multiple providers"
     >
-      {/* Request input node */}
       <circle
         cx="42"
         cy="103"
@@ -59,8 +69,6 @@ const RoutingDiagram = () => {
       >
         Req
       </text>
-
-      {/* Synapse hub */}
       <circle
         cx="142"
         cy="103"
@@ -70,7 +78,6 @@ const RoutingDiagram = () => {
         stroke="var(--primary)"
         strokeWidth={1.5}
       />
-      {/* Pulse ring */}
       <circle
         cx="142"
         cy="103"
@@ -112,8 +119,6 @@ const RoutingDiagram = () => {
       >
         Router
       </text>
-
-      {/* Provider nodes */}
       {providers.map((node) => (
         <g key={node.label}>
           <circle
@@ -138,8 +143,6 @@ const RoutingDiagram = () => {
           </text>
         </g>
       ))}
-
-      {/* Input path: request -> hub */}
       <line
         x1="60"
         y1="103"
@@ -159,8 +162,6 @@ const RoutingDiagram = () => {
           repeatCount="indefinite"
         />
       </line>
-
-      {/* Output paths: hub -> providers */}
       {outputPaths.map((d, i) => (
         <path
           key={d}
@@ -186,36 +187,36 @@ const RoutingDiagram = () => {
 };
 
 /**
- * Home page with bento grid layout.
+ * Home page — neural network node graph layout.
  */
 function HomePage() {
   return (
-    <div className="relative mx-auto max-w-6xl px-4 py-6 lg:py-10">
+    <div className="relative" style={{ zIndex: 1 }}>
       <NeuralBackground />
-      <HeroGraph />
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute top-0 left-1/4 size-[500px] rounded-full bg-primary/5 blur-[120px]" />
-      <div className="pointer-events-none absolute right-1/4 bottom-1/3 size-[400px] rounded-full bg-secondary/5 blur-[120px]" />
 
-      {/* Bento grid */}
-      <div className="relative grid gap-4 lg:grid-cols-3">
-        {/* Hero cell */}
-        <div className="glass-panel rounded-xl p-8 lg:col-span-2 lg:p-12">
-          <p className="mb-3 font-mono text-muted-foreground text-xs uppercase tracking-widest">
-            AI Router
+      {/* Hero: full-viewport neural graph */}
+      <section
+        className="relative flex items-center justify-center overflow-hidden"
+        style={{ height: "calc(100vh - 66px)" }}
+      >
+        <HeroGraph />
+
+        {/* Hero text — centered soma content */}
+        <div className="relative z-10 max-w-sm px-6 text-center">
+          <p className="mb-2 font-mono text-primary/70 text-xs uppercase tracking-[0.2em]">
+            node_00 · soma
           </p>
-          <h1 className="pb-1 font-bold text-5xl text-shimmer sm:text-6xl">
+          <h1 className="pb-1 font-bold text-5xl text-shimmer sm:text-7xl">
             Synapse
           </h1>
-          <p className="mt-3 text-lg text-muted-foreground">
+          <p className="mt-3 font-medium text-foreground text-lg">
             The cortex for your AI stack
           </p>
-          <p className="mt-4 max-w-md text-muted-foreground text-sm">
+          <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
             Route to any model, track every token, and manage your keys — all
             through one unified control plane
           </p>
-
-          <div className="mt-8 flex gap-3">
+          <div className="mt-8 flex justify-center gap-3">
             <InternalLink to="/pricing" variant="unstyled">
               <Button variant="gradient" size="lg">
                 Get Started
@@ -229,108 +230,170 @@ function HomePage() {
           </div>
         </div>
 
-        {/* Stats cell */}
-        <div className="glass-panel flex flex-col justify-center gap-6 rounded-xl p-6">
-          <div>
-            <p className="font-bold text-4xl text-gradient">50+</p>
-            <p className="text-muted-foreground text-sm">Models supported</p>
-          </div>
-          <div className="h-px bg-border" />
-          <div>
-            <p className="font-bold text-4xl text-gradient">&lt;50ms</p>
-            <p className="text-muted-foreground text-sm">Routing overhead</p>
-          </div>
-          <div className="h-px bg-border" />
-          <div>
-            <p className="font-bold text-4xl text-gradient">99.9%</p>
-            <p className="text-muted-foreground text-sm">Uptime SLA</p>
-          </div>
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 opacity-40">
+          <span className="font-mono text-muted-foreground text-xs">
+            explore network
+          </span>
+          <svg
+            width="16"
+            height="24"
+            viewBox="0 0 16 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 4 L8 20 M4 16 L8 20 L12 16"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.4;1;0.4"
+              dur="2s"
+              repeatCount="indefinite"
+            />
+          </svg>
         </div>
+      </section>
 
-        {/* Routing diagram cell */}
-        <div className="card-glow-hover glass-panel flex items-center justify-center rounded-xl p-6">
-          <RoutingDiagram />
-        </div>
+      {/* Below-fold content nodes */}
+      <div className="relative mx-auto max-w-5xl px-4 py-20">
+        {/* Axon spine */}
+        <div
+          aria-hidden="true"
+          className="axon-spine pointer-events-none absolute top-0 bottom-0 left-1/2 w-px"
+        />
 
-        {/* Code snippet cell */}
-        <div className="card-glow-hover glass-panel overflow-hidden rounded-xl lg:col-span-2">
-          {/* Terminal chrome */}
-          <div className="flex items-center gap-2 border-border border-b px-4 py-2.5">
-            <div className="size-2.5 rounded-full bg-primary/20" />
-            <div className="size-2.5 rounded-full bg-secondary/20" />
-            <div className="size-2.5 rounded-full bg-muted-foreground/20" />
-            <span className="ml-2 font-mono text-muted-foreground text-xs">
-              POST /v1/route
-            </span>
-          </div>
-
-          <pre className="overflow-x-auto p-4 font-mono text-sm leading-relaxed">
-            <div className="text-muted-foreground">{"{"}</div>
-            <div>
-              {"  "}
-              <span className="text-foreground">&quot;model&quot;</span>
-              {": "}
-              <span className="text-secondary">&quot;auto&quot;</span>,
+        {/* Node 01: Stats */}
+        <div className="mb-24 flex justify-end">
+          <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
+            <NodeChip id="node_01" label="metrics" />
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <p className="font-bold text-4xl text-gradient">50+</p>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  Models supported
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-4xl text-gradient">&lt;50ms</p>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  Routing overhead
+                </p>
+              </div>
+              <div>
+                <p className="font-bold text-4xl text-gradient">99.9%</p>
+                <p className="mt-1 text-muted-foreground text-sm">Uptime SLA</p>
+              </div>
             </div>
-            <div>
-              {"  "}
-              <span className="text-foreground">&quot;providers&quot;</span>
-              {": ["}
-              <span className="text-secondary">&quot;openai&quot;</span>
-              {", "}
-              <span className="text-secondary">&quot;anthropic&quot;</span>
-              {"],"}
-            </div>
-            <div>
-              {"  "}
-              <span className="text-foreground">&quot;strategy&quot;</span>
-              {": "}
-              <span className="text-secondary">&quot;cost-optimized&quot;</span>
-              ,
-            </div>
-            <div>
-              {"  "}
-              <span className="text-foreground">&quot;fallback&quot;</span>
-              {": "}
-              <span className="text-primary">true</span>
-            </div>
-            <div className="text-muted-foreground">{"}"}</div>
-          </pre>
+          </div>
         </div>
 
-        {/* Feature: Intelligent Routing */}
-        <div className="card-glow-hover glass-panel rounded-xl p-6">
-          <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <ZapIcon className="size-5" />
+        {/* Node 02: Routing diagram */}
+        <div className="mb-24 flex justify-start">
+          <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
+            <NodeChip id="node_02" label="routing engine" />
+            <h3 className="mb-4 font-semibold text-lg">Intelligent Routing</h3>
+            <p className="mb-6 text-muted-foreground text-sm">
+              Auto-select the best model based on cost, latency, or capability —
+              with built-in fallback chains that never let you down.
+            </p>
+            <RoutingDiagram />
           </div>
-          <h3 className="font-semibold">Intelligent Routing</h3>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Auto-select the best model based on cost, latency, or capability.
-            Built-in fallback chains
-          </p>
         </div>
 
-        {/* Feature: Live Analytics */}
-        <div className="card-glow-hover glass-panel rounded-xl p-6">
-          <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
-            <ActivityIcon className="size-5" />
+        {/* Node 03: Code snippet */}
+        <div className="mb-24 flex justify-end">
+          <div className="node-panel w-full max-w-md overflow-hidden rounded-2xl lg:max-w-lg">
+            <div className="p-8 pb-0">
+              <NodeChip id="node_03" label="api terminal" />
+            </div>
+            {/* Terminal chrome */}
+            <div className="flex items-center gap-2 border-border border-b px-6 py-2.5">
+              <div className="size-2.5 rounded-full bg-primary/20" />
+              <div className="size-2.5 rounded-full bg-secondary/20" />
+              <div className="size-2.5 rounded-full bg-muted-foreground/20" />
+              <span className="ml-2 font-mono text-muted-foreground text-xs">
+                POST /v1/route
+              </span>
+            </div>
+            <pre className="overflow-x-auto p-6 font-mono text-sm leading-relaxed">
+              <div className="text-muted-foreground">{"{"}</div>
+              <div>
+                {"  "}
+                <span className="text-foreground">&quot;model&quot;</span>
+                {": "}
+                <span className="text-secondary">&quot;auto&quot;</span>,
+              </div>
+              <div>
+                {"  "}
+                <span className="text-foreground">&quot;providers&quot;</span>
+                {": ["}
+                <span className="text-secondary">&quot;openai&quot;</span>
+                {", "}
+                <span className="text-secondary">&quot;anthropic&quot;</span>
+                {"],"}
+              </div>
+              <div>
+                {"  "}
+                <span className="text-foreground">&quot;strategy&quot;</span>
+                {": "}
+                <span className="text-secondary">
+                  &quot;cost-optimized&quot;
+                </span>
+                ,
+              </div>
+              <div>
+                {"  "}
+                <span className="text-foreground">&quot;fallback&quot;</span>
+                {": "}
+                <span className="text-primary">true</span>
+              </div>
+              <div className="text-muted-foreground">{"}"}</div>
+            </pre>
           </div>
-          <h3 className="font-semibold">Live Analytics</h3>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Track tokens, latency, and spend across every provider in real time
-          </p>
         </div>
 
-        {/* Feature: Scoped Keys */}
-        <div className="card-glow-hover glass-panel rounded-xl p-6">
-          <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <ShieldCheckIcon className="size-5" />
+        {/* Nodes 04–06: Feature leaf nodes */}
+        <div className="grid gap-6 sm:grid-cols-3">
+          <div className="node-panel rounded-2xl p-6">
+            <NodeChip id="node_04" label="routing" />
+            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <ZapIcon className="size-5" />
+            </div>
+            <h3 className="font-semibold">Intelligent Routing</h3>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Auto-select the best model based on cost, latency, or capability.
+              Built-in fallback chains
+            </p>
           </div>
-          <h3 className="font-semibold">Scoped Keys</h3>
-          <p className="mt-1 text-muted-foreground text-sm">
-            Fine-grained API keys with auto-rotation, audit trails, and rate
-            limits
-          </p>
+
+          <div className="node-panel rounded-2xl p-6">
+            <NodeChip id="node_05" label="analytics" />
+            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
+              <ActivityIcon className="size-5" />
+            </div>
+            <h3 className="font-semibold">Live Analytics</h3>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Track tokens, latency, and spend across every provider in real
+              time
+            </p>
+          </div>
+
+          <div className="node-panel rounded-2xl p-6">
+            <NodeChip id="node_06" label="keys" />
+            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <ShieldCheckIcon className="size-5" />
+            </div>
+            <h3 className="font-semibold">Scoped Keys</h3>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Fine-grained API keys with auto-rotation, audit trails, and rate
+              limits
+            </p>
+          </div>
         </div>
       </div>
     </div>
