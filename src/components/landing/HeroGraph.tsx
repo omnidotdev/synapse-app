@@ -118,7 +118,7 @@ function HeroGraph() {
       className="absolute inset-0 h-full w-full"
       fill="none"
       aria-hidden="true"
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio="xMidYMid slice"
     >
       {/* Connection paths */}
       {CONNECTIONS.map((c) => (

@@ -196,44 +196,35 @@ function HomePage() {
 
       {/* Hero: full-viewport neural graph */}
       <section
-        className="relative flex flex-col overflow-hidden lg:items-center lg:justify-center"
+        className="relative flex items-center justify-center overflow-hidden"
         style={{ height: "calc(100vh - 66px)" }}
       >
-        {/* Graph — top band on mobile, full overlay on desktop */}
-        <div
-          aria-hidden="true"
-          className="relative w-full shrink-0 lg:absolute lg:inset-0 lg:h-auto"
-          style={{ height: "42%" }}
-        >
-          <HeroGraph />
-        </div>
+        <HeroGraph />
 
-        {/* Hero text — fills remaining space on mobile, centered overlay on desktop */}
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center lg:absolute lg:inset-0">
-          <div className="w-full max-w-[88vw] sm:max-w-sm">
-            <NodeChip id="node_00" label="soma" />
-            <h1 className="pb-1 font-bold text-4xl text-shimmer sm:text-5xl lg:text-7xl">
-              Synapse
-            </h1>
-            <p className="mt-3 font-medium text-base text-foreground lg:text-lg">
-              The cortex for your AI stack
-            </p>
-            <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
-              Route to any model, track every token, and manage your keys — all
-              through one unified control plane
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <InternalLink to="/pricing" variant="unstyled">
-                <Button variant="gradient" size="lg">
-                  Get Started
-                </Button>
-              </InternalLink>
-              <InternalLink to="/pricing" variant="unstyled">
-                <Button variant="outline" size="lg">
-                  View Pricing
-                </Button>
-              </InternalLink>
-            </div>
+        {/* Hero text — centered soma content */}
+        <div className="relative z-10 max-w-[80vw] px-6 text-center sm:max-w-sm">
+          <NodeChip id="node_00" label="soma" />
+          <h1 className="pb-1 font-bold text-4xl text-shimmer sm:text-5xl lg:text-7xl">
+            Synapse
+          </h1>
+          <p className="mt-3 font-medium text-base text-foreground lg:text-lg">
+            The cortex for your AI stack
+          </p>
+          <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
+            Route to any model, track every token, and manage your keys through
+            one unified control plane
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <InternalLink to="/pricing" variant="unstyled">
+              <Button variant="gradient" size="lg">
+                Get Started
+              </Button>
+            </InternalLink>
+            <InternalLink to="/pricing" variant="unstyled">
+              <Button variant="outline" size="lg">
+                View Pricing
+              </Button>
+            </InternalLink>
           </div>
         </div>
 
