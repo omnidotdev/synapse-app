@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { authMiddleware } from "@/server/middleware";
-
 import { graphql } from "./graphql";
 
 interface ApiKey {

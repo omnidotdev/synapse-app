@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  KeyRoundIcon,
-  Loader2Icon,
-  PlusIcon,
-  TrashIcon,
-} from "lucide-react";
+import { KeyRoundIcon, Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -148,7 +143,9 @@ function AddKeyForm({ onClose }: { onClose: () => void }) {
         <div className="flex flex-col gap-1.5">
           <label htmlFor="model-pref-input" className="font-medium text-sm">
             Model preference{" "}
-            <span className="font-normal text-muted-foreground">(optional)</span>
+            <span className="font-normal text-muted-foreground">
+              (optional)
+            </span>
           </label>
           <input
             id="model-pref-input"
