@@ -1,10 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { SYNAPSE_API_URL } from "@/lib/config/env.config";
 import { authMiddleware } from "@/server/middleware";
 
-const API_GRAPHQL_URL = `${SYNAPSE_API_URL}/graphql`;
+import { graphql } from "./graphql";
 
 interface ApiKey {
   id: string;
@@ -22,36 +21,6 @@ interface CreateApiKeyResult {
   apiKeyId: string;
   keyHint: string;
 }
-
-/**
- * Execute a GraphQL query against synapse-api
- */
-const graphql = async <T>(
-  accessToken: string,
-  query: string,
-  variables?: Record<string, unknown>,
-): Promise<T> => {
-  const res = await fetch(API_GRAPHQL_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ query, variables }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`GraphQL request failed: ${res.status}`);
-  }
-
-  const json = await res.json();
-
-  if (json.errors?.length) {
-    throw new Error(json.errors[0].message);
-  }
-
-  return json.data;
-};
 
 /**
  * List active API keys for the current user
