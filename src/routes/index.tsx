@@ -203,9 +203,7 @@ function HomePage() {
 
         {/* Hero text — centered soma content */}
         <div className="relative z-10 max-w-sm px-6 text-center">
-          <p className="mb-2 font-mono text-primary/70 text-xs uppercase tracking-[0.2em]">
-            node_00 · soma
-          </p>
+          <NodeChip id="node_00" label="soma" />
           <h1 className="pb-1 font-bold text-5xl text-shimmer sm:text-7xl">
             Synapse
           </h1>
