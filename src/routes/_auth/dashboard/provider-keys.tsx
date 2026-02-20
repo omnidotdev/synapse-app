@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { KeyRoundIcon, Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import {
+  ArrowUpCircleIcon,
+  KeyRoundIcon,
+  Loader2Icon,
+  PlusIcon,
+  TrashIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -13,15 +19,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { fetchSession } from "@/server/functions/auth";
 import {
   listProviderKeys,
   removeProviderKey,
   setProviderKey,
 } from "@/server/functions/providerKeys";
+import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { ProviderKey } from "@/server/functions/providerKeys";
 
+const FREE_KEY_LIMIT = 3;
+
 export const Route = createFileRoute("/_auth/dashboard/provider-keys")({
+  loader: async () => {
+    const { session } = await fetchSession();
+    if (!session?.user.identityProviderId) {
+      return { subscription: null };
+    }
+
+    const subscription = await getSubscription({
+      data: {
+        entityType: "user",
+        entityId: session.user.identityProviderId,
+      },
+    }).catch(() => null);
+
+    return { subscription };
+  },
   component: ProviderKeysPage,
 });
 
@@ -232,6 +257,7 @@ function RevokeConfirm({
  * Provider keys management page
  */
 function ProviderKeysPage() {
+  const { subscription } = Route.useLoaderData();
   const [showAdd, setShowAdd] = useState(false);
   const [revoking, setRevoking] = useState<ProviderKey | null>(null);
 
@@ -240,6 +266,8 @@ function ProviderKeysPage() {
     queryFn: () => listProviderKeys(),
   });
 
+  const atFreeLimit = !subscription && keys.length >= FREE_KEY_LIMIT;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -247,14 +275,27 @@ function ProviderKeysPage() {
           <h1 className="font-bold text-2xl">Provider Keys</h1>
           <p className="text-muted-foreground text-sm">
             Manage your BYOK provider API keys
+            {!subscription && (
+              <span className="ml-1 text-muted-foreground">
+                ({keys.length}/{FREE_KEY_LIMIT} free)
+              </span>
+            )}
           </p>
         </div>
-        {!showAdd && (
-          <Button variant="solid" onClick={() => setShowAdd(true)}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Add key
-          </Button>
-        )}
+        {!showAdd &&
+          (atFreeLimit ? (
+            <Link to="/pricing">
+              <Button variant="solid">
+                <ArrowUpCircleIcon className="mr-2 h-4 w-4" />
+                Upgrade to add more
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="solid" onClick={() => setShowAdd(true)}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add key
+            </Button>
+          ))}
       </div>
 
       {showAdd && <AddKeyForm onClose={() => setShowAdd(false)} />}

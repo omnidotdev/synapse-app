@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import StatCard from "@/components/dashboard/StatCard";
+import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import { fetchSession } from "@/server/functions/auth";
 import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
@@ -46,6 +47,8 @@ function DashboardOverview() {
 
   return (
     <div className="flex flex-col gap-6">
+      <UpgradeBanner show={!subscription} />
+
       <div>
         <h1 className="font-bold text-2xl text-gradient">Overview</h1>
         <p className="text-muted-foreground text-sm">
