@@ -6,6 +6,7 @@
 @theme inline {
   --font-display: var(--display-family);
   --font-text: var(--text-family);
+  --font-mono: "Space Mono", ui-monospace, monospace;
 
   --color-base-50: var(--base-50);
   --color-base-100: var(--base-100);
@@ -159,9 +160,9 @@
   --sidebar-accent-foreground: var(--base-800);
   --sidebar-border: var(--base-200);
   --sidebar-ring: var(--primary-400);
-  --display-family: var(--font-sans);
+  --display-family: "Space Grotesk", system-ui, sans-serif;
   --display-weight: 400;
-  --text-family: var(--font-sans);
+  --text-family: "Space Grotesk", system-ui, sans-serif;
   --text-weight: 400;
 
   /* Surfaces */
@@ -258,6 +259,7 @@
     @apply bg-background text-foreground antialiased;
     background: var(--background-gradient);
     background-attachment: fixed;
+    font-family: var(--text-family);
   }
   .font-display {
     font-weight: var(--display-weight);

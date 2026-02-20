@@ -272,9 +272,9 @@ function ProviderKeysPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-2xl">Provider Keys</h1>
+          <h1 className="font-bold text-2xl text-gradient">Provider Keys</h1>
           <p className="text-muted-foreground text-sm">
-            Manage your BYOK provider API keys
+            Vault your AI provider credentials
             {!subscription && (
               <span className="ml-1 text-muted-foreground">
                 ({keys.length}/{FREE_KEY_LIMIT} free)

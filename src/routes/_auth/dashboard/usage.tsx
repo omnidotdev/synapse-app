@@ -121,9 +121,9 @@ function UsagePage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-2xl">Usage</h1>
+          <h1 className="font-bold text-2xl text-gradient">Usage</h1>
           <p className="text-muted-foreground text-sm">
-            Detailed breakdown of your Synapse API usage
+            Every token, every request — in full detail
           </p>
         </div>
         <div className="flex gap-1 rounded-md border p-0.5">

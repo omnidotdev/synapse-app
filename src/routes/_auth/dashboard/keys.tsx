@@ -221,9 +221,9 @@ function KeysPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-2xl">API Keys</h1>
+          <h1 className="font-bold text-2xl text-gradient">API Keys</h1>
           <p className="text-muted-foreground text-sm">
-            Manage your Synapse API keys
+            Authenticate your stack to the cortex
           </p>
         </div>
         {!showCreate && (

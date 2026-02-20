@@ -52,7 +52,7 @@ function DashboardOverview() {
       <div>
         <h1 className="font-bold text-2xl text-gradient">Overview</h1>
         <p className="text-muted-foreground text-sm">
-          Monitor your Synapse usage and subscription at a glance
+          Your AI network at a glance
         </p>
       </div>
 
