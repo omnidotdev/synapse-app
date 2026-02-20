@@ -196,13 +196,16 @@ function HomePage() {
 
       {/* Hero: full-viewport neural graph */}
       <section
-        className="relative flex items-center justify-center overflow-hidden"
+        className="relative flex flex-col items-center overflow-hidden"
         style={{ height: "calc(100vh - 66px)" }}
       >
         <HeroGraph />
 
-        {/* Hero text — centered soma content */}
-        <div className="relative z-10 max-w-[80vw] px-6 text-center sm:max-w-sm">
+        {/* Hero text — centered on soma ring */}
+        <div
+          className="relative z-10 max-w-[80vw] px-6 text-center sm:max-w-sm"
+          style={{ marginTop: "calc((100vh - 66px) / 2 - 5rem)" }}
+        >
           <NodeChip id="node_00" label="soma" />
           <h1 className="pb-1 font-bold text-4xl text-shimmer sm:text-5xl lg:text-7xl">
             Synapse
@@ -214,18 +217,23 @@ function HomePage() {
             Route to any model, track every token, and manage your keys through
             one unified control plane
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <InternalLink to="/pricing" variant="unstyled">
-              <Button variant="gradient" size="lg">
-                Get Started
-              </Button>
-            </InternalLink>
-            <InternalLink to="/pricing" variant="unstyled">
-              <Button variant="outline" size="lg">
-                View Pricing
-              </Button>
-            </InternalLink>
-          </div>
+        </div>
+
+        {/* CTA buttons — below soma ring */}
+        <div
+          className="relative z-10 flex flex-wrap justify-center gap-3"
+          style={{ marginTop: "calc((100vh - 66px) * 0.214 - 4rem)" }}
+        >
+          <InternalLink to="/pricing" variant="unstyled">
+            <Button variant="gradient" size="lg">
+              Get Started
+            </Button>
+          </InternalLink>
+          <InternalLink to="/pricing" variant="unstyled">
+            <Button variant="outline" size="lg">
+              View Pricing
+            </Button>
+          </InternalLink>
         </div>
 
         {/* Scroll hint */}
