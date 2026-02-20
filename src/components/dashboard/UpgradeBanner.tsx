@@ -16,12 +16,12 @@ function UpgradeBanner({ show }: Props) {
     <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
       <SparklesIcon className="h-4 w-4 shrink-0 text-primary" />
       <p className="text-sm">
-        You&apos;re on the Free plan.{" "}
+        You&apos;re on the Free plan &mdash;{" "}
         <Link
           to="/pricing"
           className="font-medium underline hover:text-foreground"
         >
-          Upgrade for higher limits
+          upgrade for higher limits
         </Link>
       </p>
     </div>

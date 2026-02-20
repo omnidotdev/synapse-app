@@ -73,8 +73,8 @@ const FreeTierCard = () => {
 
       <CardContent className="p-4">
         {price.product.marketing_features.map((feature) => (
-          <div key={feature.name} className="flex items-center gap-2">
-            <CheckIcon className="size-4 text-primary" />
+          <div key={feature.name} className="flex items-start gap-2 text-left">
+            <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
             <p>{feature.name}</p>
           </div>
         ))}
@@ -114,7 +114,12 @@ const PricingPage = () => {
       >
         <TabsList className="place-self-center">
           <TabsTrigger value="month">Monthly</TabsTrigger>
-          <TabsTrigger value="year">Yearly</TabsTrigger>
+          <TabsTrigger value="year">
+            Yearly{" "}
+            <span className="ml-1.5 rounded-full bg-primary/10 px-1.5 py-0.5 font-medium text-primary text-xs">
+              Save 20%
+            </span>
+          </TabsTrigger>
         </TabsList>
 
         {tabs.value != null && (

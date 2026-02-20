@@ -54,7 +54,9 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
       customerName: context.session.user.name ?? undefined,
       metadata: {
         externalId: context.session.user.identityProviderId ?? "",
-        omniProduct: app.name.toLowerCase(),
+        app_id: app.name.toLowerCase(),
+        entity_type: "user",
+        entity_id: context.session.user.identityProviderId ?? "",
       },
     });
   });

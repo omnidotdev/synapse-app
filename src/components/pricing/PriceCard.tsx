@@ -127,8 +127,8 @@ const PriceCard = ({
 
       <CardContent className="p-4">
         {price.product.marketing_features.map((feature) => (
-          <div key={feature.name} className="flex items-center gap-2">
-            <CheckIcon className="size-4 text-primary" />
+          <div key={feature.name} className="flex items-start gap-2 text-left">
+            <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
             <p>{feature.name}</p>
           </div>
         ))}

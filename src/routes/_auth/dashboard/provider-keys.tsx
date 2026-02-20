@@ -282,7 +282,7 @@ function ProviderKeysPage() {
             )}
           </p>
         </div>
-        {!showAdd &&
+        {!showAdd && !isLoading &&
           (atFreeLimit ? (
             <Link to="/pricing">
               <Button variant="solid">
