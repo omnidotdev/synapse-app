@@ -11,6 +11,7 @@ export const {
   AUTH_CLIENT_SECRET,
   // billing
   VITE_BILLING_BASE_URL: BILLING_BASE_URL,
+  BILLING_SERVICE_API_KEY,
   // payment processing
   VITE_STRIPE_PORTAL_CONFIG_ID: STRIPE_PORTAL_CONFIG_ID,
   // authorization

@@ -1,6 +1,9 @@
 import { createBillingProvider } from "@omnidotdev/providers";
 
-import { BILLING_BASE_URL } from "@/lib/config/env.config";
+import {
+  BILLING_BASE_URL,
+  BILLING_SERVICE_API_KEY,
+} from "@/lib/config/env.config";
 
 import type { BillingProvider } from "@omnidotdev/providers";
 
@@ -12,6 +15,7 @@ const getBilling = (): BillingProvider => {
     instance = createBillingProvider({
       baseUrl: BILLING_BASE_URL,
       appId: "synapse",
+      serviceApiKey: BILLING_SERVICE_API_KEY,
     });
   }
 

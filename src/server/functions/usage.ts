@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { BILLING_BASE_URL } from "@/lib/config/env.config";
+import {
+  BILLING_BASE_URL,
+  BILLING_SERVICE_API_KEY,
+} from "@/lib/config/env.config";
 import { authMiddleware } from "@/server/middleware";
 
 const entitySchema = z.object({
@@ -38,15 +41,15 @@ const findMeter = (meters: UsageMeter[], key: string) =>
 export const getUsageSummary = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => entitySchema.parse(data))
-  .handler(async ({ data, context }): Promise<UsageSummary> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
-
+  .handler(async ({ data }): Promise<UsageSummary> => {
     const url = `${BILLING_BASE_URL}/usage/synapse/${data.entityType}/${data.entityId}`;
 
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const headers: Record<string, string> = {};
+    if (BILLING_SERVICE_API_KEY) {
+      headers["x-service-api-key"] = BILLING_SERVICE_API_KEY;
+    }
+
+    const res = await fetch(url, { headers });
 
     if (!res.ok) {
       throw new Error(`Usage API error: ${res.status}`);
