@@ -41,14 +41,12 @@ jobs:
         run: bun run build
         env:
           NODE_ENV: test
-          E2E_AUTH_BYPASS: "true"
 
       - name: Run E2E tests
         run: bun test:e2e
         env:
           CI: true
           NODE_ENV: test
-          E2E_AUTH_BYPASS: "true"
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4

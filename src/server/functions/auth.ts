@@ -18,29 +18,6 @@ import type { Organization } from "@/lib/context/organization.context";
  * Returns session with user info if authenticated, null otherwise.
  */
 export const fetchSession = createServerFn().handler(async () => {
-  // E2E test bypass: return a hardcoded session when the auth bypass env var
-  // is set and the test cookie is present. Only active in test environments.
-  if (process.env.E2E_AUTH_BYPASS === "true") {
-    const request = getRequest();
-    const cookies = request.headers.get("cookie") ?? "";
-
-    if (cookies.includes("__test_auth=true")) {
-      return {
-        session: {
-          user: {
-            id: "test-user-id",
-            name: "Test User",
-            email: "test@omni.dev",
-            image: null,
-            identityProviderId: "test-idp-id",
-          },
-          accessToken: "test-access-token",
-        },
-        organizations: [] as Organization[],
-      };
-    }
-  }
-
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
 

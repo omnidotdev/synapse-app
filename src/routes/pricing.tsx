@@ -92,7 +92,7 @@ const PricingPage = () => {
   const tabs = useTabs({ defaultValue: "month" });
 
   const filteredPrices = prices.filter(
-    (price) => price.recurring?.interval === tabs.value,
+    (price: Price) => price.recurring?.interval === tabs.value,
   );
 
   return (
@@ -129,7 +129,7 @@ const PricingPage = () => {
           >
             <FreeTierCard />
 
-            {filteredPrices.map((price, idx) => (
+            {filteredPrices.map((price: Price, idx: number) => (
               <PriceCard key={price.id} price={price} featured={idx === 0} />
             ))}
           </TabsContent>

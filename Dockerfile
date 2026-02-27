@@ -23,8 +23,12 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-# Nitro bundles production deps into .output/server/node_modules.
-COPY --from=builder /app/.output ./.output
+RUN addgroup --system --gid 1001 synapse && \
+    adduser --system --uid 1001 -G synapse synapse
 
+# Nitro bundles production deps into .output/server/node_modules.
+COPY --from=builder --chown=synapse:synapse /app/.output ./.output
+
+USER synapse
 EXPOSE 3000
 CMD ["node", ".output/server/index.mjs"]

@@ -12,6 +12,8 @@ import {
   getSubscription,
 } from "@/server/functions/subscriptions";
 
+import type { Entitlement } from "@omnidotdev/providers";
+
 export const Route = createFileRoute("/_auth/dashboard/billing")({
   loader: async () => {
     const { session } = await fetchSession();
@@ -104,17 +106,19 @@ function BillingPage() {
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-2 text-sm">
-                {entitlements.entitlements.map((entitlement) => (
-                  <li
-                    key={entitlement.featureKey}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{entitlement.featureKey}</span>
-                    <span className="text-muted-foreground">
-                      {entitlement.value}
-                    </span>
-                  </li>
-                ))}
+                {entitlements.entitlements.map(
+                  (entitlement: Entitlement) => (
+                    <li
+                      key={entitlement.featureKey}
+                      className="flex items-center justify-between"
+                    >
+                      <span>{entitlement.featureKey}</span>
+                      <span className="text-muted-foreground">
+                        {entitlement.value}
+                      </span>
+                    </li>
+                  ),
+                )}
               </ul>
             </CardContent>
           </Card>

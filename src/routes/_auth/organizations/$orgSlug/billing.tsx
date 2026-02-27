@@ -13,6 +13,8 @@ import {
   getSubscription,
 } from "@/server/functions/subscriptions";
 
+import type { Entitlement } from "@omnidotdev/providers";
+
 export const Route = createFileRoute("/_auth/organizations/$orgSlug/billing")({
   loader: async ({ params }) => {
     const { session, organizations } = await fetchSession();
@@ -121,17 +123,19 @@ function OrgBillingPage() {
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-2 text-sm">
-                {entitlements.entitlements.map((entitlement) => (
-                  <li
-                    key={entitlement.featureKey}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{entitlement.featureKey}</span>
-                    <span className="text-muted-foreground">
-                      {entitlement.value}
-                    </span>
-                  </li>
-                ))}
+                {entitlements.entitlements.map(
+                  (entitlement: Entitlement) => (
+                    <li
+                      key={entitlement.featureKey}
+                      className="flex items-center justify-between"
+                    >
+                      <span>{entitlement.featureKey}</span>
+                      <span className="text-muted-foreground">
+                        {entitlement.value}
+                      </span>
+                    </li>
+                  ),
+                )}
               </ul>
             </CardContent>
           </Card>
