@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
+import WorkspaceSidebar from "@/components/workspace/WorkspaceSidebar";
 import { useWorkspace } from "@/lib/context";
 
 export const Route = createFileRoute(
@@ -18,7 +19,7 @@ export const Route = createFileRoute(
  * Wraps all routes under /organizations/$orgSlug/workspaces/$workspaceSlug/
  */
 function WorkspaceLayout() {
-  const { workspaceSlug } = Route.useParams();
+  const { orgSlug, workspaceSlug } = Route.useParams();
   const { workspaces } = useWorkspace();
 
   const workspace = workspaces.find((w) => w.slug === workspaceSlug);
@@ -36,5 +37,15 @@ function WorkspaceLayout() {
     );
   }
 
-  return <Outlet />;
+  return (
+    <div className="relative mx-auto flex h-full max-w-7xl gap-6 px-4 py-8">
+      {/* Ambient glow */}
+      <div className="pointer-events-none fixed top-1/3 right-1/4 size-[400px] rounded-full bg-secondary/3 blur-[100px]" />
+
+      <WorkspaceSidebar orgSlug={orgSlug} workspaceSlug={workspaceSlug} />
+      <main className="min-w-0 flex-1">
+        <Outlet />
+      </main>
+    </div>
+  );
 }

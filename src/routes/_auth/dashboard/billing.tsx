@@ -106,19 +106,17 @@ function BillingPage() {
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-2 text-sm">
-                {entitlements.entitlements.map(
-                  (entitlement: Entitlement) => (
-                    <li
-                      key={entitlement.featureKey}
-                      className="flex items-center justify-between"
-                    >
-                      <span>{entitlement.featureKey}</span>
-                      <span className="text-muted-foreground">
-                        {entitlement.value}
-                      </span>
-                    </li>
-                  ),
-                )}
+                {entitlements.entitlements.map((entitlement: Entitlement) => (
+                  <li
+                    key={entitlement.featureKey}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{entitlement.featureKey}</span>
+                    <span className="text-muted-foreground">
+                      {entitlement.value}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </CardContent>
           </Card>
