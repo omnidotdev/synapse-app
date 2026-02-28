@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-  BarChart3Icon,
-  HashIcon,
-  KeyIcon,
-  SparklesIcon,
-} from "lucide-react";
+import { BarChart3Icon, HashIcon, KeyIcon, SparklesIcon } from "lucide-react";
 
 import StatCard from "@/components/dashboard/StatCard";
 import { useWorkspace } from "@/lib/context";
@@ -66,9 +61,7 @@ function WorkspaceDashboard() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-bold text-2xl text-gradient">{workspace.name}</h1>
-        <p className="text-muted-foreground text-sm">
-          Workspace overview
-        </p>
+        <p className="text-muted-foreground text-sm">Workspace overview</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

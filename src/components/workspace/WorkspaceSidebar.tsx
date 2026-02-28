@@ -25,10 +25,7 @@ type WorkspaceSidebarProps = {
 /**
  * Build workspace nav items scoped to an org and workspace.
  */
-const buildNavItems = (
-  orgSlug: string,
-  workspaceSlug: string,
-): NavItem[] => {
+const buildNavItems = (orgSlug: string, workspaceSlug: string): NavItem[] => {
   const params = { orgSlug, workspaceSlug };
   const base = "/organizations/$orgSlug/workspaces/$workspaceSlug";
 
@@ -63,7 +60,10 @@ const buildNavItems = (
 /**
  * Workspace sidebar navigation.
  */
-const WorkspaceSidebar = ({ orgSlug, workspaceSlug }: WorkspaceSidebarProps) => {
+const WorkspaceSidebar = ({
+  orgSlug,
+  workspaceSlug,
+}: WorkspaceSidebarProps) => {
   const matchRoute = useMatchRoute();
   const navItems = buildNavItems(orgSlug, workspaceSlug);
   const baseTo = "/organizations/$orgSlug/workspaces/$workspaceSlug";
