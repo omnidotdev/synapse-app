@@ -88,7 +88,7 @@ const FreeTierCard = () => {
  * Pricing page
  */
 const PricingPage = () => {
-  const { prices } = Route.useLoaderData();
+  const { prices = [] } = Route.useLoaderData();
 
   const tabs = useTabs({ defaultValue: "month" });
 
