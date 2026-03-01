@@ -96,12 +96,12 @@ function GraphNode({ cx, cy, r, label, sublabel, color }: NodeProps) {
 }
 
 const CONNECTIONS = [
-  { d: "M 131 280 L 350 280", dur: "1.8s", begin: "0s" },
-  { d: "M 650 230 Q 720 160 794 150", dur: "2.2s", begin: "0.3s" },
-  { d: "M 650 330 Q 710 388 766 407", dur: "2.4s", begin: "0.6s" },
-  { d: "M 420 200 Q 380 130 342 100", dur: "2.0s", begin: "0.9s" },
-  { d: "M 400 360 Q 330 408 272 427", dur: "2.3s", begin: "1.2s" },
-  { d: "M 650 280 Q 750 275 862 282", dur: "2.1s", begin: "0.4s" },
+  { d: "M 131 280 L 320 280", dur: "1.8s", begin: "0s" },
+  { d: "M 666 230 Q 720 160 794 150", dur: "2.2s", begin: "0.3s" },
+  { d: "M 666 330 Q 710 388 766 407", dur: "2.4s", begin: "0.6s" },
+  { d: "M 420 185 Q 380 125 342 100", dur: "2.0s", begin: "0.9s" },
+  { d: "M 400 374 Q 330 412 272 427", dur: "2.3s", begin: "1.2s" },
+  { d: "M 680 280 Q 750 275 862 282", dur: "2.1s", begin: "0.4s" },
   { d: "M 866 152 Q 900 200 888 262", dur: "1.9s", begin: "0.8s" },
 ];
 
@@ -163,12 +163,12 @@ function HeroGraph() {
 
       {/* Soma — pill-shaped central node (text overlaid via HTML) */}
       <rect
-        x={350}
-        y={200}
-        width={300}
-        height={160}
-        rx={80}
-        ry={80}
+        x={320}
+        y={185}
+        width={360}
+        height={190}
+        rx={95}
+        ry={95}
         fill="url(#soma-fill)"
         stroke="var(--primary)"
         strokeWidth={1.5}
@@ -177,12 +177,12 @@ function HeroGraph() {
       />
       {/* Soma outer pulse */}
       <rect
-        x={350}
-        y={200}
-        width={300}
-        height={160}
-        rx={80}
-        ry={80}
+        x={320}
+        y={185}
+        width={360}
+        height={190}
+        rx={95}
+        ry={95}
         fill="none"
         stroke="var(--primary)"
         strokeOpacity={0.1}
@@ -190,25 +190,25 @@ function HeroGraph() {
       >
         <animate
           attributeName="x"
-          values="350;325;350"
+          values="320;295;320"
           dur="3s"
           repeatCount="indefinite"
         />
         <animate
           attributeName="y"
-          values="200;175;200"
+          values="185;160;185"
           dur="3s"
           repeatCount="indefinite"
         />
         <animate
           attributeName="width"
-          values="300;350;300"
+          values="360;410;360"
           dur="3s"
           repeatCount="indefinite"
         />
         <animate
           attributeName="height"
-          values="160;210;160"
+          values="190;240;190"
           dur="3s"
           repeatCount="indefinite"
         />
@@ -221,12 +221,12 @@ function HeroGraph() {
       </rect>
       {/* Soma inner ring */}
       <rect
-        x={390}
-        y={220}
-        width={220}
-        height={120}
-        rx={60}
-        ry={60}
+        x={368}
+        y={209}
+        width={264}
+        height={142}
+        rx={71}
+        ry={71}
         fill="none"
         stroke="var(--primary)"
         strokeOpacity={0.15}
