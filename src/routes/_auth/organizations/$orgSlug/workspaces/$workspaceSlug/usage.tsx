@@ -19,6 +19,8 @@ import { fetchSession } from "@/server/functions/auth";
 import { getUsageSummary } from "@/server/functions/usage";
 import { getUsageBreakdown } from "@/server/functions/usageBreakdown";
 
+import type { UsageSummary } from "@/server/functions/usage";
+
 const DATE_RANGES = [
   { label: "7 days", days: 7 },
   { label: "30 days", days: 30 },
@@ -91,9 +93,19 @@ function DailyBar({
  * Workspace usage page.
  * Displays user-scoped usage until workspace-level filtering is available.
  */
+const EMPTY_USAGE: UsageSummary = {
+  inputTokens: 0,
+  outputTokens: 0,
+  requests: 0,
+  inputTokensLimit: null,
+  outputTokensLimit: null,
+  requestsLimit: null,
+};
+
 function WorkspaceUsagePage() {
   const { workspaceSlug } = Route.useParams();
-  const { usage } = Route.useLoaderData();
+  const { usage: rawUsage } = Route.useLoaderData();
+  const usage = rawUsage ?? EMPTY_USAGE;
   const { workspaces } = useWorkspace();
   const workspace = workspaces.find((w) => w.slug === workspaceSlug);
   const [rangeDays, setRangeDays] = useState(30);
@@ -110,19 +122,6 @@ function WorkspaceUsagePage() {
   });
 
   if (!workspace) return null;
-
-  if (!usage) {
-    return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="font-bold text-2xl text-gradient">Usage</h1>
-          <p className="text-muted-foreground text-sm">
-            Usage data is not available
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const maxDailyTokens = Math.max(
     ...(breakdown?.byDay?.map((d) => d.inputTokens + d.outputTokens) ?? [1]),

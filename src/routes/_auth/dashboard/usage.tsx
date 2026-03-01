@@ -19,6 +19,8 @@ import { fetchSession } from "@/server/functions/auth";
 import { getUsageSummary } from "@/server/functions/usage";
 import { getUsageBreakdown } from "@/server/functions/usageBreakdown";
 
+import type { UsageSummary } from "@/server/functions/usage";
+
 const DATE_RANGES = [
   { label: "7 days", days: 7 },
   { label: "30 days", days: 30 },
@@ -88,8 +90,18 @@ function DailyBar({
 /**
  * Usage details page
  */
+const EMPTY_USAGE: UsageSummary = {
+  inputTokens: 0,
+  outputTokens: 0,
+  requests: 0,
+  inputTokensLimit: null,
+  outputTokensLimit: null,
+  requestsLimit: null,
+};
+
 function UsagePage() {
-  const { usage } = Route.useLoaderData();
+  const { usage: rawUsage } = Route.useLoaderData();
+  const usage = rawUsage ?? EMPTY_USAGE;
   const [rangeDays, setRangeDays] = useState(30);
 
   const { data: breakdown } = useQuery({
@@ -102,19 +114,6 @@ function UsagePage() {
         },
       }),
   });
-
-  if (!usage) {
-    return (
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="font-bold text-2xl">Usage</h1>
-          <p className="text-muted-foreground text-sm">
-            Usage data is not available
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const maxDailyTokens = Math.max(
     ...(breakdown?.byDay?.map((d) => d.inputTokens + d.outputTokens) ?? [1]),
