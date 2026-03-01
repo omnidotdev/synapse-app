@@ -1,4 +1,5 @@
 import { TabsRootProvider, useTabs } from "@ark-ui/react";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
 
@@ -12,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import authClient from "@/lib/auth/authClient";
 import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
@@ -47,6 +49,15 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
   const price = FREE_PRICE;
   const isCurrentPlan = !!auth && (!tier || tier === "Free");
 
+  const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
+    mutationFn: async () =>
+      await authClient.signIn.oauth2({
+        providerId: "omni",
+        callbackURL: "/pricing",
+        disableRedirect: false,
+      }),
+  });
+
   return (
     <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
@@ -74,8 +85,12 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
             Free
           </Button>
         ) : (
-          <Button variant="solid" asChild>
-            <a href="/login">Get Started</a>
+          <Button
+            variant="solid"
+            disabled={isSignInPending}
+            onClick={() => signIn()}
+          >
+            Get Started
           </Button>
         )}
       </CardHeader>
