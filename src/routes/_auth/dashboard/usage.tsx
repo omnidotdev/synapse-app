@@ -134,7 +134,7 @@ function UsagePage() {
               key={r.days}
               type="button"
               onClick={() => setRangeDays(r.days)}
-              className={`rounded px-3 py-1 text-xs transition-colors ${
+              className={`cursor-pointer rounded px-3 py-1 text-xs transition-colors ${
                 rangeDays === r.days
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted"

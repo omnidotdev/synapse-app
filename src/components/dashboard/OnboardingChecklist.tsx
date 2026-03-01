@@ -85,7 +85,7 @@ function OnboardingChecklist({
         <button
           type="button"
           onClick={dismiss}
-          className="rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
+          className="cursor-pointer rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
           aria-label="Dismiss onboarding checklist"
         >
           <XIcon className="h-4 w-4" />

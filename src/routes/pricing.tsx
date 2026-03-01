@@ -12,6 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getTierFromEntitlements } from "@/lib/util";
+import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
 
 import type { Price } from "@/components/pricing";
@@ -37,11 +40,12 @@ const FREE_PRICE: Price = {
 };
 
 /**
- * Free tier card with auth-aware CTA
+ * Free tier card with auth-aware CTA.
  */
-const FreeTierCard = () => {
+const FreeTierCard = ({ tier }: { tier: string | null }) => {
   const { auth } = useRouteContext({ strict: false });
   const price = FREE_PRICE;
+  const isCurrentPlan = !!auth && (!tier || tier === "Free");
 
   return (
     <CardRoot className="card-glow-hover size-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80">
@@ -61,9 +65,13 @@ const FreeTierCard = () => {
           </p>
         </div>
 
-        {auth ? (
+        {isCurrentPlan ? (
           <Button variant="solid" disabled>
             Current plan
+          </Button>
+        ) : auth ? (
+          <Button variant="solid" disabled>
+            Free
           </Button>
         ) : (
           <Button variant="solid" asChild>
@@ -85,10 +93,10 @@ const FreeTierCard = () => {
 };
 
 /**
- * Pricing page
+ * Pricing page.
  */
 const PricingPage = () => {
-  const { prices = [] } = Route.useLoaderData();
+  const { prices = [], tier = null } = Route.useLoaderData();
 
   const tabs = useTabs({ defaultValue: "month" });
 
@@ -128,10 +136,18 @@ const PricingPage = () => {
             value={tabs.value}
             className="flex flex-col items-center gap-4 lg:flex-row"
           >
-            <FreeTierCard />
+            <FreeTierCard tier={tier} />
 
             {filteredPrices.map((price: Price, idx: number) => (
-              <PriceCard key={price.id} price={price} featured={idx === 0} />
+              <PriceCard
+                key={price.id}
+                price={price}
+                featured={idx === 0}
+                disableAction={tier === price.product.name}
+                currentPlanLabel={
+                  tier === price.product.name ? "Current plan" : undefined
+                }
+              />
             ))}
           </TabsContent>
         )}
@@ -144,9 +160,24 @@ const PricingPage = () => {
 
 export const Route = createFileRoute("/pricing")({
   loader: async () => {
-    const prices = await getPrices();
+    const [prices, tier] = await Promise.all([
+      getPrices(),
+      (async () => {
+        const { session } = await fetchSession();
+        if (!session?.user.identityProviderId) return null;
 
-    return { prices };
+        const entitlements = await getEntitlements({
+          data: {
+            entityType: "user",
+            entityId: session.user.identityProviderId,
+          },
+        }).catch(() => null);
+
+        return getTierFromEntitlements(entitlements);
+      })(),
+    ]);
+
+    return { prices, tier };
   },
   component: PricingPage,
 });
