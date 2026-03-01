@@ -48,7 +48,7 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
   const isCurrentPlan = !!auth && (!tier || tier === "Free");
 
   return (
-    <CardRoot className="card-glow-hover size-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80">
+    <CardRoot className="card-glow-hover w-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
           <CardTitle className="text-lg">Free</CardTitle>
