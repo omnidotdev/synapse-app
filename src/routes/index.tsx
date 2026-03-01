@@ -205,9 +205,9 @@ function HomePage() {
       >
         <HeroGraph />
 
-        {/* Hero text — centered on soma ring */}
+        {/* Hero text — pill-shaped soma node */}
         <div
-          className="relative z-10 max-w-[80vw] px-6 text-center sm:max-w-sm"
+          className="soma-pill soma-ring relative z-10 flex flex-col items-center rounded-full px-10 py-8 text-center sm:px-16 sm:py-10"
           style={{ marginTop: "calc((100vh - 66px) / 2 - 5rem)" }}
         >
           <NodeChip id="node_00" label="soma" />
@@ -217,7 +217,7 @@ function HomePage() {
           <p className="mt-3 font-medium text-base text-foreground lg:text-lg">
             The cortex for your AI stack
           </p>
-          <p className="mt-3 text-muted-foreground text-sm leading-relaxed">
+          <p className="mt-3 max-w-xs text-muted-foreground text-sm leading-relaxed sm:max-w-sm">
             Route to any model, track every token, and manage your keys through
             one unified control plane
           </p>

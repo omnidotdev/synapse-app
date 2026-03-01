@@ -404,7 +404,38 @@
     box-shadow: inset 2px 0 0 var(--primary);
   }
 
-  /* Soma (hero) node ring */
+  /* Soma (hero) pill node */
+  .soma-pill {
+    background: radial-gradient(
+      ellipse at center,
+      oklch(0.66 0.24 264 / 0.14),
+      oklch(0.66 0.24 264 / 0.04)
+    );
+    border: 1.5px solid oklch(0.66 0.24 264 / 0.6);
+    position: relative;
+  }
+
+  /* Pulse ring */
+  .soma-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1.5px solid oklch(0.66 0.24 264 / 0.1);
+    animation: soma-pulse 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Inner dashed ring */
+  .soma-pill::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: inherit;
+    border: 1px dashed oklch(0.66 0.24 264 / 0.15);
+    pointer-events: none;
+  }
+
   .soma-ring {
     filter: drop-shadow(0 0 20px oklch(0.66 0.24 264 / 0.6));
   }
@@ -485,6 +516,18 @@
   }
 }
 
+@keyframes soma-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+
 @keyframes pulse-glow {
   0%,
   100% {
@@ -513,6 +556,7 @@
 @media (prefers-reduced-motion: reduce) {
   .signal-dot,
   .soma-ring,
+  .soma-pill::before,
   .satellite-glow {
     animation: none;
     filter: none;
