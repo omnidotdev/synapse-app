@@ -9,6 +9,7 @@ import { authMiddleware } from "@/server/middleware";
 const checkoutSchema = z.object({
   priceId: z.string().startsWith("price_"),
   successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
 });
 
 const subscriptionSchema = z.object({
@@ -47,18 +48,17 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => checkoutSchema.parse(data))
   .handler(async ({ data, context }) => {
-    return getBilling().createCheckoutSession({
+    const accessToken = requireAccessToken(context.session.accessToken);
+
+    const result = await getBilling().createCheckoutWithWorkspace({
+      appId: app.name.toLowerCase(),
       priceId: data.priceId,
       successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
-      customerEmail: context.session.user.email ?? "",
-      customerName: context.session.user.name ?? undefined,
-      metadata: {
-        externalId: context.session.user.identityProviderId ?? "",
-        app_id: app.name.toLowerCase(),
-        entity_type: "user",
-        entity_id: context.session.user.identityProviderId ?? "",
-      },
+      cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
+      accessToken,
     });
+
+    return result.checkoutUrl;
   });
 
 /**

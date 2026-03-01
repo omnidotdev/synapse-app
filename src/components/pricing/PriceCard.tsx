@@ -26,6 +26,7 @@ interface Props extends CardProps {
   price: Price;
   featured?: boolean;
   disableAction?: boolean;
+  currentPlanLabel?: string;
 }
 
 /**
@@ -36,6 +37,7 @@ const PriceCard = ({
   featured,
   className,
   disableAction,
+  currentPlanLabel,
   ...rest
 }: Props) => {
   const { auth } = useRouteContext({ strict: false });
@@ -106,7 +108,11 @@ const PriceCard = ({
           )}
         </div>
 
-        {auth ? (
+        {currentPlanLabel ? (
+          <Button variant={buttonVariant} disabled>
+            {currentPlanLabel}
+          </Button>
+        ) : auth ? (
           <Button
             variant={buttonVariant}
             disabled={disableAction}
