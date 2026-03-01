@@ -56,6 +56,10 @@ const Header = () => {
               <h1 className="font-bold text-gradient text-xl">{app.name}</h1>
             </InternalLink>
 
+            <span className="select-none self-center rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">
+              Early Access
+            </span>
+
             <InternalLink to="/pricing" variant="ghost">
               Pricing
             </InternalLink>
