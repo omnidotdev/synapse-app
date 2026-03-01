@@ -1,30 +1,36 @@
 import { Link } from "@tanstack/react-router";
 import { CheckCircle2Icon, CircleIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import type { RoutingMode } from "@/server/functions/preferences";
 
 const STORAGE_KEY = "synapse:onboarding-dismissed";
 
-interface Props {
+type Props = {
   hasApiKeys: boolean;
-  hasProviderKeys: boolean;
+  hasProviderKeys?: boolean;
   hasUsage: boolean;
-}
+  routingMode: RoutingMode;
+};
 
-const steps = [
+const allSteps = [
   {
     label: "Create an API key",
     to: "/dashboard/keys" as const,
     key: "hasApiKeys" as const,
+    byokOnly: false,
   },
   {
     label: "Add a provider key",
-    to: "/dashboard/provider-keys" as const,
+    to: "/dashboard/settings" as const,
     key: "hasProviderKeys" as const,
+    byokOnly: true,
   },
   {
     label: "Make your first request",
     to: "/dashboard/usage" as const,
     key: "hasUsage" as const,
+    byokOnly: false,
   },
 ];
 
@@ -32,7 +38,12 @@ const steps = [
  * Dismissable onboarding checklist shown on the dashboard overview for new users.
  * Auto-hides when all steps are complete. Dismiss state persists in localStorage.
  */
-function OnboardingChecklist({ hasApiKeys, hasProviderKeys, hasUsage }: Props) {
+function OnboardingChecklist({
+  hasApiKeys,
+  hasProviderKeys,
+  hasUsage,
+  routingMode,
+}: Props) {
   const [dismissed, setDismissed] = useState(true);
 
   // Hydrate dismiss state from localStorage after mount
@@ -40,19 +51,22 @@ function OnboardingChecklist({ hasApiKeys, hasProviderKeys, hasUsage }: Props) {
     setDismissed(localStorage.getItem(STORAGE_KEY) === "true");
   }, []);
 
-  const completion: Record<keyof Props, boolean> = {
+  const steps = useMemo(
+    () => allSteps.filter((step) => !step.byokOnly || routingMode === "byok"),
+    [routingMode],
+  );
+
+  const completion: Record<string, boolean> = {
     hasApiKeys,
-    hasProviderKeys,
+    hasProviderKeys: hasProviderKeys ?? false,
     hasUsage,
   };
 
-  const allComplete = hasApiKeys && hasProviderKeys && hasUsage;
+  const allComplete = steps.every((step) => completion[step.key]);
 
   if (dismissed || allComplete) return null;
 
-  const completedCount = [hasApiKeys, hasProviderKeys, hasUsage].filter(
-    Boolean,
-  ).length;
+  const completedCount = steps.filter((step) => completion[step.key]).length;
 
   const dismiss = () => {
     localStorage.setItem(STORAGE_KEY, "true");
@@ -65,7 +79,7 @@ function OnboardingChecklist({ hasApiKeys, hasProviderKeys, hasUsage }: Props) {
         <div>
           <h3 className="font-semibold text-sm">Get started with Synapse</h3>
           <p className="text-muted-foreground text-xs">
-            {completedCount}/3 steps complete
+            {completedCount}/{steps.length} steps complete
           </p>
         </div>
         <button

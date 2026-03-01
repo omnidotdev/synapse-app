@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowUpCircleIcon,
   KeyRoundIcon,
@@ -11,7 +11,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import KeysListSkeleton from "@/components/dashboard/KeysListSkeleton";
-import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,37 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchSession } from "@/server/functions/auth";
 import {
   listProviderKeys,
   removeProviderKey,
   setProviderKey,
 } from "@/server/functions/providerKeys";
-import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { ProviderKey } from "@/server/functions/providerKeys";
 
 const FREE_KEY_LIMIT = 3;
-
-export const Route = createFileRoute("/_auth/dashboard/provider-keys")({
-  errorComponent: RouteErrorFallback,
-  loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
-      return { subscription: null };
-    }
-
-    const subscription = await getSubscription({
-      data: {
-        entityType: "user",
-        entityId: session.user.identityProviderId,
-      },
-    }).catch(() => null);
-
-    return { subscription };
-  },
-  component: ProviderKeysPage,
-});
 
 const SUPPORTED_PROVIDERS = [
   {
@@ -256,11 +233,14 @@ function RevokeConfirm({
   );
 }
 
+type ProviderKeysSectionProps = {
+  subscription: unknown;
+};
+
 /**
- * Provider keys management page
+ * Self-contained provider keys management section
  */
-function ProviderKeysPage() {
-  const { subscription } = Route.useLoaderData();
+function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
   const [showAdd, setShowAdd] = useState(false);
   const [revoking, setRevoking] = useState<ProviderKey | null>(null);
 
@@ -272,30 +252,27 @@ function ProviderKeysPage() {
   const atFreeLimit = !subscription && keys.length >= FREE_KEY_LIMIT;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-bold text-2xl text-gradient">Provider Keys</h1>
-          <p className="text-muted-foreground text-sm">
-            Vault your AI provider credentials
-            {!subscription && (
-              <span className="ml-1 text-muted-foreground">
-                ({keys.length}/{FREE_KEY_LIMIT} free)
-              </span>
-            )}
-          </p>
-        </div>
+        <p className="text-muted-foreground text-sm">
+          Vault your AI provider credentials
+          {!subscription && (
+            <span className="ml-1 text-muted-foreground">
+              ({keys.length}/{FREE_KEY_LIMIT} free)
+            </span>
+          )}
+        </p>
         {!showAdd &&
           !isLoading &&
           (atFreeLimit ? (
             <Link to="/pricing">
-              <Button variant="solid">
+              <Button variant="solid" size="sm">
                 <ArrowUpCircleIcon className="mr-2 h-4 w-4" />
                 Upgrade to add more
               </Button>
             </Link>
           ) : (
-            <Button variant="solid" onClick={() => setShowAdd(true)}>
+            <Button variant="solid" size="sm" onClick={() => setShowAdd(true)}>
               <PlusIcon className="mr-2 h-4 w-4" />
               Add key
             </Button>
@@ -381,3 +358,5 @@ function ProviderKeysPage() {
     </div>
   );
 }
+
+export default ProviderKeysSection;

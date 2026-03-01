@@ -51,7 +51,6 @@ export const listWorkspaceApiKeys = createServerFn()
 
 const createKeySchema = z.object({
   name: z.string().min(1).max(100),
-  mode: z.enum(["byok", "managed"]),
   workspaceId: z.string().uuid(),
 });
 
@@ -77,7 +76,7 @@ export const createWorkspaceApiKey = createServerFn()
       {
         input: {
           name: data.name,
-          mode: data.mode,
+          mode: "managed",
           workspaceId: data.workspaceId,
         },
       },

@@ -59,13 +59,12 @@ function CreateKeyForm({
 }) {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [mode, setMode] = useState<"byok" | "managed">("managed");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const { mutateAsync: create, isPending } = useMutation({
     mutationFn: async () =>
-      await createWorkspaceApiKey({ data: { name, mode, workspaceId } }),
+      await createWorkspaceApiKey({ data: { name, workspaceId } }),
     onSuccess: (result) => {
       setCreatedKey(result.rawKey);
       queryClient.invalidateQueries({
@@ -131,25 +130,6 @@ function CreateKeyForm({
             onChange={(e) => setName(e.target.value)}
             className="rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:border-primary"
           />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="key-mode" className="font-medium text-sm">
-            Mode
-          </label>
-          <select
-            id="key-mode"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as "byok" | "managed")}
-            className="rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:border-primary"
-          >
-            <option value="managed">Managed</option>
-            <option value="byok">BYOK (Bring Your Own Key)</option>
-          </select>
-          <p className="text-muted-foreground text-xs">
-            {mode === "managed"
-              ? "Omni manages provider keys. Usage is billed to your subscription."
-              : "Use your own provider API keys. Synapse provides routing only."}
-          </p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -299,7 +279,6 @@ function WorkspaceKeysPage() {
               <TableRow className="bg-primary/10">
                 <TableCell className="px-4 py-3 font-semibold">Name</TableCell>
                 <TableCell className="px-4 py-3 font-semibold">Key</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">Mode</TableCell>
                 <TableCell className="px-4 py-3 font-semibold">
                   Created
                 </TableCell>
@@ -319,11 +298,6 @@ function WorkspaceKeysPage() {
                     <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
                       synapse_****{key.keyHint}
                     </code>
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-                      {key.mode === "byok" ? "BYOK" : "Managed"}
-                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-muted-foreground text-sm">
                     {formatDate(key.createdAt)}

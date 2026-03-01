@@ -12,6 +12,7 @@ import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
+import { getUserPreferences } from "@/server/functions/preferences";
 import { listProviderKeys } from "@/server/functions/providerKeys";
 import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
@@ -27,24 +28,30 @@ export const Route = createFileRoute("/_auth/dashboard/")({
         subscription: null,
         hasApiKeys: false,
         hasProviderKeys: false,
+        routingMode: "managed" as const,
       };
     }
 
     const entityType = "user";
     const entityId = session.user.identityProviderId;
 
-    const [usage, subscription, apiKeys, providerKeys] = await Promise.all([
-      getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
-      getSubscription({ data: { entityType, entityId } }).catch(() => null),
-      listApiKeys().catch(() => []),
-      listProviderKeys().catch(() => []),
-    ]);
+    const [usage, subscription, apiKeys, providerKeys, preferences] =
+      await Promise.all([
+        getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
+        getSubscription({ data: { entityType, entityId } }).catch(() => null),
+        listApiKeys().catch(() => []),
+        listProviderKeys().catch(() => []),
+        getUserPreferences().catch(() => null),
+      ]);
+
+    const routingMode = preferences?.routingMode ?? "managed";
 
     return {
       usage,
       subscription,
       hasApiKeys: apiKeys.length > 0,
       hasProviderKeys: providerKeys.length > 0,
+      routingMode,
     };
   },
   component: DashboardOverview,
@@ -59,7 +66,7 @@ const formatNumber = (n: number) => n.toLocaleString();
  * Dashboard overview page.
  */
 function DashboardOverview() {
-  const { usage, subscription, hasApiKeys, hasProviderKeys } =
+  const { usage, subscription, hasApiKeys, hasProviderKeys, routingMode } =
     Route.useLoaderData();
 
   const totalTokens = (usage?.inputTokens ?? 0) + (usage?.outputTokens ?? 0);
@@ -71,6 +78,7 @@ function DashboardOverview() {
         hasApiKeys={hasApiKeys}
         hasProviderKeys={hasProviderKeys}
         hasUsage={hasUsage}
+        routingMode={routingMode}
       />
       <UpgradeBanner show={!subscription} />
 

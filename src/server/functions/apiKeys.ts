@@ -60,7 +60,6 @@ export const listApiKeys = createServerFn()
 
 const createKeySchema = z.object({
   name: z.string().min(1).max(100),
-  mode: z.enum(["byok", "managed"]),
 });
 
 /**
@@ -82,7 +81,7 @@ export const createApiKey = createServerFn()
           keyHint
         }
       }`,
-      { input: { name: data.name, mode: data.mode } },
+      { input: { name: data.name, mode: "managed" } },
     );
 
     return result.generateApiKey;

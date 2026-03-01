@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Table skeleton for keys and provider-keys pages.
+ * Table skeleton for keys list and provider keys section
  */
 function KeysListSkeleton() {
   return (

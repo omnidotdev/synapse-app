@@ -3,7 +3,6 @@ import {
   BarChart3Icon,
   CreditCardIcon,
   KeyIcon,
-  KeyRoundIcon,
   LayoutDashboardIcon,
   SettingsIcon,
 } from "lucide-react";
@@ -25,6 +24,11 @@ const navItems: NavItem[] = [
     icon: <LayoutDashboardIcon className="h-4 w-4" />,
   },
   {
+    to: "/dashboard/keys",
+    label: "API Keys",
+    icon: <KeyIcon className="h-4 w-4" />,
+  },
+  {
     to: "/dashboard/usage",
     label: "Usage",
     icon: <BarChart3Icon className="h-4 w-4" />,
@@ -33,16 +37,6 @@ const navItems: NavItem[] = [
     to: "/dashboard/billing",
     label: "Billing",
     icon: <CreditCardIcon className="h-4 w-4" />,
-  },
-  {
-    to: "/dashboard/keys",
-    label: "API Keys",
-    icon: <KeyIcon className="h-4 w-4" />,
-  },
-  {
-    to: "/dashboard/provider-keys",
-    label: "Provider Keys",
-    icon: <KeyRoundIcon className="h-4 w-4" />,
   },
   {
     to: "/dashboard/settings",
