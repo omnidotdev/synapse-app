@@ -10,7 +10,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-import KeysListSkeleton from "@/components/dashboard/KeysListSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -289,7 +288,11 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
       )}
 
       {isLoading ? (
-        <KeysListSkeleton />
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
       ) : keys.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12">
