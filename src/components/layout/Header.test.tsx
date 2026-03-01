@@ -15,15 +15,20 @@ spyOn(TanStackRouter, "useLocation").mockReturnValue({
 
 // Mock auth client before importing Header
 const mockSignIn = mock(() => Promise.resolve());
-const mockSignOut = mock(() => Promise.resolve());
 
 mock.module("@/lib/auth/authClient", () => ({
   default: {
     signIn: {
       oauth2: mockSignIn,
     },
-    signOut: mockSignOut,
   },
+}));
+
+// Mock signOut module
+const mockSignOut = mock(() => Promise.resolve());
+
+mock.module("@/lib/auth/signOut", () => ({
+  default: mockSignOut,
 }));
 
 // Mock useTheme
@@ -126,5 +131,46 @@ describe("Header", () => {
 
     const signInButton = screen.queryByRole("button", { name: "Sign In" });
     expect(signInButton).toBeNull();
+  });
+
+  test("renders Sign Out menu item when authenticated", () => {
+    const auth = {
+      user: {
+        id: "user-1",
+        email: "test@example.com",
+        name: "Test User",
+        image: null,
+      },
+    };
+
+    renderHeader(auth);
+
+    // Menu item is in the DOM (Ark UI renders it even when closed)
+    expect(screen.getByText("Sign Out")).toBeDefined();
+  });
+
+  test("renders account menu items when authenticated", () => {
+    const auth = {
+      user: {
+        id: "user-1",
+        email: "test@example.com",
+        name: "Test User",
+        image: null,
+      },
+    };
+
+    renderHeader(auth);
+
+    expect(screen.getByText("My Account")).toBeDefined();
+    // Dashboard appears in both nav and menu
+    expect(screen.getAllByText("Dashboard").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText("Profile")).toBeDefined();
+  });
+
+  test("does not render account menu when unauthenticated", () => {
+    renderHeader(null);
+
+    expect(screen.queryByText("My Account")).toBeNull();
+    expect(screen.queryByText("Sign Out")).toBeNull();
   });
 });

@@ -72,7 +72,7 @@ const Header = () => {
 
             {auth ? (
               <MenuRootProvider value={accountMenu}>
-                <MenuTrigger className="avatar-glow rounded-full">
+                <MenuTrigger className="avatar-glow cursor-pointer rounded-full">
                   <AvatarRoot>
                     <AvatarImage src={auth.user.image ?? undefined} />
                     <AvatarFallback>{auth.user.name.charAt(0)}</AvatarFallback>
@@ -107,13 +107,13 @@ const Header = () => {
 
                     <MenuSeparator />
 
-                    <Button
-                      variant="destructive"
+                    <MenuItem
+                      value="signOut"
+                      className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
                       onClick={handleSignOut}
-                      tabIndex={-1}
                     >
-                      Sign Out
-                    </Button>
+                      <MenuItemText>Sign Out</MenuItemText>
+                    </MenuItem>
                   </MenuContent>
                 </MenuPositioner>
               </MenuRootProvider>
