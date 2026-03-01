@@ -62,13 +62,14 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
         createWorkspace: { name: `${userName}'s Workspace` },
       });
 
-      return result.checkoutUrl;
+      return { url: result.checkoutUrl };
     } catch (error) {
-      throw new Error(
-        error instanceof Error
-          ? error.message
-          : "Failed to create checkout session",
-      );
+      return {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to create checkout session",
+      };
     }
   });
 

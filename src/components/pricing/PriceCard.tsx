@@ -53,8 +53,13 @@ const PriceCard = ({
   });
 
   const { mutateAsync: checkout } = useMutation({
-    mutationFn: async (priceId: string) =>
-      await getCheckoutUrl({ data: { priceId } }),
+    mutationFn: async (priceId: string) => {
+      const result = await getCheckoutUrl({ data: { priceId } });
+
+      if ("error" in result) throw new Error(result.error);
+
+      return result.url;
+    },
     onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
     onError: (error) =>
       toast.error(error?.message ?? "Failed to start checkout"),
