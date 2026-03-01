@@ -48,7 +48,7 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
   const isCurrentPlan = !!auth && (!tier || tier === "Free");
 
   return (
-    <CardRoot className="card-glow-hover w-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80">
+    <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
           <CardTitle className="text-lg">Free</CardTitle>
@@ -80,7 +80,7 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
         )}
       </CardHeader>
 
-      <CardContent className="p-4">
+      <CardContent className="flex-1 p-4">
         {price.product.marketing_features.map((feature) => (
           <div key={feature.name} className="flex items-start gap-2 text-left">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -134,7 +134,7 @@ const PricingPage = () => {
         {tabs.value != null && (
           <TabsContent
             value={tabs.value}
-            className="flex flex-col items-center gap-4 lg:flex-row"
+            className="flex flex-col items-center gap-4 lg:flex-row lg:items-stretch"
           >
             <FreeTierCard tier={tier} />
 

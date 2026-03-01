@@ -71,7 +71,7 @@ const PriceCard = ({
     <CardRoot
       key={price.product.name}
       className={cn(
-        "card-glow-hover w-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80",
+        "card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
         featured && "glow-primary border-primary/30",
         className,
       )}
@@ -137,7 +137,7 @@ const PriceCard = ({
         )}
       </CardHeader>
 
-      <CardContent className="p-4">
+      <CardContent className="flex-1 p-4">
         {price.product.marketing_features.map((feature) => (
           <div key={feature.name} className="flex items-start gap-2 text-left">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
