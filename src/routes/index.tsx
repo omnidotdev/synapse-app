@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ActivityIcon, ShieldCheckIcon, ZapIcon } from "lucide-react";
+import { useRef } from "react";
 
 import { InternalLink } from "@/components/core";
 import {
@@ -194,19 +195,23 @@ function RoutingDiagram() {
  * Home page — neural network node graph layout.
  */
 function HomePage() {
+  const heroRef = useRef<HTMLElement>(null);
+
   return (
     <div className="relative z-[1]">
       <NeuralBackground />
 
       {/* Hero: full-viewport neural graph */}
       <section
+        ref={heroRef}
         className="relative flex flex-col items-center overflow-hidden"
         style={{ height: "calc(100vh - 66px)" }}
       >
-        <HeroGraph />
+        <HeroGraph heroRef={heroRef} />
 
         {/* Hero text — pill-shaped soma node */}
         <div
+          data-node="soma"
           className="soma-pill soma-ring relative z-10 flex flex-col items-center rounded-full px-10 py-8 text-center sm:px-16 sm:py-10"
           style={{ marginTop: "calc((100vh - 66px) / 2 - 5rem)" }}
         >
