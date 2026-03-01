@@ -27,10 +27,10 @@ const FREE_PRICE: Price = {
     name: "Free",
     description: "Start for free.",
     marketing_features: [
-      { name: "1,000 requests per month" },
+      { name: "20 requests per minute" },
+      { name: "16K tokens per day" },
       { name: "500K tokens per month" },
       { name: "All models" },
-      { name: "Community support" },
     ],
   },
   metadata: {},
