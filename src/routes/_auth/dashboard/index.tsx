@@ -10,8 +10,10 @@ import OnboardingChecklist from "@/components/dashboard/OnboardingChecklist";
 import StatCard from "@/components/dashboard/StatCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
+import { getTierFromEntitlements } from "@/lib/util";
 import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
 import { getUserPreferences } from "@/server/functions/preferences";
 import { listProviderKeys } from "@/server/functions/providerKeys";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/_auth/dashboard/")({
       return {
         usage: null,
         subscription: null,
+        entitlements: null,
         hasApiKeys: false,
         hasProviderKeys: false,
         routingMode: "managed" as const,
@@ -35,20 +38,28 @@ export const Route = createFileRoute("/_auth/dashboard/")({
     const entityType = "user";
     const entityId = session.user.identityProviderId;
 
-    const [usage, subscription, apiKeys, providerKeys, preferences] =
-      await Promise.all([
-        getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
-        getSubscription({ data: { entityType, entityId } }).catch(() => null),
-        listApiKeys().catch(() => []),
-        listProviderKeys().catch(() => []),
-        getUserPreferences().catch(() => null),
-      ]);
+    const [
+      usage,
+      subscription,
+      entitlements,
+      apiKeys,
+      providerKeys,
+      preferences,
+    ] = await Promise.all([
+      getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
+      getSubscription({ data: { entityType, entityId } }).catch(() => null),
+      getEntitlements({ data: { entityType, entityId } }).catch(() => null),
+      listApiKeys().catch(() => []),
+      listProviderKeys().catch(() => []),
+      getUserPreferences().catch(() => null),
+    ]);
 
     const routingMode = preferences?.routingMode ?? "managed";
 
     return {
       usage,
       subscription,
+      entitlements,
       hasApiKeys: apiKeys.length > 0,
       hasProviderKeys: providerKeys.length > 0,
       routingMode,
@@ -66,9 +77,16 @@ const formatNumber = (n: number) => n.toLocaleString();
  * Dashboard overview page.
  */
 function DashboardOverview() {
-  const { usage, subscription, hasApiKeys, hasProviderKeys, routingMode } =
-    Route.useLoaderData();
+  const {
+    usage,
+    subscription,
+    entitlements,
+    hasApiKeys,
+    hasProviderKeys,
+    routingMode,
+  } = Route.useLoaderData();
 
+  const tier = getTierFromEntitlements(entitlements);
   const totalTokens = (usage?.inputTokens ?? 0) + (usage?.outputTokens ?? 0);
   const hasUsage = (usage?.requests ?? 0) > 0;
 
@@ -80,7 +98,7 @@ function DashboardOverview() {
         hasUsage={hasUsage}
         routingMode={routingMode}
       />
-      <UpgradeBanner show={!subscription} />
+      <UpgradeBanner show={!tier || tier === "Free"} />
 
       <div>
         <h1 className="font-bold text-2xl text-gradient">Overview</h1>
@@ -108,7 +126,7 @@ function DashboardOverview() {
         <StatCard
           icon={<CreditCardIcon className="h-5 w-5" />}
           label="Current Plan"
-          value={subscription?.product?.name ?? "No plan"}
+          value={tier ?? "No plan"}
           description={
             subscription ? `Status: ${subscription.status}` : undefined
           }

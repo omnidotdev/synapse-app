@@ -2,7 +2,9 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { RouteErrorFallback } from "@/components/layout";
+import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
 
 /**
@@ -10,7 +12,10 @@ import { getSubscription } from "@/server/functions/subscriptions";
  */
 const ProfilePage = () => {
   const { auth } = Route.useRouteContext();
-  const { subscription, entityType, entityId } = Route.useLoaderData();
+  const { subscription, entitlements, entityType, entityId } =
+    Route.useLoaderData();
+
+  const tier = getTierFromEntitlements(entitlements);
 
   return (
     <div className="mx-auto flex h-full max-w-7xl flex-col text-pretty px-4 py-8 text-center sm:text-start">
@@ -37,7 +42,9 @@ const ProfilePage = () => {
               entityId={entityId}
             />
           ) : (
-            <p className="text-muted-foreground">No active subscription.</p>
+            <p className="text-muted-foreground">
+              {tier ? `${tier} plan` : "No active subscription"}
+            </p>
           )}
         </div>
 
@@ -59,17 +66,23 @@ export const Route = createFileRoute("/_auth/profile")({
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {
-      return { subscription: null, entityType: "user", entityId: "" };
+      return {
+        subscription: null,
+        entitlements: null,
+        entityType: "user",
+        entityId: "",
+      };
     }
 
     const entityType = "user";
     const entityId = session.user.identityProviderId;
 
-    const subscription = await getSubscription({
-      data: { entityType, entityId },
-    }).catch(() => null);
+    const [subscription, entitlements] = await Promise.all([
+      getSubscription({ data: { entityType, entityId } }).catch(() => null),
+      getEntitlements({ data: { entityType, entityId } }).catch(() => null),
+    ]);
 
-    return { subscription, entityType, entityId };
+    return { subscription, entitlements, entityType, entityId };
   },
   component: ProfilePage,
 });

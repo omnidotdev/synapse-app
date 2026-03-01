@@ -4,6 +4,7 @@ import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
+import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -54,6 +55,7 @@ function OrgBillingPage() {
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
 
+  const tier = getTierFromEntitlements(entitlements);
   const org = organizations.find((o) => o.slug === orgSlug);
 
   if (!org) return null;
@@ -78,7 +80,9 @@ function OrgBillingPage() {
         ) : (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-muted-foreground">No active subscription</p>
+              <p className="text-muted-foreground">
+                {tier ? `${tier} plan` : "No active subscription"}
+              </p>
               <Link to="/pricing">
                 <Button variant="outline" className="mt-4">
                   View Plans
