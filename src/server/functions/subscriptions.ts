@@ -52,16 +52,24 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
 
     const userName = context.session.user.name ?? "Personal";
 
-    const result = await getBilling().createCheckoutWithWorkspace({
-      appId: app.name.toLowerCase(),
-      priceId: data.priceId,
-      successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
-      cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
-      accessToken,
-      createWorkspace: { name: `${userName}'s Workspace` },
-    });
+    try {
+      const result = await getBilling().createCheckoutWithWorkspace({
+        appId: app.name.toLowerCase(),
+        priceId: data.priceId,
+        successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
+        cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
+        accessToken,
+        createWorkspace: { name: `${userName}'s Workspace` },
+      });
 
-    return result.checkoutUrl;
+      return result.checkoutUrl;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to create checkout session",
+      );
+    }
   });
 
 /**

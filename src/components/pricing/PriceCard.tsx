@@ -56,7 +56,8 @@ const PriceCard = ({
     mutationFn: async (priceId: string) =>
       await getCheckoutUrl({ data: { priceId } }),
     onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
-    onError: (error) => toast.error(error.message),
+    onError: (error) =>
+      toast.error(error?.message ?? "Failed to start checkout"),
   });
 
   const buttonVariant = featured ? "gradient" : "solid";
@@ -65,7 +66,7 @@ const PriceCard = ({
     <CardRoot
       key={price.product.name}
       className={cn(
-        "card-glow-hover size-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80",
+        "card-glow-hover w-full max-w-lg overflow-hidden transition-all duration-300 lg:min-w-80",
         featured && "glow-primary border-primary/30",
         className,
       )}
