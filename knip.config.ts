@@ -37,7 +37,7 @@ const knipConfig: KnipConfig = {
     "src/server/functions/providerKeys.ts",
   ],
   ignoreDependencies: [
-"dotenv",
+    "dotenv",
     "@faker-js/faker",
     "@happy-dom/global-registrator",
     "@testing-library/jest-dom",
