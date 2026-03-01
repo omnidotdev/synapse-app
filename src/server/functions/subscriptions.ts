@@ -48,11 +48,10 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => checkoutSchema.parse(data))
   .handler(async ({ data, context }) => {
-    const accessToken = requireAccessToken(context.session.accessToken);
-
-    const userName = context.session.user.name ?? "Personal";
-
     try {
+      const accessToken = requireAccessToken(context.session.accessToken);
+      const userName = context.session.user.name ?? "Personal";
+
       const result = await getBilling().createCheckoutWithWorkspace({
         appId: app.name.toLowerCase(),
         priceId: data.priceId,

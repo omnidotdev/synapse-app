@@ -56,13 +56,21 @@ const PriceCard = ({
     mutationFn: async (priceId: string) => {
       const result = await getCheckoutUrl({ data: { priceId } });
 
-      if ("error" in result) throw new Error(result.error);
+      if (!result || typeof result !== "object" || !("url" in result)) {
+        const message =
+          result && typeof result === "object" && "error" in result
+            ? result.error
+            : "Failed to start checkout";
+        throw new Error(message);
+      }
 
       return result.url;
     },
     onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
     onError: (error) =>
-      toast.error(error?.message ?? "Failed to start checkout"),
+      toast.error(
+        error instanceof Error ? error.message : "Failed to start checkout",
+      ),
   });
 
   const buttonVariant = featured ? "gradient" : "solid";
