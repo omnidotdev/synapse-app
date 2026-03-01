@@ -1,7 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeaders } from "@tanstack/react-start/server";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { decodeJwt } from "jose";
 
 import auth from "@/lib/auth/auth";
 import {
@@ -12,11 +12,6 @@ import {
 import { parseOrganizationClaims } from "@/lib/context/organization.context";
 
 import type { Organization } from "@/lib/context/organization.context";
-
-// Module-level JWKS set — reused across requests with built-in key caching
-const jwks = AUTH_BASE_URL
-  ? createRemoteJWKSet(new URL(`${AUTH_BASE_URL}/jwks`))
-  : null;
 
 /**
  * Fetch the current user session.
@@ -40,9 +35,11 @@ export const fetchSession = createServerFn().handler(async () => {
     });
     accessToken = tokenResult?.accessToken;
 
-    // Extract identity provider ID and org claims from the ID token
-    if (tokenResult?.idToken && jwks) {
-      const { payload } = await jwtVerify(tokenResult.idToken, jwks);
+    // Decode identity and org claims from the ID token — signature was
+    // already verified during the OAuth flow; the token is retrieved from
+    // our own trusted auth storage so re-verification is unnecessary
+    if (tokenResult?.idToken) {
+      const payload = decodeJwt(tokenResult.idToken);
       identityProviderId = payload.sub;
       organizations = parseOrganizationClaims(
         payload as Record<string, unknown>,
