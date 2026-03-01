@@ -1,6 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ExternalLinkIcon } from "lucide-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
@@ -8,10 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
-import {
-  getBillingPortalUrl,
-  getSubscription,
-} from "@/server/functions/subscriptions";
+import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { Entitlement } from "@omnidotdev/providers";
 
@@ -48,13 +43,6 @@ export const Route = createFileRoute("/_auth/dashboard/billing")({
 function BillingPage() {
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
-  const navigate = useNavigate();
-
-  const { mutateAsync: openPortal, isPending: isPortalPending } = useMutation({
-    mutationFn: async () =>
-      await getBillingPortalUrl({ data: { entityType, entityId } }),
-    onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
-  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -86,19 +74,6 @@ function BillingPage() {
           </Card>
         )}
       </div>
-
-      {entityId && (
-        <div>
-          <Button
-            variant="outline"
-            onClick={() => openPortal()}
-            disabled={isPortalPending}
-          >
-            <ExternalLinkIcon className="mr-2 h-4 w-4" />
-            Billing Portal
-          </Button>
-        </div>
-      )}
 
       {entitlements?.entitlements && entitlements.entitlements.length > 0 && (
         <div className="flex flex-col gap-4">
