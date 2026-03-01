@@ -50,12 +50,15 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const accessToken = requireAccessToken(context.session.accessToken);
 
+    const userName = context.session.user.name ?? "Personal";
+
     const result = await getBilling().createCheckoutWithWorkspace({
       appId: app.name.toLowerCase(),
       priceId: data.priceId,
       successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
       cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
       accessToken,
+      createWorkspace: { name: `${userName}'s Workspace` },
     });
 
     return result.checkoutUrl;
