@@ -4,6 +4,7 @@ import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
@@ -12,6 +13,7 @@ import { addWorkspace, listWorkspaces } from "@/server/functions/workspaces";
 export const Route = createFileRoute(
   "/_auth/organizations/$orgSlug/workspaces/",
 )({
+  errorComponent: RouteErrorFallback,
   component: WorkspacesPage,
 });
 
@@ -168,8 +170,17 @@ function WorkspacesPage() {
       )}
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
+              key={i}
+              className="rounded-lg border p-4"
+            >
+              <div className="h-5 w-28 animate-pulse rounded bg-muted" />
+              <div className="mt-2 h-4 w-20 animate-pulse rounded bg-muted" />
+            </div>
+          ))}
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

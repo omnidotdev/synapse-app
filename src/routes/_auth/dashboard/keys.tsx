@@ -11,6 +11,8 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
+import KeysListSkeleton from "@/components/dashboard/KeysListSkeleton";
+import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -29,6 +31,7 @@ import {
 import type { ApiKey } from "@/server/functions/apiKeys";
 
 export const Route = createFileRoute("/_auth/dashboard/keys")({
+  errorComponent: RouteErrorFallback,
   component: KeysPage,
 });
 
@@ -241,11 +244,7 @@ function KeysPage() {
       )}
 
       {isLoading ? (
-        <Card>
-          <CardContent className="flex items-center justify-center py-12">
-            <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
-          </CardContent>
-        </Card>
+        <KeysListSkeleton />
       ) : keys.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12">

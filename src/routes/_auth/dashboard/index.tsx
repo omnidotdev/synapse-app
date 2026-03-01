@@ -6,28 +6,46 @@ import {
   SparklesIcon,
 } from "lucide-react";
 
+import OnboardingChecklist from "@/components/dashboard/OnboardingChecklist";
 import StatCard from "@/components/dashboard/StatCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
+import { DashboardPending, RouteErrorFallback } from "@/components/layout";
+import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
+import { listProviderKeys } from "@/server/functions/providerKeys";
 import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
 
 export const Route = createFileRoute("/_auth/dashboard/")({
+  errorComponent: RouteErrorFallback,
+  pendingComponent: DashboardPending,
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {
-      return { usage: null, subscription: null };
+      return {
+        usage: null,
+        subscription: null,
+        hasApiKeys: false,
+        hasProviderKeys: false,
+      };
     }
 
     const entityType = "user";
     const entityId = session.user.identityProviderId;
 
-    const [usage, subscription] = await Promise.all([
+    const [usage, subscription, apiKeys, providerKeys] = await Promise.all([
       getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
       getSubscription({ data: { entityType, entityId } }).catch(() => null),
+      listApiKeys().catch(() => []),
+      listProviderKeys().catch(() => []),
     ]);
 
-    return { usage, subscription };
+    return {
+      usage,
+      subscription,
+      hasApiKeys: apiKeys.length > 0,
+      hasProviderKeys: providerKeys.length > 0,
+    };
   },
   component: DashboardOverview,
 });
@@ -41,12 +59,19 @@ const formatNumber = (n: number) => n.toLocaleString();
  * Dashboard overview page.
  */
 function DashboardOverview() {
-  const { usage, subscription } = Route.useLoaderData();
+  const { usage, subscription, hasApiKeys, hasProviderKeys } =
+    Route.useLoaderData();
 
   const totalTokens = (usage?.inputTokens ?? 0) + (usage?.outputTokens ?? 0);
+  const hasUsage = (usage?.requests ?? 0) > 0;
 
   return (
     <div className="flex flex-col gap-6">
+      <OnboardingChecklist
+        hasApiKeys={hasApiKeys}
+        hasProviderKeys={hasProviderKeys}
+        hasUsage={hasUsage}
+      />
       <UpgradeBanner show={!subscription} />
 
       <div>

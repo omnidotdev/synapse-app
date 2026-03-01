@@ -4,6 +4,7 @@ import { BellIcon, Loader2Icon, SlidersHorizontalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/server/functions/preferences";
 
 export const Route = createFileRoute("/_auth/dashboard/settings")({
+  errorComponent: RouteErrorFallback,
   component: SettingsPage,
 });
 

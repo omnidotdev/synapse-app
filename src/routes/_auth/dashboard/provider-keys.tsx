@@ -10,6 +10,8 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
+import KeysListSkeleton from "@/components/dashboard/KeysListSkeleton";
+import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -32,6 +34,7 @@ import type { ProviderKey } from "@/server/functions/providerKeys";
 const FREE_KEY_LIMIT = 3;
 
 export const Route = createFileRoute("/_auth/dashboard/provider-keys")({
+  errorComponent: RouteErrorFallback,
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {
@@ -309,11 +312,7 @@ function ProviderKeysPage() {
       )}
 
       {isLoading ? (
-        <Card>
-          <CardContent className="flex items-center justify-center py-12">
-            <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
-          </CardContent>
-        </Card>
+        <KeysListSkeleton />
       ) : keys.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-4 py-12">

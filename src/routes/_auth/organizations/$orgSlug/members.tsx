@@ -4,6 +4,8 @@ import { Loader2Icon, UserPlusIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import MembersListSkeleton from "@/components/dashboard/MembersListSkeleton";
+import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
@@ -15,6 +17,7 @@ import {
 } from "@/server/functions/organizations";
 
 export const Route = createFileRoute("/_auth/organizations/$orgSlug/members")({
+  errorComponent: RouteErrorFallback,
   component: OrgMembersPage,
 });
 
@@ -211,9 +214,7 @@ function OrgMembersPage() {
           </table>
         </div>
       ) : isLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <MembersListSkeleton />
       ) : (
         <div className="rounded-lg border">
           <table className="w-full">

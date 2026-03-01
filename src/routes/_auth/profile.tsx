@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { RouteErrorFallback } from "@/components/layout";
 import { fetchSession } from "@/server/functions/auth";
 import { getSubscription } from "@/server/functions/subscriptions";
 
@@ -54,6 +55,7 @@ const ProfilePage = () => {
 };
 
 export const Route = createFileRoute("/_auth/profile")({
+  errorComponent: RouteErrorFallback,
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {

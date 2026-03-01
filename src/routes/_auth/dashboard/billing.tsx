@@ -3,6 +3,7 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ExternalLinkIcon } from "lucide-react";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchSession } from "@/server/functions/auth";
@@ -15,6 +16,8 @@ import {
 import type { Entitlement } from "@omnidotdev/providers";
 
 export const Route = createFileRoute("/_auth/dashboard/billing")({
+  errorComponent: RouteErrorFallback,
+  pendingComponent: DashboardPending,
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {
