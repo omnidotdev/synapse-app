@@ -2,7 +2,11 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ActivityIcon, ShieldCheckIcon, ZapIcon } from "lucide-react";
 
 import { InternalLink } from "@/components/core";
-import { HeroGraph, NeuralBackground } from "@/components/landing";
+import {
+  HeroGraph,
+  MetricsCharts,
+  NeuralBackground,
+} from "@/components/landing";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -54,9 +58,9 @@ function RoutingDiagram() {
         cy="103"
         r="16"
         fill="var(--primary)"
-        fillOpacity={0.06}
+        fillOpacity={0.12}
         stroke="var(--primary)"
-        strokeOpacity={0.5}
+        strokeOpacity={0.7}
         strokeWidth={1.5}
       />
       <text
@@ -74,7 +78,7 @@ function RoutingDiagram() {
         cy="103"
         r="24"
         fill="var(--primary)"
-        fillOpacity={0.06}
+        fillOpacity={0.12}
         stroke="var(--primary)"
         strokeWidth={1.5}
       />
@@ -126,10 +130,10 @@ function RoutingDiagram() {
             cy={node.cy}
             r="12"
             fill="var(--secondary)"
-            fillOpacity={0.06}
+            fillOpacity={0.12}
             stroke="var(--secondary)"
-            strokeOpacity={0.5}
-            strokeWidth={1}
+            strokeOpacity={0.7}
+            strokeWidth={1.2}
           />
           <text
             x={node.cx}
@@ -149,7 +153,7 @@ function RoutingDiagram() {
         x2="116"
         y2="103"
         stroke="var(--primary)"
-        strokeOpacity={0.35}
+        strokeOpacity={0.5}
         strokeWidth={1.5}
         strokeDasharray="6 4"
         strokeLinecap="round"
@@ -167,7 +171,7 @@ function RoutingDiagram() {
           key={d}
           d={d}
           stroke="var(--secondary)"
-          strokeOpacity={0.35}
+          strokeOpacity={0.5}
           strokeWidth={1.5}
           strokeDasharray="6 4"
           strokeLinecap="round"
@@ -275,28 +279,11 @@ function HomePage() {
           className="axon-spine pointer-events-none absolute top-0 bottom-0 left-1/2 w-px"
         />
 
-        {/* Node 01: Stats */}
+        {/* Node 01: Metrics charts */}
         <div className="mb-24 flex justify-end">
           <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
             <NodeChip id="node_01" label="metrics" />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
-              <div>
-                <p className="font-bold text-2xl text-gradient">50+</p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  Models supported
-                </p>
-              </div>
-              <div>
-                <p className="font-bold text-2xl text-gradient">&lt;50ms</p>
-                <p className="mt-1 text-muted-foreground text-sm">
-                  Routing overhead
-                </p>
-              </div>
-              <div>
-                <p className="font-bold text-2xl text-gradient">99.9%</p>
-                <p className="mt-1 text-muted-foreground text-sm">Uptime SLA</p>
-              </div>
-            </div>
+            <MetricsCharts />
           </div>
         </div>
 

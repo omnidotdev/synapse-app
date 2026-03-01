@@ -7,7 +7,7 @@ type SignalProps = {
 /** Animated signal dot traveling along a path. */
 function Signal({ path, dur, begin = "0s" }: SignalProps) {
   return (
-    <circle r="3.5" className="signal-dot">
+    <circle r="4.5" className="signal-dot">
       <animateMotion
         dur={dur}
         begin={begin}
@@ -62,10 +62,10 @@ function GraphNode({ cx, cy, r, label, sublabel, color }: NodeProps) {
         cy={cy}
         r={r}
         fill={color}
-        fillOpacity={0.07}
+        fillOpacity={0.14}
         stroke={color}
-        strokeOpacity={0.5}
-        strokeWidth={1.2}
+        strokeOpacity={0.7}
+        strokeWidth={1.5}
         className="satellite-glow"
       />
       {/* Label */}
@@ -96,12 +96,12 @@ function GraphNode({ cx, cy, r, label, sublabel, color }: NodeProps) {
 }
 
 const CONNECTIONS = [
-  { d: "M 131 280 L 380 280", dur: "1.8s", begin: "0s" },
-  { d: "M 608 210 Q 720 160 794 150", dur: "2.2s", begin: "0.3s" },
-  { d: "M 608 340 Q 710 388 766 407", dur: "2.4s", begin: "0.6s" },
-  { d: "M 420 175 Q 380 130 342 100", dur: "2.0s", begin: "0.9s" },
-  { d: "M 400 370 Q 330 408 272 427", dur: "2.3s", begin: "1.2s" },
-  { d: "M 619 268 Q 750 265 862 282", dur: "2.1s", begin: "0.4s" },
+  { d: "M 131 280 L 350 280", dur: "1.8s", begin: "0s" },
+  { d: "M 650 230 Q 720 160 794 150", dur: "2.2s", begin: "0.3s" },
+  { d: "M 650 330 Q 710 388 766 407", dur: "2.4s", begin: "0.6s" },
+  { d: "M 420 200 Q 380 130 342 100", dur: "2.0s", begin: "0.9s" },
+  { d: "M 400 360 Q 330 408 272 427", dur: "2.3s", begin: "1.2s" },
+  { d: "M 650 280 Q 750 275 862 282", dur: "2.1s", begin: "0.4s" },
   { d: "M 866 152 Q 900 200 888 262", dur: "1.9s", begin: "0.8s" },
 ];
 
@@ -126,8 +126,8 @@ function HeroGraph() {
           key={c.d}
           d={c.d}
           stroke="var(--primary)"
-          strokeOpacity={0.2}
-          strokeWidth={1.2}
+          strokeOpacity={0.4}
+          strokeWidth={1.5}
           strokeDasharray="6 5"
           strokeLinecap="round"
         >
@@ -153,31 +153,62 @@ function HeroGraph() {
         </g>
       ))}
 
-      {/* Soma — large central ring (text overlaid via HTML) */}
-      <circle
-        cx={500}
-        cy={280}
-        r={120}
-        fill="var(--primary)"
-        fillOpacity={0.04}
+      {/* Gradient defs */}
+      <defs>
+        <radialGradient id="soma-fill" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.14} />
+          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.04} />
+        </radialGradient>
+      </defs>
+
+      {/* Soma — pill-shaped central node (text overlaid via HTML) */}
+      <rect
+        x={350}
+        y={200}
+        width={300}
+        height={160}
+        rx={80}
+        ry={80}
+        fill="url(#soma-fill)"
         stroke="var(--primary)"
         strokeWidth={1.5}
         strokeOpacity={0.6}
         className="soma-ring"
       />
       {/* Soma outer pulse */}
-      <circle
-        cx={500}
-        cy={280}
-        r={120}
+      <rect
+        x={350}
+        y={200}
+        width={300}
+        height={160}
+        rx={80}
+        ry={80}
         fill="none"
         stroke="var(--primary)"
         strokeOpacity={0.1}
         strokeWidth={1.5}
       >
         <animate
-          attributeName="r"
-          values="120;145;120"
+          attributeName="x"
+          values="350;325;350"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="y"
+          values="200;175;200"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="width"
+          values="300;350;300"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="height"
+          values="160;210;160"
           dur="3s"
           repeatCount="indefinite"
         />
@@ -187,12 +218,15 @@ function HeroGraph() {
           dur="3s"
           repeatCount="indefinite"
         />
-      </circle>
+      </rect>
       {/* Soma inner ring */}
-      <circle
-        cx={500}
-        cy={280}
-        r={88}
+      <rect
+        x={390}
+        y={220}
+        width={220}
+        height={120}
+        rx={60}
+        ry={60}
         fill="none"
         stroke="var(--primary)"
         strokeOpacity={0.15}
