@@ -47,7 +47,7 @@ const PriceCard = ({
     mutationFn: async () =>
       await authClient.signIn.oauth2({
         providerId: "omni",
-        callbackURL: "/pricing",
+        callbackURL: "/dashboard",
         disableRedirect: false,
       }),
   });

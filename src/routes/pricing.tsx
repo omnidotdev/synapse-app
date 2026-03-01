@@ -53,7 +53,7 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
     mutationFn: async () =>
       await authClient.signIn.oauth2({
         providerId: "omni",
-        callbackURL: "/pricing",
+        callbackURL: "/dashboard",
         disableRedirect: false,
       }),
   });
