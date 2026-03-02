@@ -43,6 +43,7 @@ export const getSubscription = createServerFn()
 
 /**
  * Create a checkout session for a new subscription.
+ * Uses the user's existing personal organization rather than creating a new one.
  */
 export const getCheckoutUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -50,7 +51,14 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     try {
       const accessToken = requireAccessToken(context.session.accessToken);
-      const userName = context.session.user.name ?? "Personal";
+
+      const personalOrg = context.organizations.find(
+        (org: { type: string }) => org.type === "personal",
+      );
+
+      if (!personalOrg) {
+        return { error: "No personal workspace found" };
+      }
 
       const result = await getBilling().createCheckoutWithWorkspace({
         appId: app.name.toLowerCase(),
@@ -58,7 +66,7 @@ export const getCheckoutUrl = createServerFn({ method: "POST" })
         successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
         cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
         accessToken,
-        createWorkspace: { name: `${userName}'s Workspace` },
+        workspaceId: personalOrg.id,
       });
 
       return { url: result.checkoutUrl };

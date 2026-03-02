@@ -8,9 +8,9 @@ import { fetchSession } from "@/server/functions/auth";
  * Throws if the user is not authenticated.
  */
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-  const { session } = await fetchSession();
+  const { session, organizations } = await fetchSession();
 
   if (!session) throw new Error("Unauthorized");
 
-  return next({ context: { session } });
+  return next({ context: { session, organizations } });
 });
