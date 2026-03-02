@@ -66,6 +66,8 @@ export const inviteOrgMember = createServerFn()
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+          // Satisfy Better Auth CSRF check for server-to-server calls
+          Origin: AUTH_BASE_URL!,
         },
         body: JSON.stringify({
           organizationId: data.organizationId,
@@ -165,6 +167,8 @@ export const updateOrganization = createServerFn()
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
+        // Satisfy Better Auth CSRF check for server-to-server calls
+        Origin: AUTH_BASE_URL!,
       },
       body: JSON.stringify({
         organizationId: data.organizationId,
@@ -200,6 +204,8 @@ export const deleteOrganization = createServerFn()
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
+        // Satisfy Better Auth CSRF check for server-to-server calls
+        Origin: AUTH_BASE_URL!,
       },
       body: JSON.stringify({
         organizationId: data.organizationId,
