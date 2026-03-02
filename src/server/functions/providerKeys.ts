@@ -28,20 +28,24 @@ export const listProviderKeys = createServerFn()
     const accessToken = context.session.accessToken;
     if (!accessToken) throw new Error("Access token required");
 
-    const data = await graphql<{ myProviderKeys: ProviderKey[] }>(
+    const data = await graphql<{
+      observer: { providerKeys: ProviderKey[] } | null;
+    }>(
       accessToken,
       `query {
-        myProviderKeys {
-          id
-          provider
-          keyHint
-          modelPreference
-          createdAt
+        observer {
+          providerKeys {
+            id
+            provider
+            keyHint
+            modelPreference
+            createdAt
+          }
         }
       }`,
     );
 
-    return data.myProviderKeys ?? [];
+    return data.observer?.providerKeys ?? [];
   });
 
 const setKeySchema = z.object({
