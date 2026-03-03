@@ -9,6 +9,7 @@ import type { Price } from "./PriceCard";
 // Spy on router hooks for this test file
 spyOn(TanStackRouter, "useRouteContext").mockReturnValue({ auth: null });
 spyOn(TanStackRouter, "useNavigate").mockReturnValue(mock());
+spyOn(TanStackRouter, "useSearch").mockReturnValue({});
 
 // Mock auth client
 mock.module("@/lib/auth/authClient", () => ({
@@ -19,9 +20,12 @@ mock.module("@/lib/auth/authClient", () => ({
   },
 }));
 
-// Mock server function
+// Mock server functions
 mock.module("@/server/functions/subscriptions", () => ({
   getCheckoutUrl: mock(() => Promise.resolve("https://checkout.stripe.com")),
+  createCheckoutWithWorkspace: mock(() =>
+    Promise.resolve({ checkoutUrl: "https://checkout.stripe.com" }),
+  ),
 }));
 
 // Import after mocking
@@ -52,7 +56,7 @@ const mockPrice: Price = {
   metadata: {},
 };
 
-const renderPriceCard = (price: Price, disableAction = false) => {
+const renderPriceCard = (price: Price) => {
   cleanup();
 
   const queryClient = new QueryClient({
@@ -61,7 +65,7 @@ const renderPriceCard = (price: Price, disableAction = false) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <PriceCard price={price} disableAction={disableAction} />
+      <PriceCard price={price} />
     </QueryClientProvider>,
   );
 };

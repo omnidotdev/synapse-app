@@ -12,9 +12,30 @@ const checkoutSchema = z.object({
   cancelUrl: z.string().url().optional(),
 });
 
+const checkoutWithWorkspaceSchema = z
+  .object({
+    priceId: z.string().startsWith("price_"),
+    successUrl: z.string().url(),
+    cancelUrl: z.string().url(),
+    workspaceId: z.string().uuid().optional(),
+    createWorkspace: z
+      .object({
+        name: z.string().min(1).max(100),
+        slug: z.string().min(1).max(100).optional(),
+      })
+      .optional(),
+  })
+  .refine((data) => data.workspaceId || data.createWorkspace, {
+    message: "Either workspaceId or createWorkspace is required",
+  });
+
 const subscriptionSchema = z.object({
   entityType: z.string().min(1),
   entityId: z.string().min(1),
+});
+
+const organizationSchema = z.object({
+  organizationId: z.string().min(1),
 });
 
 /**
@@ -44,6 +65,7 @@ export const getSubscription = createServerFn()
 /**
  * Create a checkout session for a new subscription.
  * Uses the user's existing personal organization rather than creating a new one.
+ * @knipignore
  */
 export const getCheckoutUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -123,4 +145,36 @@ export const renewSubscription = createServerFn({ method: "POST" })
       data.entityId,
       requireAccessToken(context.session.accessToken),
     );
+  });
+
+/**
+ * Get subscription for an organization.
+ */
+export const getOrgSubscription = createServerFn()
+  .middleware([authMiddleware])
+  .inputValidator((data) => organizationSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    return getBilling().getSubscription(
+      "organization",
+      data.organizationId,
+      requireAccessToken(context.session.accessToken),
+    );
+  });
+
+/**
+ * Create a checkout session with workspace selection or creation.
+ */
+export const createCheckoutWithWorkspace = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .inputValidator((data) => checkoutWithWorkspaceSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    return getBilling().createCheckoutWithWorkspace({
+      appId: app.name.toLowerCase(),
+      priceId: data.priceId,
+      successUrl: data.successUrl,
+      cancelUrl: data.cancelUrl,
+      accessToken: requireAccessToken(context.session.accessToken),
+      workspaceId: data.workspaceId,
+      createWorkspace: data.createWorkspace,
+    });
   });

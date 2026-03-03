@@ -1,9 +1,14 @@
 import { Format } from "@ark-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, useRouteContext } from "@tanstack/react-router";
-import { CheckIcon } from "lucide-react";
-import { toast } from "sonner";
+import {
+  useNavigate,
+  useRouteContext,
+  useSearch,
+} from "@tanstack/react-router";
+import { BuildingIcon, CheckIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
 
+import CreateWorkspaceModal from "@/components/pricing/CreateWorkspaceModal";
 import { Button } from "@/components/ui/button";
 import {
   CardContent,
@@ -12,148 +17,323 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  MenuContent,
+  MenuItem,
+  MenuItemGroup,
+  MenuItemGroupLabel,
+  MenuItemText,
+  MenuPositioner,
+  MenuRoot,
+  MenuSeparator,
+  MenuTrigger,
+} from "@/components/ui/menu";
 import authClient from "@/lib/auth/authClient";
+import { BASE_URL } from "@/lib/config/env.config";
 import { capitalizeFirstLetter } from "@/lib/util";
 import cn from "@/lib/utils";
-import { getCheckoutUrl } from "@/server/functions/subscriptions";
+import { createCheckoutWithWorkspace } from "@/server/functions/subscriptions";
 
-import type { Price } from "@omnidotdev/providers";
-import type { CardProps } from "@/components/ui/card";
+import type { Organization } from "@/lib/context/organization.context";
+import type { Price, Subscription } from "@omnidotdev/providers";
 
 export type { Price };
 
-interface Props extends CardProps {
+type Props = {
   price: Price;
-  featured?: boolean;
-  disableAction?: boolean;
-  currentPlanLabel?: string;
-}
+  orgSubscriptions?: Record<string, Subscription | null>;
+  organizations?: Organization[];
+};
 
-/**
- * Price card.
- */
+// Synapse tier hierarchy for upgrade logic
+const TIER_ORDER = ["free", "basic", "team"] as const;
+type Tier = (typeof TIER_ORDER)[number];
+
 const PriceCard = ({
   price,
-  featured,
-  className,
-  disableAction,
-  currentPlanLabel,
-  ...rest
+  orgSubscriptions = {},
+  organizations = [],
 }: Props) => {
   const { auth } = useRouteContext({ strict: false });
   const navigate = useNavigate();
+  const search = useSearch({ strict: false }) as { tier?: string };
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const tier = (price.metadata?.tier as Tier) ?? "free";
+  const isBasicTier = tier === "basic";
+  const isFreeTier = tier === "free";
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
       await authClient.signIn.oauth2({
         providerId: "omni",
-        callbackURL: "/dashboard",
+        callbackURL: `/pricing?tier=${tier}`,
         disableRedirect: false,
       }),
   });
 
-  const { mutateAsync: checkout } = useMutation({
-    mutationFn: async (priceId: string) => {
-      const result = await getCheckoutUrl({ data: { priceId } });
+  const getOrgTier = (orgId: string): Tier => {
+    const subscription = orgSubscriptions[orgId];
+    if (!subscription) return "free";
+    const productName = subscription.product?.name?.toLowerCase() ?? "";
+    if (productName.includes("team")) return "team";
+    if (productName.includes("basic")) return "basic";
+    return "free";
+  };
 
-      if (!result || typeof result !== "object" || !("url" in result)) {
-        const message =
-          result && typeof result === "object" && "error" in result
-            ? result.error
-            : "Failed to start checkout";
-        throw new Error(message);
-      }
+  const getTierIndex = (t: Tier): number => TIER_ORDER.indexOf(t);
 
-      return result.url;
+  const allOrgs = organizations;
+  const upgradeableOrgs = allOrgs.filter(
+    (org) => getTierIndex(getOrgTier(org.id)) < getTierIndex(tier),
+  );
+  const nonUpgradeableOrgs = allOrgs.filter(
+    (org) => getTierIndex(getOrgTier(org.id)) >= getTierIndex(tier),
+  );
+
+  // Auto-open dropdown when returning from sign-in with tier param
+  const shouldAutoOpen = search.tier === tier && !!auth;
+
+  const { mutateAsync: initiateCheckout } = useMutation({
+    mutationFn: async (params: {
+      workspaceId?: string;
+      createWorkspace?: { name: string; slug: string };
+    }) => {
+      setIsCheckoutLoading(true);
+      return createCheckoutWithWorkspace({
+        data: {
+          priceId: price.id,
+          successUrl: `${BASE_URL}/pricing`,
+          cancelUrl: `${BASE_URL}/pricing`,
+          ...params,
+        },
+      });
     },
-    onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
-    onError: (error) =>
-      toast.error(
-        error instanceof Error ? error.message : "Failed to start checkout",
-      ),
+    onSuccess: (result) => {
+      window.location.href = result.checkoutUrl;
+    },
+    onError: () => {
+      setIsCheckoutLoading(false);
+    },
   });
 
-  const buttonVariant = featured ? "gradient" : "solid";
+  const handleWorkspaceSelect = (workspaceId: string) => {
+    if (workspaceId === "create-new") {
+      setIsCreateModalOpen(true);
+    } else {
+      initiateCheckout({ workspaceId });
+    }
+  };
+
+  const handleCreateWorkspace = (name: string, slug: string) => {
+    setIsCreateModalOpen(false);
+    initiateCheckout({ createWorkspace: { name, slug } });
+  };
+
+  const handleClick = () => {
+    if (!auth) {
+      signIn();
+      return;
+    }
+
+    if (isFreeTier) {
+      navigate({ to: "/dashboard" });
+      return;
+    }
+
+    // Paid tier without orgs - open create workspace modal
+    if (!allOrgs.length) {
+      setIsCreateModalOpen(true);
+      return;
+    }
+  };
+
+  const showDropdown = !!auth && !isFreeTier && !!allOrgs.length;
+
+  const buttonVariant = isBasicTier ? "gradient" : "solid";
+
+  const getButtonContent = () => {
+    if (isFreeTier) return "Get Started";
+    return `Continue with ${capitalizeFirstLetter(tier)}`;
+  };
 
   return (
-    <CardRoot
-      key={price.product.name}
-      className={cn(
-        "card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
-        featured && "glow-primary border-primary/30",
-        className,
-      )}
-      {...rest}
-    >
-      <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
-        <div className="flex flex-1 flex-col">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg">
-              {capitalizeFirstLetter(price.product.name)}
-            </CardTitle>
+    <>
+      <CardRoot
+        key={price.product.name}
+        className={cn(
+          "card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
+          isBasicTier && "glow-primary border-primary/30",
+        )}
+      >
+        <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
+          <div className="flex flex-1 flex-col">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">
+                {capitalizeFirstLetter(price.product.name)}
+              </CardTitle>
 
-            {featured && (
-              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-shimmer text-xs">
-                Popular
-              </span>
+              {isBasicTier && (
+                <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-shimmer text-xs">
+                  Popular
+                </span>
+              )}
+            </div>
+
+            <CardDescription className="mt-2 mb-4 flex-1">
+              {price.product.description}
+            </CardDescription>
+
+            {price.unit_amount != null && (
+              <p className="font-semibold text-lg">
+                <span className="text-gradient">
+                  <Format.Number
+                    value={price.unit_amount / 100}
+                    style="currency"
+                    currency="USD"
+                    notation="compact"
+                    compactDisplay="short"
+                  />
+                </span>
+
+                <span className="pl-1 font-normal text-muted-foreground text-sm">
+                  /{price.recurring ? price.recurring.interval : "forever"}
+                </span>
+              </p>
             )}
           </div>
 
-          <CardDescription className="mt-2 mb-4 flex-1">
-            {price.product.description}
-          </CardDescription>
+          {showDropdown ? (
+            <MenuRoot
+              defaultOpen={shouldAutoOpen}
+              onSelect={({ value }) => handleWorkspaceSelect(value)}
+            >
+              <MenuTrigger asChild>
+                <Button
+                  variant={buttonVariant}
+                  disabled={isCheckoutLoading}
+                >
+                  {isCheckoutLoading ? "Loading..." : getButtonContent()}
+                </Button>
+              </MenuTrigger>
+              <MenuPositioner className="!w-[var(--reference-width)]">
+                <MenuContent className="w-full">
+                  {allOrgs.length > 0 && (
+                    <>
+                      <MenuItemGroup>
+                        <MenuItemGroupLabel className="text-muted-foreground">
+                          Your workspaces
+                        </MenuItemGroupLabel>
 
-          {price.unit_amount != null && (
-            <p className="font-semibold text-lg">
-              <span className="text-gradient">
-                <Format.Number
-                  value={price.unit_amount / 100}
-                  style="currency"
-                  currency="USD"
-                  notation="compact"
-                  compactDisplay="short"
-                />
-              </span>
+                        {upgradeableOrgs.map((org) => (
+                          <MenuItem
+                            key={org.id}
+                            value={org.id}
+                            className="cursor-pointer"
+                          >
+                            <MenuItemText className="flex w-full items-center gap-2">
+                              <BuildingIcon
+                                size={16}
+                                className="text-muted-foreground"
+                              />
+                              <span className="flex-1 truncate font-medium text-sm">
+                                {org.slug}
+                              </span>
+                              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-xs">
+                                Upgrade
+                              </span>
+                            </MenuItemText>
+                          </MenuItem>
+                        ))}
 
-              <span className="pl-1 font-normal text-muted-foreground text-sm">
-                /{price.recurring ? price.recurring.interval : "forever"}
-              </span>
-            </p>
+                        {nonUpgradeableOrgs.map((org) => {
+                          const orgTier = getOrgTier(org.id);
+                          const isSameTier = orgTier === tier;
+
+                          return (
+                            <MenuItem
+                              key={org.id}
+                              value={org.id}
+                              disabled
+                              className="opacity-60"
+                            >
+                              <MenuItemText className="flex w-full items-center gap-2">
+                                <BuildingIcon
+                                  size={16}
+                                  className="text-muted-foreground"
+                                />
+                                <span className="flex-1 truncate font-medium text-sm">
+                                  {org.slug}
+                                </span>
+                                <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                                  {isSameTier
+                                    ? "Current plan"
+                                    : capitalizeFirstLetter(orgTier)}
+                                </span>
+                              </MenuItemText>
+                            </MenuItem>
+                          );
+                        })}
+                      </MenuItemGroup>
+
+                      <MenuSeparator />
+                    </>
+                  )}
+
+                  <MenuItemGroup>
+                    <MenuItem value="create-new" className="cursor-pointer">
+                      <MenuItemText className="flex w-full items-center gap-2">
+                        <PlusIcon size={16} className="text-muted-foreground" />
+                        <span className="font-medium text-sm">
+                          New workspace
+                        </span>
+                      </MenuItemText>
+                    </MenuItem>
+                  </MenuItemGroup>
+                </MenuContent>
+              </MenuPositioner>
+            </MenuRoot>
+          ) : auth ? (
+            <Button
+              variant={buttonVariant}
+              disabled={isCheckoutLoading}
+              onClick={handleClick}
+            >
+              {isCheckoutLoading ? "Loading..." : getButtonContent()}
+            </Button>
+          ) : (
+            <Button
+              variant={buttonVariant}
+              disabled={isSignInPending}
+              onClick={() => signIn()}
+            >
+              Get Started
+            </Button>
           )}
-        </div>
+        </CardHeader>
 
-        {currentPlanLabel ? (
-          <Button variant={buttonVariant} disabled>
-            {currentPlanLabel}
-          </Button>
-        ) : auth ? (
-          <Button
-            variant={buttonVariant}
-            disabled={disableAction}
-            onClick={() => checkout(price.id)}
-          >
-            Get Started
-          </Button>
-        ) : (
-          <Button
-            variant={buttonVariant}
-            disabled={isSignInPending}
-            onClick={() => signIn()}
-          >
-            Get Started
-          </Button>
-        )}
-      </CardHeader>
+        <CardContent className="flex-1 p-4">
+          {price.product.marketing_features.map((feature) => (
+            <div
+              key={feature.name}
+              className="flex items-start gap-2 text-left"
+            >
+              <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+              <p>{feature.name}</p>
+            </div>
+          ))}
+        </CardContent>
+      </CardRoot>
 
-      <CardContent className="flex-1 p-4">
-        {price.product.marketing_features.map((feature) => (
-          <div key={feature.name} className="flex items-start gap-2 text-left">
-            <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-            <p>{feature.name}</p>
-          </div>
-        ))}
-      </CardContent>
-    </CardRoot>
+      <CreateWorkspaceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        tierName={capitalizeFirstLetter(tier)}
+        onSubmit={handleCreateWorkspace}
+        isLoading={isCheckoutLoading}
+      />
+    </>
   );
 };
 

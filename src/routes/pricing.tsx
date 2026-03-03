@@ -2,6 +2,7 @@ import { TabsRootProvider, useTabs } from "@ark-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
+import { z } from "zod";
 
 import { FrequentlyAskedQuestions, PriceCard } from "@/components/pricing";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,17 @@ import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
+import { getOrgSubscription } from "@/server/functions/subscriptions";
 
 import type { Price } from "@/components/pricing";
+import type { Subscription } from "@omnidotdev/providers";
+
+const searchSchema = z.object({
+  tier: z
+    .string()
+    .pipe(z.enum(["free", "basic", "team"]))
+    .optional(),
+});
 
 const FREE_PRICE: Price = {
   id: "free-price",
@@ -111,7 +121,12 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
  * Pricing page.
  */
 const PricingPage = () => {
-  const { prices = [], tier = null } = Route.useLoaderData();
+  const {
+    prices = [],
+    tier = null,
+    orgSubscriptions = {},
+    organizations = [],
+  } = Route.useLoaderData();
 
   const tabs = useTabs({ defaultValue: "month" });
 
@@ -153,15 +168,12 @@ const PricingPage = () => {
           >
             <FreeTierCard tier={tier} />
 
-            {filteredPrices.map((price: Price, idx: number) => (
+            {filteredPrices.map((price: Price) => (
               <PriceCard
                 key={price.id}
                 price={price}
-                featured={idx === 0}
-                disableAction={tier === price.product.name}
-                currentPlanLabel={
-                  tier === price.product.name ? "Current plan" : undefined
-                }
+                orgSubscriptions={orgSubscriptions}
+                organizations={organizations}
               />
             ))}
           </TabsContent>
@@ -174,25 +186,51 @@ const PricingPage = () => {
 };
 
 export const Route = createFileRoute("/pricing")({
+  validateSearch: (search) => searchSchema.parse(search),
   loader: async () => {
-    const [prices, tier] = await Promise.all([
+    const [prices, sessionData] = await Promise.all([
       getPrices(),
-      (async () => {
-        const { session } = await fetchSession();
-        if (!session?.user.identityProviderId) return null;
-
-        const entitlements = await getEntitlements({
-          data: {
-            entityType: "user",
-            entityId: session.user.identityProviderId,
-          },
-        }).catch(() => null);
-
-        return getTierFromEntitlements(entitlements);
-      })(),
+      fetchSession(),
     ]);
 
-    return { prices, tier };
+    const { session, organizations } = sessionData;
+
+    let tier: string | null = null;
+    if (session?.user.identityProviderId) {
+      const entitlements = await getEntitlements({
+        data: {
+          entityType: "user",
+          entityId: session.user.identityProviderId,
+        },
+      }).catch(() => null);
+
+      tier = getTierFromEntitlements(entitlements);
+    }
+
+    // Fetch org subscriptions for all user organizations
+    const orgSubscriptions: Record<string, Subscription | null> = {};
+
+    if (organizations.length > 0) {
+      const subscriptionPromises = organizations.map(
+        async (org: { id: string }) => {
+          try {
+            const subscription = await getOrgSubscription({
+              data: { organizationId: org.id },
+            });
+            return { orgId: org.id, subscription };
+          } catch {
+            return { orgId: org.id, subscription: null };
+          }
+        },
+      );
+
+      const results = await Promise.all(subscriptionPromises);
+      for (const { orgId, subscription } of results) {
+        orgSubscriptions[orgId] = subscription;
+      }
+    }
+
+    return { prices, tier, orgSubscriptions, organizations };
   },
   component: PricingPage,
 });
