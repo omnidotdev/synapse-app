@@ -85,7 +85,7 @@ export const addWorkspace = createServerFn()
 
     const result = await graphql<{ addWorkspace: Workspace }>(
       accessToken,
-      `mutation CreateWorkspace($input: CreateWorkspaceInput!) {
+      `mutation CreateWorkspace($input: NewWorkspaceInput!) {
         addWorkspace(input: $input) {
           id
           organizationId
@@ -120,7 +120,7 @@ export const patchWorkspace = createServerFn()
 
     const result = await graphql<{ patchWorkspace: Workspace }>(
       accessToken,
-      `mutation UpdateWorkspace($id: UUID!, $input: UpdateWorkspaceInput!) {
+      `mutation UpdateWorkspace($id: UUID!, $input: PatchWorkspaceInput!) {
         patchWorkspace(id: $id, input: $input) {
           id
           organizationId

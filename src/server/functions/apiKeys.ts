@@ -31,31 +31,26 @@ export const listApiKeys = createServerFn()
     if (!accessToken) throw new Error("Access token required");
 
     const data = await graphql<{
-      currentUser: { apiKeys: { nodes: ApiKey[] } };
+      observer: { apiKeys: ApiKey[] };
     }>(
       accessToken,
       `query {
-        currentUser {
-          apiKeys(
-            condition: { revokedAt: null }
-            orderBy: CREATED_AT_DESC
-          ) {
-            nodes {
-              id
-              name
-              keyHint
-              mode
-              createdAt
-              lastUsedAt
-              expiresAt
-              revokedAt
-            }
+        observer {
+          apiKeys {
+            id
+            name
+            keyHint
+            mode
+            createdAt
+            lastUsedAt
+            expiresAt
+            revokedAt
           }
         }
       }`,
     );
 
-    return data.currentUser?.apiKeys?.nodes ?? [];
+    return data.observer?.apiKeys ?? [];
   });
 
 const createKeySchema = z.object({

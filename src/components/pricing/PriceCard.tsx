@@ -34,8 +34,8 @@ import { capitalizeFirstLetter } from "@/lib/util";
 import cn from "@/lib/utils";
 import { createCheckoutWithWorkspace } from "@/server/functions/subscriptions";
 
-import type { Organization } from "@/lib/context/organization.context";
 import type { Price, Subscription } from "@omnidotdev/providers";
+import type { Organization } from "@/lib/context/organization.context";
 
 export type { Price };
 
@@ -210,10 +210,7 @@ const PriceCard = ({
               onSelect={({ value }) => handleWorkspaceSelect(value)}
             >
               <MenuTrigger asChild>
-                <Button
-                  variant={buttonVariant}
-                  disabled={isCheckoutLoading}
-                >
+                <Button variant={buttonVariant} disabled={isCheckoutLoading}>
                   {isCheckoutLoading ? "Loading..." : getButtonContent()}
                 </Button>
               </MenuTrigger>

@@ -21,8 +21,8 @@ import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
 import { getOrgSubscription } from "@/server/functions/subscriptions";
 
-import type { Price } from "@/components/pricing";
 import type { Subscription } from "@omnidotdev/providers";
+import type { Price } from "@/components/pricing";
 
 const searchSchema = z.object({
   tier: z

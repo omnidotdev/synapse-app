@@ -21,32 +21,27 @@ export const listWorkspaceApiKeys = createServerFn()
     if (!accessToken) throw new Error("Access token required");
 
     const result = await graphql<{
-      currentUser: { apiKeys: { nodes: ApiKey[] } };
+      observer: { apiKeys: ApiKey[] };
     }>(
       accessToken,
       `query WorkspaceApiKeys($workspaceId: UUID!) {
-        currentUser {
-          apiKeys(
-            condition: { workspaceId: $workspaceId, revokedAt: null }
-            orderBy: CREATED_AT_DESC
-          ) {
-            nodes {
-              id
-              name
-              keyHint
-              mode
-              createdAt
-              lastUsedAt
-              expiresAt
-              revokedAt
-            }
+        observer {
+          apiKeys(workspaceId: $workspaceId) {
+            id
+            name
+            keyHint
+            mode
+            createdAt
+            lastUsedAt
+            expiresAt
+            revokedAt
           }
         }
       }`,
       { workspaceId: data.workspaceId },
     );
 
-    return result.currentUser?.apiKeys?.nodes ?? [];
+    return result.observer?.apiKeys ?? [];
   });
 
 const createKeySchema = z.object({
@@ -121,20 +116,18 @@ export const countWorkspaceApiKeys = createServerFn()
     if (!accessToken) throw new Error("Access token required");
 
     const result = await graphql<{
-      currentUser: { apiKeys: { totalCount: number } };
+      observer: { apiKeys: ApiKey[] };
     }>(
       accessToken,
       `query WorkspaceApiKeyCount($workspaceId: UUID!) {
-        currentUser {
-          apiKeys(
-            condition: { workspaceId: $workspaceId, revokedAt: null }
-          ) {
-            totalCount
+        observer {
+          apiKeys(workspaceId: $workspaceId) {
+            id
           }
         }
       }`,
       { workspaceId: data.workspaceId },
     );
 
-    return result.currentUser?.apiKeys?.totalCount ?? 0;
+    return result.observer?.apiKeys?.length ?? 0;
   });
