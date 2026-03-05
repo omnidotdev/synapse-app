@@ -17,8 +17,6 @@ export const Route = createFileRoute(
       return { usage: null };
     }
 
-    // Usage is currently user-scoped; workspace filtering is not yet
-    // available on the backend
     const usage = await getUsageSummary({
       data: {
         entityType: "user",

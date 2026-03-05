@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { HashIcon, InfoIcon, LogInIcon, LogOutIcon } from "lucide-react";
+import { HashIcon, LogInIcon, LogOutIcon } from "lucide-react";
 import { useState } from "react";
 
 import StatCard from "@/components/dashboard/StatCard";
@@ -45,8 +45,6 @@ export const Route = createFileRoute(
       return { usage: null };
     }
 
-    // Usage API is currently user-scoped; workspace filtering is not yet
-    // available on the backend
     const usage = await getUsageSummary({
       data: {
         entityType: "user",
@@ -91,7 +89,6 @@ function DailyBar({
 
 /**
  * Workspace usage page.
- * Displays user-scoped usage until workspace-level filtering is available.
  */
 const EMPTY_USAGE: UsageSummary = {
   inputTokens: 0,
@@ -111,14 +108,16 @@ function WorkspaceUsagePage() {
   const [rangeDays, setRangeDays] = useState(30);
 
   const { data: breakdown } = useQuery({
-    queryKey: ["usageBreakdown", rangeDays],
+    queryKey: ["usageBreakdown", rangeDays, workspace?.id],
     queryFn: () =>
       getUsageBreakdown({
         data: {
           startDate: daysAgo(rangeDays),
           endDate: new Date().toISOString(),
+          workspaceId: workspace?.id,
         },
       }),
+    enabled: !!workspace,
   });
 
   if (!workspace) return null;
@@ -152,15 +151,6 @@ function WorkspaceUsagePage() {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Workspace filtering notice */}
-      <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
-        <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <p className="text-muted-foreground text-sm">
-          Usage data currently reflects your account-level totals.
-          Workspace-scoped usage filtering is coming soon.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

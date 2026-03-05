@@ -29,6 +29,7 @@ interface UsageBreakdown {
 const dateRangeSchema = z.object({
   startDate: z.string().min(1),
   endDate: z.string().min(1),
+  workspaceId: z.string().optional(),
 });
 
 /**
@@ -48,8 +49,8 @@ export const getUsageBreakdown = createServerFn()
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({
-        query: `query UsageBreakdown($startDate: String!, $endDate: String!) {
-          usageBreakdown(startDate: $startDate, endDate: $endDate) {
+        query: `query UsageBreakdown($startDate: String!, $endDate: String!, $workspaceId: String) {
+          usageBreakdown(startDate: $startDate, endDate: $endDate, workspaceId: $workspaceId) {
             byModel {
               model
               provider
@@ -68,6 +69,7 @@ export const getUsageBreakdown = createServerFn()
         variables: {
           startDate: data.startDate,
           endDate: data.endDate,
+          workspaceId: data.workspaceId,
         },
       }),
     });
