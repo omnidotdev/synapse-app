@@ -229,10 +229,7 @@ function HomePage() {
         </div>
 
         {/* CTA buttons — below soma ring */}
-        <div
-          className="relative z-10 flex flex-wrap justify-center gap-3"
-          style={{ marginTop: "calc((100vh - 66px) * 0.214 - 4rem)" }}
-        >
+        <div className="relative z-10 mt-6 flex flex-wrap justify-center gap-3">
           <InternalLink to="/pricing" variant="unstyled">
             <Button variant="gradient" size="lg">
               Get Started
@@ -393,6 +390,29 @@ function HomePage() {
               Fine-grained API keys with auto-rotation, audit trails, and rate
               limits
             </p>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mt-24 flex flex-col items-center text-center">
+          <h2 className="font-bold text-2xl text-shimmer sm:text-3xl">
+            Ready to unify your AI stack?
+          </h2>
+          <p className="mt-3 max-w-md text-muted-foreground text-sm">
+            Start routing requests through Synapse in minutes. Free tier
+            included, no credit card required.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <InternalLink to="/pricing" variant="unstyled">
+              <Button variant="gradient" size="lg">
+                Get Started
+              </Button>
+            </InternalLink>
+            <InternalLink to="/pricing" variant="unstyled">
+              <Button variant="outline" size="lg">
+                View Pricing
+              </Button>
+            </InternalLink>
           </div>
         </div>
       </div>

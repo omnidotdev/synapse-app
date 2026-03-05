@@ -130,9 +130,16 @@ const PricingPage = () => {
 
   const tabs = useTabs({ defaultValue: "month" });
 
-  const filteredPrices = prices.filter(
-    (price: Price) => price.recurring?.interval === tabs.value,
-  );
+  // Filter by billing interval and deduplicate by product name (keep first match)
+  const seen = new Set<string>();
+  const filteredPrices = prices
+    .filter((price: Price) => price.recurring?.interval === tabs.value)
+    .filter((price: Price) => {
+      const name = price.product.name.toLowerCase();
+      if (seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    });
 
   return (
     <div className="relative flex h-full flex-col items-center px-4 py-8 text-center">
