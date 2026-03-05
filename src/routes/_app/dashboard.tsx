@@ -3,7 +3,7 @@ import { Outlet, createFileRoute } from "@tanstack/react-router";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import createMetaTags from "@/lib/util/createMetaTags";
 
-export const Route = createFileRoute("/_auth/dashboard")({
+export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
     meta: createMetaTags({ title: "Dashboard" }),
   }),

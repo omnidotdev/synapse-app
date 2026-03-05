@@ -30,7 +30,7 @@ import {
 import type { ApiKey } from "@/server/functions/apiKeys";
 
 export const Route = createFileRoute(
-  "/_auth/organizations/$orgSlug/workspaces/$workspaceSlug/keys",
+  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/keys",
 )({
   component: WorkspaceKeysPage,
 });

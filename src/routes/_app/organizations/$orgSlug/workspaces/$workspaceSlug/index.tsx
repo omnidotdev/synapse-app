@@ -9,7 +9,7 @@ import { getUsageSummary } from "@/server/functions/usage";
 import { countWorkspaceApiKeys } from "@/server/functions/workspaceApiKeys";
 
 export const Route = createFileRoute(
-  "/_auth/organizations/$orgSlug/workspaces/$workspaceSlug/",
+  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/",
 )({
   loader: async () => {
     const { session } = await fetchSession();

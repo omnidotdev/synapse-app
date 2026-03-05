@@ -27,7 +27,7 @@ import type { Price } from "@/components/pricing";
 const searchSchema = z.object({
   tier: z
     .string()
-    .pipe(z.enum(["free", "basic", "team"]))
+    .pipe(z.enum(["free", "pro", "team"]))
     .optional(),
 });
 

@@ -11,7 +11,7 @@ import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { Entitlement } from "@omnidotdev/providers";
 
-export const Route = createFileRoute("/_auth/organizations/$orgSlug/billing")({
+export const Route = createFileRoute("/_app/organizations/$orgSlug/billing")({
   loader: async ({ params }) => {
     const { session, organizations } = await fetchSession();
     if (!session?.user.identityProviderId) {

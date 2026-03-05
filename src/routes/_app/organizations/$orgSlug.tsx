@@ -2,7 +2,7 @@ import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import { useOrganization } from "@/lib/context";
 
-export const Route = createFileRoute("/_auth/organizations/$orgSlug")({
+export const Route = createFileRoute("/_app/organizations/$orgSlug")({
   beforeLoad: async ({ params }) => {
     // Validate org slug exists in user's organizations
     // This will be populated from context in a real app

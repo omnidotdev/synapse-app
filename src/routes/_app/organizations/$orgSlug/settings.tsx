@@ -11,7 +11,7 @@ import {
   updateOrganization,
 } from "@/server/functions/organizations";
 
-export const Route = createFileRoute("/_auth/organizations/$orgSlug/settings")({
+export const Route = createFileRoute("/_app/organizations/$orgSlug/settings")({
   component: OrgSettingsPage,
 });
 

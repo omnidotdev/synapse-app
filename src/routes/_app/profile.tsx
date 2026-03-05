@@ -61,7 +61,7 @@ const ProfilePage = () => {
   );
 };
 
-export const Route = createFileRoute("/_auth/profile")({
+export const Route = createFileRoute("/_app/profile")({
   errorComponent: RouteErrorFallback,
   loader: async () => {
     const { session } = await fetchSession();

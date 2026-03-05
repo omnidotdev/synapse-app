@@ -11,7 +11,7 @@ import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { Entitlement } from "@omnidotdev/providers";
 
-export const Route = createFileRoute("/_auth/dashboard/billing")({
+export const Route = createFileRoute("/_app/dashboard/billing")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

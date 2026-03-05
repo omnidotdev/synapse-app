@@ -19,7 +19,7 @@ import { listProviderKeys } from "@/server/functions/providerKeys";
 import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
 
-export const Route = createFileRoute("/_auth/dashboard/")({
+export const Route = createFileRoute("/_app/dashboard/")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

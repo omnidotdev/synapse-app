@@ -11,7 +11,7 @@ import { useOrganization } from "@/lib/context";
 import { addWorkspace, listWorkspaces } from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
-  "/_auth/organizations/$orgSlug/workspaces/",
+  "/_app/organizations/$orgSlug/workspaces/",
 )({
   errorComponent: RouteErrorFallback,
   component: WorkspacesPage,

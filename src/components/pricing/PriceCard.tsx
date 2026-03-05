@@ -46,7 +46,7 @@ type Props = {
 };
 
 // Synapse tier hierarchy for upgrade logic
-const TIER_ORDER = ["free", "basic", "team"] as const;
+const TIER_ORDER = ["free", "pro", "team"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
 const PriceCard = ({
@@ -61,7 +61,7 @@ const PriceCard = ({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const tier = (price.metadata?.tier as Tier) ?? "free";
-  const isBasicTier = tier === "basic";
+  const isProTier = tier === "pro";
   const isFreeTier = tier === "free";
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
@@ -78,7 +78,7 @@ const PriceCard = ({
     if (!subscription) return "free";
     const productName = subscription.product?.name?.toLowerCase() ?? "";
     if (productName.includes("team")) return "team";
-    if (productName.includes("basic")) return "basic";
+    if (productName.includes("pro")) return "pro";
     return "free";
   };
 
@@ -151,7 +151,7 @@ const PriceCard = ({
 
   const showDropdown = !!auth && !isFreeTier && !!allOrgs.length;
 
-  const buttonVariant = isBasicTier ? "gradient" : "solid";
+  const buttonVariant = isProTier ? "gradient" : "solid";
 
   const getButtonContent = () => {
     if (isFreeTier) return "Get Started";
@@ -164,7 +164,7 @@ const PriceCard = ({
         key={price.product.name}
         className={cn(
           "card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
-          isBasicTier && "glow-primary border-primary/30",
+          isProTier && "glow-primary border-primary/30",
         )}
       >
         <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
@@ -174,7 +174,7 @@ const PriceCard = ({
                 {capitalizeFirstLetter(price.product.name)}
               </CardTitle>
 
-              {isBasicTier && (
+              {isProTier && (
                 <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-shimmer text-xs">
                   Popular
                 </span>

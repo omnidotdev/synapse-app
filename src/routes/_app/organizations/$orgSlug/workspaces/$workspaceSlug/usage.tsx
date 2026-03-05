@@ -37,7 +37,7 @@ const daysAgo = (n: number) => {
 };
 
 export const Route = createFileRoute(
-  "/_auth/organizations/$orgSlug/workspaces/$workspaceSlug/usage",
+  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/usage",
 )({
   loader: async () => {
     const { session } = await fetchSession();

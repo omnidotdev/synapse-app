@@ -22,7 +22,7 @@ import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { RoutingMode } from "@/server/functions/preferences";
 
-export const Route = createFileRoute("/_auth/dashboard/settings")({
+export const Route = createFileRoute("/_app/dashboard/settings")({
   errorComponent: RouteErrorFallback,
   loader: async () => {
     const { session } = await fetchSession();

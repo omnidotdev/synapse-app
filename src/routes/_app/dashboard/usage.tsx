@@ -36,7 +36,7 @@ const daysAgo = (n: number) => {
   return d.toISOString();
 };
 
-export const Route = createFileRoute("/_auth/dashboard/usage")({
+export const Route = createFileRoute("/_app/dashboard/usage")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

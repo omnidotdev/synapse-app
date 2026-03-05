@@ -13,7 +13,7 @@ import {
 } from "@/server/functions/workspaces";
 
 export const Route = createFileRoute(
-  "/_auth/organizations/$orgSlug/workspaces/$workspaceSlug/settings",
+  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/settings",
 )({
   component: WorkspaceSettingsPage,
 });

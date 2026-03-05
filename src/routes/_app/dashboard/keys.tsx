@@ -29,7 +29,7 @@ import {
 
 import type { ApiKey } from "@/server/functions/apiKeys";
 
-export const Route = createFileRoute("/_auth/dashboard/keys")({
+export const Route = createFileRoute("/_app/dashboard/keys")({
   errorComponent: RouteErrorFallback,
   component: KeysPage,
 });

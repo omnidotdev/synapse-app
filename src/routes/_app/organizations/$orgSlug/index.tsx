@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { useOrganization, useWorkspace } from "@/lib/context";
 
-export const Route = createFileRoute("/_auth/organizations/$orgSlug/")({
+export const Route = createFileRoute("/_app/organizations/$orgSlug/")({
   component: OrgDashboard,
 });
 

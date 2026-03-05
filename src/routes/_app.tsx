@@ -12,7 +12,7 @@ const eventsProvider = {
   },
 };
 
-export const Route = createFileRoute("/_auth")({
+export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ context: { auth } }) => {
     if (!auth) throw redirect({ to: "/" });
   },

@@ -16,7 +16,7 @@ import {
   updateMemberRole,
 } from "@/server/functions/organizations";
 
-export const Route = createFileRoute("/_auth/organizations/$orgSlug/members")({
+export const Route = createFileRoute("/_app/organizations/$orgSlug/members")({
   errorComponent: RouteErrorFallback,
   component: OrgMembersPage,
 });

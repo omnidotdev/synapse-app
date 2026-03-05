@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { useOrganization } from "@/lib/context";
 
-export const Route = createFileRoute("/_auth/organizations/")({
+export const Route = createFileRoute("/_app/organizations/")({
   component: OrganizationsPage,
 });
 
