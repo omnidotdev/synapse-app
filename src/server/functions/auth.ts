@@ -1,3 +1,4 @@
+import { ensureFreshAccessToken } from "@omnidotdev/providers";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeaders } from "@tanstack/react-start/server";
@@ -29,11 +30,23 @@ export const fetchSession = createServerFn().handler(async () => {
   let organizations: Organization[] = [];
 
   try {
-    const tokenResult = await auth.api.getAccessToken({
-      body: { providerId: "omni" },
-      headers,
+    const tokenResult = await ensureFreshAccessToken({
+      getAccessToken: () =>
+        auth.api.getAccessToken({
+          body: { providerId: "omni" },
+          headers,
+        }),
+      refreshToken: () =>
+        auth.api.refreshToken({
+          body: { providerId: "omni" },
+          headers,
+        }),
     });
     accessToken = tokenResult?.accessToken;
+
+    if (!accessToken) {
+      console.warn("[fetchSession] No access token after refresh attempt");
+    }
 
     // Decode identity and org claims from the ID token — signature was
     // already verified during the OAuth flow; the token is retrieved from

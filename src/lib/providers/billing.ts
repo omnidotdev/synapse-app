@@ -13,6 +13,7 @@ let instance: BillingProvider | undefined;
 const getBilling = (): BillingProvider => {
   if (!instance) {
     instance = createBillingProvider({
+      provider: "aether",
       baseUrl: BILLING_BASE_URL,
       appId: "synapse",
       serviceApiKey: BILLING_SERVICE_API_KEY,
