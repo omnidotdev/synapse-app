@@ -31,16 +31,37 @@ export const fetchSession = createServerFn().handler(async () => {
 
   try {
     const tokenResult = await ensureFreshAccessToken({
-      getAccessToken: () =>
-        auth.api.getAccessToken({
-          body: { providerId: "omni" },
-          headers,
-        }),
-      refreshToken: () =>
-        auth.api.refreshToken({
-          body: { providerId: "omni" },
-          headers,
-        }),
+      getAccessToken: async () => {
+        try {
+          const result = await auth.api.getAccessToken({
+            body: { providerId: "omni" },
+            headers,
+          });
+          console.info("[fetchSession] getAccessToken:", {
+            hasToken: !!result?.accessToken,
+            expiresAt: result?.accessTokenExpiresAt ?? "null",
+          });
+          return result;
+        } catch (err) {
+          console.error("[fetchSession] getAccessToken threw:", err);
+          return null;
+        }
+      },
+      refreshToken: async () => {
+        try {
+          const result = await auth.api.refreshToken({
+            body: { providerId: "omni" },
+            headers,
+          });
+          console.info("[fetchSession] refreshToken:", {
+            hasToken: !!result?.accessToken,
+          });
+          return result;
+        } catch (err) {
+          console.error("[fetchSession] refreshToken threw:", err);
+          return null;
+        }
+      },
     });
     accessToken = tokenResult?.accessToken;
 
