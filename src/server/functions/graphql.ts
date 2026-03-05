@@ -10,22 +10,34 @@ export const graphql = async <T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> => {
-  const res = await fetch(API_GRAPHQL_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ query, variables }),
-  });
+  console.info("[graphql] Fetching:", API_GRAPHQL_URL);
+
+  let res: Response;
+
+  try {
+    res = await fetch(API_GRAPHQL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+  } catch (err) {
+    console.error("[graphql] fetch threw:", err);
+    throw err;
+  }
 
   if (!res.ok) {
+    const body = await res.text().catch(() => "(unreadable)");
+    console.error(`[graphql] HTTP ${res.status}:`, body);
     throw new Error(`GraphQL request failed: ${res.status}`);
   }
 
   const json = await res.json();
 
   if (json.errors?.length) {
+    console.error("[graphql] GraphQL errors:", json.errors);
     throw new Error(json.errors[0].message);
   }
 
