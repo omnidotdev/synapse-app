@@ -17,8 +17,8 @@ export const {
   // authorization
   VITE_AUTHZ_API_URL: AUTHZ_API_URL,
   VITE_AUTHZ_ENABLED: AUTHZ_ENABLED,
-  // synapse
-  VITE_SYNAPSE_API_URL: SYNAPSE_API_URL,
+  // synapse (server-only — no VITE_ prefix so it reads at runtime, not build time)
+  SYNAPSE_API_URL,
 } = { ...import.meta.env, ...process.env };
 
 export const API_GRAPHQL_URL = `${API_BASE_URL}/graphql`;
