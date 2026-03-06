@@ -25,8 +25,7 @@ interface SetProviderKeyResult {
 export const listProviderKeys = createServerFn()
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<ProviderKey[]> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const data = await graphql<{
       observer: { providerKeys: ProviderKey[] } | null;
@@ -61,8 +60,7 @@ export const setProviderKey = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => setKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<SetProviderKeyResult> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ setProviderKey: SetProviderKeyResult }>(
       accessToken,
@@ -91,8 +89,7 @@ export const removeProviderKey = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => removeKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ removeProviderKey: boolean }>(
       accessToken,

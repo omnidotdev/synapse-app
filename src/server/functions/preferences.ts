@@ -51,8 +51,7 @@ const graphql = async <T>(
 export const getUserPreferences = createServerFn()
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<UserPreferences> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const data = await graphql<{
       observer: { preferences: UserPreferences } | null;
@@ -87,8 +86,7 @@ export const updateUserPreferences = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => updateSchema.parse(data))
   .handler(async ({ data, context }): Promise<UserPreferences> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{
       updateUserPreferences: UserPreferences;

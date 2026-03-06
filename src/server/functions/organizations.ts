@@ -26,8 +26,7 @@ export const getOrgMembers = createServerFn()
     z.object({ organizationId: z.string().min(1) }).parse(data),
   )
   .handler(async ({ data, context }): Promise<Member[]> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(
       `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}`,
@@ -56,8 +55,7 @@ export const inviteOrgMember = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => inviteSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(
       `${AUTH_BASE_URL}/api/auth/organization/invite-member`,
@@ -98,8 +96,7 @@ export const updateMemberRole = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => updateRoleSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(
       `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}&memberId=${data.memberId}`,
@@ -130,8 +127,7 @@ export const removeMember = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => removeMemberSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(
       `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}&memberId=${data.memberId}`,
@@ -159,8 +155,7 @@ export const updateOrganization = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => updateOrgSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(`${AUTH_BASE_URL}/api/auth/organization/update`, {
       method: "POST",
@@ -196,8 +191,7 @@ export const deleteOrganization = createServerFn()
     z.object({ organizationId: z.string().min(1) }).parse(data),
   )
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(`${AUTH_BASE_URL}/api/auth/organization/delete`, {
       method: "POST",

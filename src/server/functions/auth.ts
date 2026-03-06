@@ -33,41 +33,26 @@ export const fetchSession = createServerFn().handler(async () => {
     const tokenResult = await ensureFreshAccessToken({
       getAccessToken: async () => {
         try {
-          const result = await auth.api.getAccessToken({
+          return await auth.api.getAccessToken({
             body: { providerId: "omni" },
             headers,
           });
-          console.info("[fetchSession] getAccessToken:", {
-            hasToken: !!result?.accessToken,
-            expiresAt: result?.accessTokenExpiresAt ?? "null",
-          });
-          return result;
-        } catch (err) {
-          console.error("[fetchSession] getAccessToken threw:", err);
+        } catch {
           return null;
         }
       },
       refreshToken: async () => {
         try {
-          const result = await auth.api.refreshToken({
+          return await auth.api.refreshToken({
             body: { providerId: "omni" },
             headers,
           });
-          console.info("[fetchSession] refreshToken:", {
-            hasToken: !!result?.accessToken,
-          });
-          return result;
-        } catch (err) {
-          console.error("[fetchSession] refreshToken threw:", err);
+        } catch {
           return null;
         }
       },
     });
     accessToken = tokenResult?.accessToken;
-
-    if (!accessToken) {
-      console.warn("[fetchSession] No access token after refresh attempt");
-    }
 
     // Decode identity and org claims from the ID token — signature was
     // already verified during the OAuth flow; the token is retrieved from

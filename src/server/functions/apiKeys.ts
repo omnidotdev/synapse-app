@@ -27,8 +27,7 @@ interface CreateApiKeyResult {
 export const listApiKeys = createServerFn()
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<ApiKey[]> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const data = await graphql<{
       observer: { apiKeys: ApiKey[] };
@@ -64,8 +63,7 @@ export const createApiKey = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => createKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<CreateApiKeyResult> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ generateApiKey: CreateApiKeyResult }>(
       accessToken,
@@ -93,8 +91,7 @@ export const revokeApiKey = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => revokeKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ revokeApiKey: boolean }>(
       accessToken,

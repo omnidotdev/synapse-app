@@ -39,8 +39,7 @@ export const getUsageBreakdown = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => dateRangeSchema.parse(data))
   .handler(async ({ data, context }): Promise<UsageBreakdown> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const res = await fetch(API_GRAPHQL_URL, {
       method: "POST",

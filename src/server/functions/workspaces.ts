@@ -47,8 +47,7 @@ export const listWorkspaces = createServerFn()
     z.object({ organizationId: z.string().min(1) }).parse(data),
   )
   .handler(async ({ data, context }): Promise<Workspace[]> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ orgWorkspaces: Workspace[] }>(
       accessToken,
@@ -80,8 +79,7 @@ export const addWorkspace = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => createSchema.parse(data))
   .handler(async ({ data, context }): Promise<Workspace> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ addWorkspace: Workspace }>(
       accessToken,
@@ -113,8 +111,7 @@ export const patchWorkspace = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => updateSchema.parse(data))
   .handler(async ({ data, context }): Promise<Workspace> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const { id, ...input } = data;
 
@@ -141,8 +138,7 @@ export const removeWorkspace = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
-    const accessToken = context.session.accessToken;
-    if (!accessToken) throw new Error("Access token required");
+    const { accessToken } = context.session;
 
     const result = await graphql<{ removeWorkspace: boolean }>(
       accessToken,

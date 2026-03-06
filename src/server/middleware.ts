@@ -12,5 +12,14 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 
   if (!session) throw new Error("Unauthorized");
 
-  return next({ context: { session, organizations } });
+  const { accessToken } = session;
+  if (!accessToken) {
+    throw new Error(
+      "Session expired. Please sign out and sign in again to reconnect",
+    );
+  }
+
+  return next({
+    context: { session: { ...session, accessToken }, organizations },
+  });
 });
