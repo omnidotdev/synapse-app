@@ -4,8 +4,6 @@ import { useOrganization } from "@/lib/context";
 
 export const Route = createFileRoute("/_app/organizations/$orgSlug")({
   beforeLoad: async ({ params }) => {
-    // Validate org slug exists in user's organizations
-    // This will be populated from context in a real app
     return { orgSlug: params.orgSlug };
   },
   component: OrgLayout,
@@ -14,6 +12,11 @@ export const Route = createFileRoute("/_app/organizations/$orgSlug")({
 /**
  * Organization layout.
  * Wraps all routes under /organizations/$orgSlug/
+ *
+ * Access control is enforced at two levels:
+ * 1. JWT claims — user must be a member of the org (checked below)
+ * 2. Warden PDP — synapse-api organization middleware checks permissions
+ *    for all API mutations via authz.checkPermission
  */
 function OrgLayout() {
   const { orgSlug } = Route.useParams();
@@ -35,7 +38,6 @@ function OrgLayout() {
   }
 
   // Set as active organization when viewing
-  // useEffect would be better here in a real app
   if (org.id !== organizations.find((o) => o.slug === orgSlug)?.id) {
     setActiveOrganization(org.id);
   }

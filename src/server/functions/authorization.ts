@@ -22,12 +22,16 @@ const batchCheckSchema = z.object({
 
 /**
  * Check if the current user has permission on a resource.
+ * Returns true if authz is not configured (graceful degradation).
  */
 export const checkPermission = createServerFn()
   .inputValidator((data) => checkPermissionSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<boolean> => {
-    return getAuthz().checkPermission(
+    const authz = getAuthz();
+    if (!authz) return true;
+
+    return authz.checkPermission(
       context.session.user.id,
       data.resourceType,
       data.resourceId,
@@ -38,15 +42,16 @@ export const checkPermission = createServerFn()
 /**
  * Batch check permissions for multiple resources.
  * Returns an array of booleans corresponding to each check.
+ * All return true if authz is not configured.
  */
 export const batchCheckPermissions = createServerFn()
   .inputValidator((data) => batchCheckSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<boolean[]> => {
     const authz = getAuthz();
+    if (!authz) return data.checks.map(() => true);
 
     if (!authz.checkPermissionsBatch) {
-      // Fallback to individual checks
       const results: boolean[] = [];
       for (const check of data.checks) {
         const allowed = await authz.checkPermission(

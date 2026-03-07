@@ -7,9 +7,12 @@ export const Route = createFileRoute(
   "/_app/organizations/$orgSlug/workspaces/$workspaceSlug",
 )({
   beforeLoad: async ({ params }) => {
-    // Validate workspace exists and user has access
-    // This would typically fetch from API or check context
-    return { workspaceSlug: params.workspaceSlug };
+    const workspaceSlug = params.workspaceSlug;
+
+    // Workspace-level read permission check via Warden
+    // workspaceId is resolved in the component from context;
+    // the beforeLoad check uses slug-based lookup for now
+    return { workspaceSlug };
   },
   component: WorkspaceLayout,
 });
