@@ -1,11 +1,11 @@
-import { createBillingProvider } from "@omnidotdev/providers";
+import { createBillingProvider } from "@omnidotdev/providers/billing";
 
 import {
   BILLING_BASE_URL,
   BILLING_SERVICE_API_KEY,
 } from "@/lib/config/env.config";
 
-import type { BillingProvider } from "@omnidotdev/providers";
+import type { BillingProvider } from "@omnidotdev/providers/billing";
 
 let instance: BillingProvider | undefined;
 
