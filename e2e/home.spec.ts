@@ -39,20 +39,26 @@ test.describe("Home Page", () => {
     ).toBeVisible();
   });
 
-  test("renders stats", async ({ homePage }) => {
+  test("renders feature leaf nodes", async ({ homePage }) => {
     await homePage.goto();
-    await expect(homePage.page.getByText("50+")).toBeVisible();
-    await expect(homePage.page.getByText("<50ms")).toBeVisible();
-    await expect(homePage.page.getByText("99.9%")).toBeVisible();
+    await expect(
+      homePage.page.getByRole("heading", { name: "Auto Routing" }),
+    ).toBeVisible();
+    await expect(
+      homePage.page.getByRole("heading", { name: "Live Analytics" }),
+    ).toBeVisible();
+    await expect(
+      homePage.page.getByRole("heading", { name: "Scoped Keys" }),
+    ).toBeVisible();
   });
 
   test("renders CTA buttons", async ({ homePage }) => {
     await homePage.goto();
     await expect(
-      homePage.page.getByRole("link", { name: "Get Started" }),
+      homePage.page.getByRole("link", { name: "Get Started" }).first(),
     ).toBeVisible();
     await expect(
-      homePage.page.getByRole("link", { name: "View Pricing" }),
+      homePage.page.getByRole("link", { name: "View Pricing" }).first(),
     ).toBeVisible();
   });
 

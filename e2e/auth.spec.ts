@@ -13,34 +13,24 @@ test.describe("Authentication", () => {
     await expect(signInButton).toBeEnabled();
   });
 
-  test("sign in button triggers auth redirect", async ({ homePage }) => {
+  test("sign in button triggers auth flow", async ({ homePage }) => {
     await homePage.goto();
     const signInButton = homePage.getSignInButton();
 
-    // Capture the current URL before clicking
-    const urlBefore = homePage.page.url();
+    await expect(signInButton).toBeEnabled();
 
-    // Clicking initiates OAuth flow which redirects away from the app
+    // Click initiates OAuth flow; intercept the auth request so we can
+    // verify it fires without depending on an external provider
+    const authRequestPromise = homePage.page.waitForRequest(
+      (req) => req.url().includes("/api/auth"),
+      { timeout: 5000 },
+    );
+
     await signInButton.click();
 
-    // The OAuth redirect should change the URL or show a loading state
-    await homePage.page
-      .waitForURL((url) => url.toString() !== urlBefore, {
-        timeout: 5000,
-      })
-      .catch(() => {
-        // If no redirect happens (auth provider unreachable), the button
-        // should at least show a pending/disabled state
-      });
-
-    // After click, either we redirected or the button entered pending state
-    const currentUrl = homePage.page.url();
-    const buttonDisabled = await signInButton.isDisabled().catch(() => false);
-    const urlChanged = currentUrl !== urlBefore;
-
-    // At minimum one of these should be true: redirect happened or button
-    // entered loading state
-    expect(urlChanged || buttonDisabled).toBeTruthy();
+    // Verify the auth request was initiated
+    const authRequest = await authRequestPromise.catch(() => null);
+    expect(authRequest).not.toBeNull();
   });
 
   test("dashboard link is not visible when unauthenticated", async ({
