@@ -273,7 +273,7 @@ function WorkspaceKeysPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card contentProps={{ className: "p-0" }}>
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
