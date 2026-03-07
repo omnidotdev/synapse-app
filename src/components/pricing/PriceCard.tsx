@@ -49,6 +49,13 @@ type Props = {
 const TIER_ORDER = ["free", "pro", "team"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
+// Stripe metadata uses "basic" for the first paid tier; normalize to "pro"
+const normalizeTier = (raw: string | undefined): Tier => {
+  if (raw === "basic") return "pro";
+  if (raw === "pro" || raw === "team") return raw;
+  return "free";
+};
+
 const PriceCard = ({
   price,
   orgSubscriptions = {},
@@ -60,7 +67,7 @@ const PriceCard = ({
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const tier = (price.metadata?.tier as Tier) ?? "free";
+  const tier = normalizeTier(price.metadata?.tier);
   const isProTier = tier === "pro";
   const isFreeTier = tier === "free";
 

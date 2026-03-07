@@ -42,6 +42,12 @@ const graphql = async <T>(
   return json.data;
 };
 
+const DEFAULT_PREFERENCES: UserPreferences = {
+  defaultProvider: null,
+  notifyUsageThreshold: true,
+  notifyKeyExpiry: true,
+};
+
 /**
  * Fetch user preferences
  */
@@ -50,22 +56,27 @@ export const getUserPreferences = createServerFn()
   .handler(async ({ context }): Promise<UserPreferences> => {
     const { accessToken } = context.session;
 
-    const data = await graphql<{
-      observer: { preferences: UserPreferences } | null;
-    }>(
-      accessToken,
-      `query {
-        observer {
-          preferences {
-            defaultProvider
-            notifyUsageThreshold
-            notifyKeyExpiry
+    try {
+      const data = await graphql<{
+        observer: { preferences: UserPreferences } | null;
+      }>(
+        accessToken,
+        `query {
+          observer {
+            preferences {
+              defaultProvider
+              notifyUsageThreshold
+              notifyKeyExpiry
+            }
           }
-        }
-      }`,
-    );
+        }`,
+      );
 
-    return data.observer?.preferences as UserPreferences;
+      return data.observer?.preferences ?? DEFAULT_PREFERENCES;
+    } catch {
+      // Return defaults when the API is unreachable or the query fails
+      return DEFAULT_PREFERENCES;
+    }
   });
 
 const updateSchema = z.object({

@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
  */
 export interface Organization {
   id: string;
+  name: string | null;
   slug: string;
   /** Discriminator: 'personal' (auto-created, immutable) or 'team' (collaborative) */
   type: "personal" | "team";
@@ -115,6 +116,7 @@ export function parseOrganizationClaims(
 
   return claims.map((org) => ({
     id: org.id,
+    name: org.name ?? null,
     slug: org.slug,
     type: org.type ?? "team",
     roles: org.roles ?? [],

@@ -107,7 +107,7 @@ function DashboardOverview() {
         <StatCard
           icon={<CreditCardIcon className="h-5 w-5" />}
           label="Current Plan"
-          value={tier ?? "No plan"}
+          value={tier ?? "Free"}
           description={
             subscription ? `Status: ${subscription.status}` : undefined
           }

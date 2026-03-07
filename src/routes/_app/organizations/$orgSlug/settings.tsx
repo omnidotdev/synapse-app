@@ -27,7 +27,7 @@ function OrgSettingsPage() {
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
 
-  const [name, setName] = useState(org?.slug ?? "");
+  const [name, setName] = useState(org?.name ?? org?.slug ?? "");
   const [slug, setSlug] = useState(org?.slug ?? "");
   const [confirmSlug, setConfirmSlug] = useState("");
   const [showDelete, setShowDelete] = useState(false);

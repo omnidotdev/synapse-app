@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -43,10 +43,12 @@ function WorkspaceSettingsPage() {
   const [showDelete, setShowDelete] = useState(false);
 
   // Sync local state when workspace loads
-  if (workspace && name === "" && slug === "") {
-    setName(workspace.name);
-    setSlug(workspace.slug);
-  }
+  useEffect(() => {
+    if (workspace && name === "" && slug === "") {
+      setName(workspace.name);
+      setSlug(workspace.slug);
+    }
+  }, [workspace, name, slug]);
 
   const { mutateAsync: save, isPending: isSaving } = useMutation({
     mutationFn: async () => {

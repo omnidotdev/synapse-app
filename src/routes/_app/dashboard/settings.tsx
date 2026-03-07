@@ -61,6 +61,7 @@ function SettingsPage() {
   const { data: prefs, isLoading } = useQuery({
     queryKey: ["userPreferences"],
     queryFn: () => getUserPreferences(),
+    retry: false,
   });
 
   const [routingMode, setRoutingMode] = useState<RoutingMode>("managed");

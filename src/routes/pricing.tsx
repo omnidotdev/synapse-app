@@ -4,6 +4,7 @@ import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
 import { z } from "zod";
 
+import { RouteErrorFallback } from "@/components/layout";
 import { FrequentlyAskedQuestions, PriceCard } from "@/components/pricing";
 import { Button } from "@/components/ui/button";
 import {
@@ -193,6 +194,7 @@ const PricingPage = () => {
 };
 
 export const Route = createFileRoute("/pricing")({
+  errorComponent: RouteErrorFallback,
   validateSearch: (search) => searchSchema.parse(search),
   loader: async () => {
     const [prices, sessionData] = await Promise.all([
