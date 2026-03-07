@@ -230,7 +230,7 @@ function HomePage() {
 
         {/* CTA buttons — below soma ring */}
         <div className="relative z-10 mt-6 flex flex-wrap justify-center gap-3">
-          <InternalLink to="/pricing" variant="unstyled">
+          <InternalLink to="/dashboard" variant="unstyled">
             <Button variant="gradient" size="lg">
               Get Started
             </Button>
@@ -403,7 +403,7 @@ function HomePage() {
             included, no credit card required.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <InternalLink to="/pricing" variant="unstyled">
+            <InternalLink to="/dashboard" variant="unstyled">
               <Button variant="gradient" size="lg">
                 Get Started
               </Button>

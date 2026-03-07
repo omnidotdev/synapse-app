@@ -16,6 +16,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -310,17 +311,13 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
-                <TableCell className="px-4 py-3 font-semibold">
-                  Provider
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold">Key</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
+                <TableHead className="px-4 py-3">Provider</TableHead>
+                <TableHead className="px-4 py-3">Key</TableHead>
+                <TableHead className="px-4 py-3">
                   Model preference
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
-                  Created
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold" />
+                </TableHead>
+                <TableHead className="px-4 py-3">Created</TableHead>
+                <TableHead className="px-4 py-3" />
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -11,7 +11,6 @@ import { Toaster } from "sonner";
 
 import { ErrorBoundary, Footer, Header } from "@/components/layout";
 import app from "@/lib/config/app.config";
-import { isDevEnv } from "@/lib/config/env.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
 import ThemeProvider from "@/providers/ThemeProvider";
@@ -20,19 +19,6 @@ import { getThemeServerFn } from "@/server/functions/theme";
 
 import type { QueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
-
-/**
- * Coming soon teaser page for production.
- */
-function ComingSoon() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-sky-900 to-sky-800">
-      <div className="text-center">
-        <div className="text-9xl">✨</div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Root route.
@@ -123,26 +109,12 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
-  // Note: Production teaser is intentionally disabled for this app
-  // To enable, uncomment the isDevEnv check below
-  // if (!isDevEnv) {
-  //   return (
-  //     <RootDocument>
-  //       <ComingSoon />
-  //     </RootDocument>
-  //   );
-  // }
-
   return (
     <RootDocument>
       <Outlet />
     </RootDocument>
   );
 }
-
-// Suppress unused warnings while teaser is disabled
-void isDevEnv;
-void ComingSoon;
 
 // TODO: re-enable once serwist output is compatible with TanStack Start's Nitro build
 // See src/sw.ts for the service worker source

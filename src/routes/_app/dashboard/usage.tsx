@@ -12,6 +12,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -206,21 +207,17 @@ function UsagePage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-primary/10">
-                  <TableCell className="px-4 py-3 font-semibold">
-                    Model
-                  </TableCell>
-                  <TableCell className="px-4 py-3 font-semibold">
-                    Provider
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-right font-semibold">
+                  <TableHead className="px-4 py-3">Model</TableHead>
+                  <TableHead className="px-4 py-3">Provider</TableHead>
+                  <TableHead className="px-4 py-3 text-right">
                     Input Tokens
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-right font-semibold">
+                  </TableHead>
+                  <TableHead className="px-4 py-3 text-right">
                     Output Tokens
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-right font-semibold">
+                  </TableHead>
+                  <TableHead className="px-4 py-3 text-right">
                     Requests
-                  </TableCell>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

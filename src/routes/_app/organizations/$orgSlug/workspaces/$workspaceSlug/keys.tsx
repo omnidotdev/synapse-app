@@ -17,6 +17,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -277,15 +278,11 @@ function WorkspaceKeysPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
-                <TableCell className="px-4 py-3 font-semibold">Name</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">Key</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
-                  Created
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
-                  Last used
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold" />
+                <TableHead className="px-4 py-3">Name</TableHead>
+                <TableHead className="px-4 py-3">Key</TableHead>
+                <TableHead className="px-4 py-3">Created</TableHead>
+                <TableHead className="px-4 py-3">Last used</TableHead>
+                <TableHead className="px-4 py-3" />
               </TableRow>
             </TableHeader>
             <TableBody>

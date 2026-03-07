@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_app/organizations/$orgSlug")({
  */
 function OrgLayout() {
   const { orgSlug } = Route.useParams();
-  const { organizations, setActiveOrganization } = useOrganization();
+  const { organizations } = useOrganization();
 
   const org = organizations.find((o) => o.slug === orgSlug);
 
@@ -35,11 +35,6 @@ function OrgLayout() {
         </p>
       </div>
     );
-  }
-
-  // Set as active organization when viewing
-  if (org.id !== organizations.find((o) => o.slug === orgSlug)?.id) {
-    setActiveOrganization(org.id);
   }
 
   return <Outlet />;
