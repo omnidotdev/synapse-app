@@ -20,7 +20,7 @@ import {
 } from "@/server/functions/preferences";
 import { getSubscription } from "@/server/functions/subscriptions";
 
-import type { RoutingMode } from "@/server/functions/preferences";
+type RoutingMode = "managed" | "byok";
 
 export const Route = createFileRoute("/_app/dashboard/settings")({
   errorComponent: RouteErrorFallback,
@@ -71,7 +71,6 @@ function SettingsPage() {
   // Sync local state with loaded prefs
   useEffect(() => {
     if (prefs) {
-      setRoutingMode(prefs.routingMode ?? "managed");
       setDefaultProvider(prefs.defaultProvider ?? "");
       setNotifyUsageThreshold(prefs.notifyUsageThreshold);
       setNotifyKeyExpiry(prefs.notifyKeyExpiry);
@@ -82,7 +81,6 @@ function SettingsPage() {
     mutationFn: async () =>
       await updateUserPreferences({
         data: {
-          routingMode,
           defaultProvider: defaultProvider || null,
           notifyUsageThreshold,
           notifyKeyExpiry,

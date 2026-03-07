@@ -6,10 +6,7 @@ import { authMiddleware } from "@/server/middleware";
 
 const API_GRAPHQL_URL = `${SYNAPSE_API_URL}/graphql`;
 
-type RoutingMode = "managed" | "byok";
-
 interface UserPreferences {
-  routingMode: RoutingMode;
   defaultProvider: string | null;
   notifyUsageThreshold: boolean;
   notifyKeyExpiry: boolean;
@@ -60,7 +57,6 @@ export const getUserPreferences = createServerFn()
       `query {
         observer {
           preferences {
-            routingMode
             defaultProvider
             notifyUsageThreshold
             notifyKeyExpiry
@@ -73,7 +69,6 @@ export const getUserPreferences = createServerFn()
   });
 
 const updateSchema = z.object({
-  routingMode: z.enum(["managed", "byok"]).optional(),
   defaultProvider: z.string().nullable().optional(),
   notifyUsageThreshold: z.boolean().optional(),
   notifyKeyExpiry: z.boolean().optional(),
@@ -94,7 +89,6 @@ export const updateUserPreferences = createServerFn()
       accessToken,
       `mutation UpdateUserPreferences($input: UpdateUserPreferencesInput!) {
         updateUserPreferences(input: $input) {
-          routingMode
           defaultProvider
           notifyUsageThreshold
           notifyKeyExpiry
@@ -106,4 +100,4 @@ export const updateUserPreferences = createServerFn()
     return result.updateUserPreferences;
   });
 
-export type { RoutingMode, UserPreferences };
+export type { UserPreferences };

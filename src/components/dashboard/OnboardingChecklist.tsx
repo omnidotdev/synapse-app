@@ -2,15 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { CheckCircle2Icon, CircleIcon, XIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import type { RoutingMode } from "@/server/functions/preferences";
-
 const STORAGE_KEY = "synapse:onboarding-dismissed";
 
 type Props = {
   hasApiKeys: boolean;
   hasProviderKeys?: boolean;
   hasUsage: boolean;
-  routingMode: RoutingMode;
 };
 
 const allSteps = [
@@ -42,7 +39,6 @@ function OnboardingChecklist({
   hasApiKeys,
   hasProviderKeys,
   hasUsage,
-  routingMode,
 }: Props) {
   const [dismissed, setDismissed] = useState(true);
 
@@ -52,8 +48,11 @@ function OnboardingChecklist({
   }, []);
 
   const steps = useMemo(
-    () => allSteps.filter((step) => !step.byokOnly || routingMode === "byok"),
-    [routingMode],
+    () =>
+      allSteps.filter(
+        (step) => !step.byokOnly || (hasProviderKeys ?? false),
+      ),
+    [hasProviderKeys],
   );
 
   const completion: Record<string, boolean> = {

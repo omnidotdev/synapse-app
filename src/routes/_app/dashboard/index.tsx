@@ -14,7 +14,6 @@ import { getTierFromEntitlements } from "@/lib/util";
 import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
-import { getUserPreferences } from "@/server/functions/preferences";
 import { listProviderKeys } from "@/server/functions/providerKeys";
 import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
@@ -31,30 +30,20 @@ export const Route = createFileRoute("/_app/dashboard/")({
         entitlements: null,
         hasApiKeys: false,
         hasProviderKeys: false,
-        routingMode: "managed" as const,
       };
     }
 
     const entityType = "user";
     const entityId = session.user.identityProviderId;
 
-    const [
-      usage,
-      subscription,
-      entitlements,
-      apiKeys,
-      providerKeys,
-      preferences,
-    ] = await Promise.all([
-      getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
-      getSubscription({ data: { entityType, entityId } }).catch(() => null),
-      getEntitlements({ data: { entityType, entityId } }).catch(() => null),
-      listApiKeys().catch(() => []),
-      listProviderKeys().catch(() => []),
-      getUserPreferences().catch(() => null),
-    ]);
-
-    const routingMode = preferences?.routingMode ?? "managed";
+    const [usage, subscription, entitlements, apiKeys, providerKeys] =
+      await Promise.all([
+        getUsageSummary({ data: { entityType, entityId } }).catch(() => null),
+        getSubscription({ data: { entityType, entityId } }).catch(() => null),
+        getEntitlements({ data: { entityType, entityId } }).catch(() => null),
+        listApiKeys().catch(() => []),
+        listProviderKeys().catch(() => []),
+      ]);
 
     return {
       usage,
@@ -62,7 +51,6 @@ export const Route = createFileRoute("/_app/dashboard/")({
       entitlements,
       hasApiKeys: apiKeys.length > 0,
       hasProviderKeys: providerKeys.length > 0,
-      routingMode,
     };
   },
   component: DashboardOverview,
@@ -77,14 +65,8 @@ const formatNumber = (n: number) => n.toLocaleString();
  * Dashboard overview page.
  */
 function DashboardOverview() {
-  const {
-    usage,
-    subscription,
-    entitlements,
-    hasApiKeys,
-    hasProviderKeys,
-    routingMode,
-  } = Route.useLoaderData();
+  const { usage, subscription, entitlements, hasApiKeys, hasProviderKeys } =
+    Route.useLoaderData();
 
   const tier = getTierFromEntitlements(entitlements);
   const totalTokens = (usage?.inputTokens ?? 0) + (usage?.outputTokens ?? 0);
@@ -96,7 +78,6 @@ function DashboardOverview() {
         hasApiKeys={hasApiKeys}
         hasProviderKeys={hasProviderKeys}
         hasUsage={hasUsage}
-        routingMode={routingMode}
       />
       <UpgradeBanner show={!tier || tier === "Free"} />
 
