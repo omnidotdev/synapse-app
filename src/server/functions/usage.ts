@@ -55,7 +55,8 @@ export const getUsageSummary = createServerFn()
       throw new Error(`Usage API error: ${res.status}`);
     }
 
-    const meters: UsageMeter[] = await res.json();
+    const body = await res.json();
+    const meters: UsageMeter[] = body.meters ?? body;
 
     const inputTokens = findMeter(meters, "input_tokens");
     const outputTokens = findMeter(meters, "output_tokens");
