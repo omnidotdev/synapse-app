@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiHealthRouteImport } from './routes/api/_health'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppOrganizationsIndexRouteImport } from './routes/_app/organizations/index'
@@ -49,8 +49,8 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/_health',
-  path: '/api',
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -169,7 +169,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/dashboard': typeof AppDashboardRouteWithChildren
   '/profile': typeof AppProfileRoute
-  '/api': typeof ApiHealthRoute
+  '/api/health': typeof ApiHealthRoute
   '/dashboard/billing': typeof AppDashboardBillingRoute
   '/dashboard/keys': typeof AppDashboardKeysRoute
   '/dashboard/settings': typeof AppDashboardSettingsRoute
@@ -193,7 +193,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof AppProfileRoute
-  '/api': typeof ApiHealthRoute
+  '/api/health': typeof ApiHealthRoute
   '/dashboard/billing': typeof AppDashboardBillingRoute
   '/dashboard/keys': typeof AppDashboardKeysRoute
   '/dashboard/settings': typeof AppDashboardSettingsRoute
@@ -218,7 +218,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/_app/dashboard': typeof AppDashboardRouteWithChildren
   '/_app/profile': typeof AppProfileRoute
-  '/api/_health': typeof ApiHealthRoute
+  '/api/health': typeof ApiHealthRoute
   '/_app/dashboard/billing': typeof AppDashboardBillingRoute
   '/_app/dashboard/keys': typeof AppDashboardKeysRoute
   '/_app/dashboard/settings': typeof AppDashboardSettingsRoute
@@ -245,7 +245,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/dashboard'
     | '/profile'
-    | '/api'
+    | '/api/health'
     | '/dashboard/billing'
     | '/dashboard/keys'
     | '/dashboard/settings'
@@ -269,7 +269,7 @@ export interface FileRouteTypes {
     | '/'
     | '/pricing'
     | '/profile'
-    | '/api'
+    | '/api/health'
     | '/dashboard/billing'
     | '/dashboard/keys'
     | '/dashboard/settings'
@@ -293,7 +293,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/_app/dashboard'
     | '/_app/profile'
-    | '/api/_health'
+    | '/api/health'
     | '/_app/dashboard/billing'
     | '/_app/dashboard/keys'
     | '/_app/dashboard/settings'
@@ -345,10 +345,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/_health': {
-      id: '/api/_health'
-      path: '/api'
-      fullPath: '/api'
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -591,3 +591,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
