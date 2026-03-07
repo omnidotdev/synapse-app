@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ClipboardCopyIcon,
+  InfoIcon,
   KeyIcon,
   Loader2Icon,
   PlusIcon,
@@ -18,6 +19,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -245,22 +247,28 @@ function KeysPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
-                <TableCell className="px-4 py-3 font-semibold">Name</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">Key</TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
-                  Created
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold">
-                  Last used
-                </TableCell>
-                <TableCell className="px-4 py-3 font-semibold" />
+                <TableHead className="px-4 py-3">Name</TableHead>
+                <TableHead className="px-4 py-3">Key</TableHead>
+                <TableHead className="px-4 py-3">Created</TableHead>
+                <TableHead className="px-4 py-3">Last used</TableHead>
+                <TableHead className="w-12 px-4 py-3" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {keys.map((key) => (
                 <TableRow key={key.id}>
                   <TableCell className="px-4 py-3 font-medium">
-                    {key.name}
+                    <span className="flex items-center gap-2">
+                      {key.name}
+                      {key.mode === "managed" && (
+                        <span
+                          title="Auto-provisioned by Beacon. Revoking this key will temporarily disable Beacon access until your next request re-provisions it"
+                          className="cursor-help"
+                        >
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </span>
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
