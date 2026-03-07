@@ -35,11 +35,7 @@ const allSteps = [
  * Dismissable onboarding checklist shown on the dashboard overview for new users.
  * Auto-hides when all steps are complete. Dismiss state persists in localStorage.
  */
-function OnboardingChecklist({
-  hasApiKeys,
-  hasProviderKeys,
-  hasUsage,
-}: Props) {
+function OnboardingChecklist({ hasApiKeys, hasProviderKeys, hasUsage }: Props) {
   const [dismissed, setDismissed] = useState(true);
 
   // Hydrate dismiss state from localStorage after mount
@@ -49,9 +45,7 @@ function OnboardingChecklist({
 
   const steps = useMemo(
     () =>
-      allSteps.filter(
-        (step) => !step.byokOnly || (hasProviderKeys ?? false),
-      ),
+      allSteps.filter((step) => !step.byokOnly || (hasProviderKeys ?? false)),
     [hasProviderKeys],
   );
 
