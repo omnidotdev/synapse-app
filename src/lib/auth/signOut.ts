@@ -6,8 +6,10 @@ import { signOutLocal } from "@/server/functions/auth";
  * Clears local session then redirects to IDP end_session_endpoint
  * to also clear the identity provider session
  */
-const signOut = async () => {
-  const { idpLogoutUrl } = await signOutLocal();
+const signOut = async (
+  clearSession: () => Promise<{ idpLogoutUrl: string | null }> = signOutLocal,
+) => {
+  const { idpLogoutUrl } = await clearSession();
 
   // Redirect to IDP for federated logout, or fallback to home
   window.location.href = idpLogoutUrl ?? "/";
