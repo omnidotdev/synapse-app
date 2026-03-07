@@ -14,17 +14,15 @@ mock.module("@/server/functions/auth", () => ({
 const { default: signOut } = await import("./signOut");
 
 describe("signOut", () => {
-  const originalHref = window.location.href;
-
   beforeEach(() => {
     mockSignOutLocal.mockClear();
     mockSignOutLocal.mockResolvedValue({ idpLogoutUrl: IDP_LOGOUT_URL });
-  });
-
-  afterEach(() => {
+    // Replace window.location with a plain object so href assignment
+    // doesn't trigger Happy DOM navigation (which resets to about:blank)
     Object.defineProperty(window, "location", {
-      value: { href: originalHref },
+      value: { href: "" },
       writable: true,
+      configurable: true,
     });
   });
 
