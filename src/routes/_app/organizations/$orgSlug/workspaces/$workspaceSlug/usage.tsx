@@ -6,7 +6,12 @@ import { useState } from "react";
 import StatCard from "@/components/dashboard/StatCard";
 import UsageChart from "@/components/dashboard/UsageChart";
 import UsageProgress from "@/components/dashboard/UsageProgress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -172,7 +177,7 @@ function WorkspaceUsagePage() {
         />
       </div>
 
-      <Card>
+      <CardRoot>
         <CardHeader>
           <CardTitle>Token Usage</CardTitle>
         </CardHeader>
@@ -182,10 +187,10 @@ function WorkspaceUsagePage() {
             outputTokens={usage.outputTokens}
           />
         </CardContent>
-      </Card>
+      </CardRoot>
 
       {breakdown?.byDay && breakdown.byDay.length > 0 && (
-        <Card>
+        <CardRoot>
           <CardHeader>
             <CardTitle>Daily Usage (last {rangeDays} days)</CardTitle>
           </CardHeader>
@@ -202,11 +207,11 @@ function WorkspaceUsagePage() {
               />
             ))}
           </CardContent>
-        </Card>
+        </CardRoot>
       )}
 
       {breakdown?.byModel && breakdown.byModel.length > 0 && (
-        <Card>
+        <CardRoot>
           <CardHeader>
             <CardTitle>Per-Model Breakdown</CardTitle>
           </CardHeader>
@@ -250,10 +255,10 @@ function WorkspaceUsagePage() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </CardRoot>
       )}
 
-      <Card>
+      <CardRoot>
         <CardHeader>
           <CardTitle>Usage Limits</CardTitle>
         </CardHeader>
@@ -274,7 +279,7 @@ function WorkspaceUsagePage() {
             limit={usage.requestsLimit}
           />
         </CardContent>
-      </Card>
+      </CardRoot>
     </div>
   );
 }

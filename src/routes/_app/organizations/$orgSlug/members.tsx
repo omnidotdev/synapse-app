@@ -7,7 +7,12 @@ import { toast } from "sonner";
 import MembersListSkeleton from "@/components/dashboard/MembersListSkeleton";
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
 import {
   getOrgMembers,
@@ -49,7 +54,7 @@ function InviteForm({
   });
 
   return (
-    <Card>
+    <CardRoot>
       <CardHeader>
         <CardTitle className="text-base">Invite member</CardTitle>
       </CardHeader>
@@ -95,7 +100,7 @@ function InviteForm({
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 

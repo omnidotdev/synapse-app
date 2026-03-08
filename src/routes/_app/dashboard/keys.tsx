@@ -14,7 +14,12 @@ import { toast } from "sonner";
 
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -76,7 +81,7 @@ function CreateKeyForm({ onClose }: { onClose: () => void }) {
 
   if (createdKey) {
     return (
-      <Card className="border-primary/30">
+      <CardRoot className="border-primary/30">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <ShieldAlertIcon className="h-5 w-5 text-amber-500" />
@@ -100,12 +105,12 @@ function CreateKeyForm({ onClose }: { onClose: () => void }) {
             Done
           </Button>
         </CardContent>
-      </Card>
+      </CardRoot>
     );
   }
 
   return (
-    <Card>
+    <CardRoot>
       <CardHeader>
         <CardTitle className="text-base">Create API key</CardTitle>
       </CardHeader>
@@ -137,7 +142,7 @@ function CreateKeyForm({ onClose }: { onClose: () => void }) {
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 
@@ -164,7 +169,7 @@ function RevokeConfirm({
   });
 
   return (
-    <Card className="border-destructive/30">
+    <CardRoot className="border-destructive/30">
       <CardContent className="flex flex-col gap-4 pt-6">
         <p className="font-medium">Revoke &ldquo;{apiKey.name}&rdquo;?</p>
         <p className="text-muted-foreground text-sm">
@@ -185,7 +190,7 @@ function RevokeConfirm({
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 
@@ -225,13 +230,13 @@ function KeysPage() {
       )}
 
       {isLoading ? (
-        <Card>
+        <CardRoot>
           <CardContent className="flex items-center justify-center py-12">
             <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
           </CardContent>
-        </Card>
+        </CardRoot>
       ) : keys.length === 0 ? (
-        <Card>
+        <CardRoot>
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <KeyIcon className="h-12 w-12 text-muted-foreground" />
             <div className="text-center">
@@ -241,9 +246,9 @@ function KeysPage() {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </CardRoot>
       ) : (
-        <Card contentProps={{ className: "p-0" }}>
+        <CardRoot>
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
@@ -295,7 +300,7 @@ function KeysPage() {
               ))}
             </TableBody>
           </Table>
-        </Card>
+        </CardRoot>
       )}
     </div>
   );

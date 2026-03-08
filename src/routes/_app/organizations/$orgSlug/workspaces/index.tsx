@@ -6,7 +6,12 @@ import { toast } from "sonner";
 
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
 import { addWorkspace, listWorkspaces } from "@/server/functions/workspaces";
 
@@ -63,7 +68,7 @@ function CreateWorkspaceForm({
   });
 
   return (
-    <Card>
+    <CardRoot>
       <CardHeader>
         <CardTitle className="text-base">Create workspace</CardTitle>
       </CardHeader>
@@ -128,7 +133,7 @@ function CreateWorkspaceForm({
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 

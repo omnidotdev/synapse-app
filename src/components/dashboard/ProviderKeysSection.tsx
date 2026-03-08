@@ -11,7 +11,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -97,7 +102,7 @@ function AddKeyForm({ onClose }: { onClose: () => void }) {
   const selectedProvider = SUPPORTED_PROVIDERS.find((p) => p.id === provider);
 
   return (
-    <Card>
+    <CardRoot>
       <CardHeader>
         <CardTitle className="text-base">Add provider key</CardTitle>
       </CardHeader>
@@ -178,7 +183,7 @@ function AddKeyForm({ onClose }: { onClose: () => void }) {
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 
@@ -206,7 +211,7 @@ function RevokeConfirm({
   });
 
   return (
-    <Card className="border-destructive/30">
+    <CardRoot className="border-destructive/30">
       <CardContent className="flex flex-col gap-4 pt-6">
         <p className="font-medium">
           Revoke {providerName(providerKey.provider)} key?
@@ -229,7 +234,7 @@ function RevokeConfirm({
           </Button>
         </div>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 }
 
@@ -289,13 +294,13 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
       )}
 
       {isLoading ? (
-        <Card>
+        <CardRoot>
           <CardContent className="flex items-center justify-center py-12">
             <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
           </CardContent>
-        </Card>
+        </CardRoot>
       ) : keys.length === 0 ? (
-        <Card>
+        <CardRoot>
           <CardContent className="flex flex-col items-center gap-4 py-12">
             <KeyRoundIcon className="h-12 w-12 text-muted-foreground" />
             <div className="text-center">
@@ -305,9 +310,9 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
               </p>
             </div>
           </CardContent>
-        </Card>
+        </CardRoot>
       ) : (
-        <Card>
+        <CardRoot>
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
@@ -351,7 +356,7 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
               ))}
             </TableBody>
           </Table>
-        </Card>
+        </CardRoot>
       )}
     </div>
   );

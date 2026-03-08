@@ -7,7 +7,12 @@ import StatCard from "@/components/dashboard/StatCard";
 import UsageChart from "@/components/dashboard/UsageChart";
 import UsageProgress from "@/components/dashboard/UsageProgress";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -165,7 +170,7 @@ function UsagePage() {
         />
       </div>
 
-      <Card>
+      <CardRoot>
         <CardHeader>
           <CardTitle>Token Usage</CardTitle>
         </CardHeader>
@@ -175,10 +180,10 @@ function UsagePage() {
             outputTokens={usage.outputTokens}
           />
         </CardContent>
-      </Card>
+      </CardRoot>
 
       {breakdown?.byDay && breakdown.byDay.length > 0 && (
-        <Card>
+        <CardRoot>
           <CardHeader>
             <CardTitle>Daily Usage (last {rangeDays} days)</CardTitle>
           </CardHeader>
@@ -195,11 +200,11 @@ function UsagePage() {
               />
             ))}
           </CardContent>
-        </Card>
+        </CardRoot>
       )}
 
       {breakdown?.byModel && breakdown.byModel.length > 0 && (
-        <Card>
+        <CardRoot>
           <CardHeader>
             <CardTitle>Per-Model Breakdown</CardTitle>
           </CardHeader>
@@ -243,10 +248,10 @@ function UsagePage() {
               </TableBody>
             </Table>
           </CardContent>
-        </Card>
+        </CardRoot>
       )}
 
-      <Card>
+      <CardRoot>
         <CardHeader>
           <CardTitle>Usage Limits</CardTitle>
         </CardHeader>
@@ -267,7 +272,7 @@ function UsagePage() {
             limit={usage.requestsLimit}
           />
         </CardContent>
-      </Card>
+      </CardRoot>
     </div>
   );
 }

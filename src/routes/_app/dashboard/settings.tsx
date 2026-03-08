@@ -12,7 +12,12 @@ import { toast } from "sonner";
 import ProviderKeysSection from "@/components/dashboard/ProviderKeysSection";
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { fetchSession } from "@/server/functions/auth";
 import {
   getUserPreferences,
@@ -120,7 +125,7 @@ function SettingsPage() {
       </div>
 
       {/* Routing Mode */}
-      <Card>
+      <CardRoot>
         <CardHeader className="flex flex-row items-center gap-3">
           <RadioIcon className="h-5 w-5 text-muted-foreground" />
           <CardTitle className="text-base">Routing Mode</CardTitle>
@@ -168,10 +173,10 @@ function SettingsPage() {
             </div>
           )}
         </CardContent>
-      </Card>
+      </CardRoot>
 
       {/* Default Provider */}
-      <Card>
+      <CardRoot>
         <CardHeader className="flex flex-row items-center gap-3">
           <SlidersHorizontalIcon className="h-5 w-5 text-muted-foreground" />
           <CardTitle className="text-base">Provider Preferences</CardTitle>
@@ -199,10 +204,10 @@ function SettingsPage() {
             </p>
           </div>
         </CardContent>
-      </Card>
+      </CardRoot>
 
       {/* Notifications */}
-      <Card>
+      <CardRoot>
         <CardHeader className="flex flex-row items-center gap-3">
           <BellIcon className="h-5 w-5 text-muted-foreground" />
           <CardTitle className="text-base">Notifications</CardTitle>
@@ -238,7 +243,7 @@ function SettingsPage() {
             </div>
           </label>
         </CardContent>
-      </Card>
+      </CardRoot>
 
       <div>
         <Button variant="solid" disabled={isPending} onClick={() => save()}>

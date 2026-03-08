@@ -3,7 +3,12 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
@@ -65,25 +70,23 @@ function BillingPage() {
             entityId={entityId}
           />
         ) : (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-muted-foreground">
-                {tier ? `${tier} plan` : "No active subscription"}
-              </p>
-              <Link to="/pricing">
-                <Button variant="outline" className="mt-4">
-                  View Plans
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <CardRoot className="p-6">
+            <p className="text-muted-foreground">
+              {tier ? `${tier} plan` : "No active subscription"}
+            </p>
+            <Link to="/pricing">
+              <Button variant="outline" className="mt-4">
+                View Plans
+              </Button>
+            </Link>
+          </CardRoot>
         )}
       </div>
 
       {entitlements?.entitlements && entitlements.entitlements.length > 0 && (
         <div className="flex flex-col gap-4">
           <h2 className="font-semibold text-lg">Entitlements</h2>
-          <Card>
+          <CardRoot>
             <CardHeader>
               <CardTitle className="text-base">Active Features</CardTitle>
             </CardHeader>
@@ -102,7 +105,7 @@ function BillingPage() {
                 ))}
               </ul>
             </CardContent>
-          </Card>
+          </CardRoot>
         </div>
       )}
     </div>

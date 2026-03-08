@@ -1,5 +1,10 @@
 import { CancelSubscription, ManageSubscription } from "@/components/profile";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 
 import type { Subscription } from "@omnidotdev/providers";
 
@@ -26,7 +31,7 @@ const SubscriptionCard = ({
   const isPendingCancellation = subscription.cancelAt !== null;
 
   return (
-    <Card>
+    <CardRoot>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">
           {subscription.product?.name ?? "Subscription"}
@@ -56,7 +61,7 @@ const SubscriptionCard = ({
           )}
         </dl>
       </CardContent>
-    </Card>
+    </CardRoot>
   );
 };
 
