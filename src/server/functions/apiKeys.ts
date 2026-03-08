@@ -4,11 +4,14 @@ import { z } from "zod";
 import { authMiddleware } from "@/server/middleware";
 import { graphql } from "./graphql";
 
+/** How an API key was provisioned */
+type ApiKeyMode = "manual" | "managed";
+
 interface ApiKey {
   id: string;
   name: string;
   keyHint: string;
-  mode: string;
+  mode: ApiKeyMode;
   createdAt: string;
   lastUsedAt: string | null;
   expiresAt: string | null;
@@ -104,4 +107,4 @@ export const revokeApiKey = createServerFn()
     return result.revokeApiKey;
   });
 
-export type { ApiKey, CreateApiKeyResult };
+export type { ApiKey, ApiKeyMode, CreateApiKeyResult };

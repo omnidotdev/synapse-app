@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ClipboardCopyIcon,
+  InfoIcon,
   KeyIcon,
   Loader2Icon,
   PlusIcon,
@@ -294,7 +295,17 @@ function WorkspaceKeysPage() {
               {keys.map((key) => (
                 <TableRow key={key.id}>
                   <TableCell className="px-4 py-3 font-medium">
-                    {key.name}
+                    <span className="flex items-center gap-2">
+                      {key.name}
+                      {key.mode === "managed" && (
+                        <span
+                          title="Auto-provisioned by Beacon. Revoking this key will temporarily disable Beacon access until your next request re-provisions it"
+                          className="cursor-help"
+                        >
+                          <InfoIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </span>
+                      )}
+                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
