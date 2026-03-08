@@ -46,13 +46,13 @@ type Props = {
 };
 
 // Synapse tier hierarchy for upgrade logic
-const TIER_ORDER = ["free", "pro", "team", "business", "enterprise"] as const;
+const TIER_ORDER = ["free", "pro", "enterprise"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
 // Stripe metadata uses "basic" for the first paid tier; normalize to "pro"
 const normalizeTier = (raw: string | undefined): Tier => {
   if (raw === "basic") return "pro";
-  if (raw === "pro" || raw === "team" || raw === "business") return raw;
+  if (raw === "pro") return raw;
   if (raw === "enterprise") return "enterprise";
   return "free";
 };
@@ -87,8 +87,6 @@ const PriceCard = ({
     if (!subscription) return "free";
     const productName = subscription.product?.name?.toLowerCase() ?? "";
     if (productName.includes("enterprise")) return "enterprise";
-    if (productName.includes("business")) return "business";
-    if (productName.includes("team")) return "team";
     if (productName.includes("pro")) return "pro";
     return "free";
   };

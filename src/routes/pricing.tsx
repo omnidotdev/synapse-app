@@ -29,7 +29,7 @@ import type { Price } from "@/components/pricing";
 const searchSchema = z.object({
   tier: z
     .string()
-    .pipe(z.enum(["free", "pro", "team", "business", "enterprise"]))
+    .pipe(z.enum(["free", "pro", "enterprise"]))
     .optional(),
   signin: z.boolean().optional(),
 });
@@ -45,8 +45,7 @@ const FREE_PRICE: Price = {
     name: "Free",
     description: "Start for free.",
     marketing_features: [
-      { name: "20 requests per minute" },
-      { name: "16K tokens per day" },
+      { name: "1,000 requests per month" },
       { name: "500K tokens per month" },
       { name: "All models" },
     ],
