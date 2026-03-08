@@ -2,6 +2,7 @@ import { TabsRootProvider, useTabs } from "@ark-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
+import { useEffect } from "react";
 import { z } from "zod";
 
 import { RouteErrorFallback } from "@/components/layout";
@@ -28,8 +29,9 @@ import type { Price } from "@/components/pricing";
 const searchSchema = z.object({
   tier: z
     .string()
-    .pipe(z.enum(["free", "pro", "team"]))
+    .pipe(z.enum(["free", "pro", "team", "business", "enterprise"]))
     .optional(),
+  signin: z.boolean().optional(),
 });
 
 const FREE_PRICE: Price = {
@@ -128,8 +130,20 @@ const PricingPage = () => {
     orgSubscriptions = {},
     organizations = [],
   } = Route.useLoaderData();
+  const { signin } = Route.useSearch();
 
   const tabs = useTabs({ defaultValue: "month" });
+
+  // Auto-trigger OAuth sign-in when redirected from a protected route
+  useEffect(() => {
+    if (!signin) return;
+
+    authClient.signIn.oauth2({
+      providerId: "omni",
+      callbackURL: "/dashboard",
+      disableRedirect: false,
+    });
+  }, [signin]);
 
   // Filter by billing interval and deduplicate by product name (keep first match)
   const seen = new Set<string>();

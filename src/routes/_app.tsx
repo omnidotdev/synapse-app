@@ -14,7 +14,7 @@ const eventsProvider = {
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ context: { auth } }) => {
-    if (!auth) throw redirect({ to: "/" });
+    if (!auth) throw redirect({ to: "/pricing", search: { signin: true } });
   },
   component: AuthLayout,
 });

@@ -46,13 +46,14 @@ type Props = {
 };
 
 // Synapse tier hierarchy for upgrade logic
-const TIER_ORDER = ["free", "pro", "team"] as const;
+const TIER_ORDER = ["free", "pro", "team", "business", "enterprise"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
 // Stripe metadata uses "basic" for the first paid tier; normalize to "pro"
 const normalizeTier = (raw: string | undefined): Tier => {
   if (raw === "basic") return "pro";
-  if (raw === "pro" || raw === "team") return raw;
+  if (raw === "pro" || raw === "team" || raw === "business") return raw;
+  if (raw === "enterprise") return "enterprise";
   return "free";
 };
 
@@ -70,6 +71,7 @@ const PriceCard = ({
   const tier = normalizeTier(price.metadata?.tier);
   const isProTier = tier === "pro";
   const isFreeTier = tier === "free";
+  const isEnterpriseTier = tier === "enterprise";
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
@@ -84,6 +86,8 @@ const PriceCard = ({
     const subscription = orgSubscriptions[orgId];
     if (!subscription) return "free";
     const productName = subscription.product?.name?.toLowerCase() ?? "";
+    if (productName.includes("enterprise")) return "enterprise";
+    if (productName.includes("business")) return "business";
     if (productName.includes("team")) return "team";
     if (productName.includes("pro")) return "pro";
     return "free";
@@ -108,11 +112,17 @@ const PriceCard = ({
       createWorkspace?: { name: string; slug: string };
     }) => {
       setIsCheckoutLoading(true);
+
+      // Use `window.location.origin` as a reliable fallback since `BASE_URL`
+      // may be empty when Vite statically replaces `import.meta.env` at build time
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : BASE_URL;
+
       return createCheckoutWithWorkspace({
         data: {
           priceId: price.id,
-          successUrl: `${BASE_URL}/pricing`,
-          cancelUrl: `${BASE_URL}/pricing`,
+          successUrl: `${origin}/pricing`,
+          cancelUrl: `${origin}/pricing`,
           ...params,
         },
       });
@@ -149,6 +159,11 @@ const PriceCard = ({
       return;
     }
 
+    if (isEnterpriseTier) {
+      window.location.href = "mailto:sales@omni.dev";
+      return;
+    }
+
     // Paid tier without orgs - open create workspace modal
     if (!allOrgs.length) {
       setIsCreateModalOpen(true);
@@ -156,12 +171,14 @@ const PriceCard = ({
     }
   };
 
-  const showDropdown = !!auth && !isFreeTier && !!allOrgs.length;
+  const showDropdown =
+    !!auth && !isFreeTier && !isEnterpriseTier && !!allOrgs.length;
 
   const buttonVariant = isProTier ? "gradient" : "solid";
 
   const getButtonContent = () => {
     if (isFreeTier) return "Get Started";
+    if (isEnterpriseTier) return "Contact Sales";
     return `Continue with ${capitalizeFirstLetter(tier)}`;
   };
 
@@ -305,6 +322,15 @@ const PriceCard = ({
               onClick={handleClick}
             >
               {isCheckoutLoading ? "Loading..." : getButtonContent()}
+            </Button>
+          ) : isEnterpriseTier ? (
+            <Button
+              variant={buttonVariant}
+              onClick={() => {
+                window.location.href = "mailto:sales@omni.dev";
+              }}
+            >
+              Contact Sales
             </Button>
           ) : (
             <Button
