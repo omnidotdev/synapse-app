@@ -74,7 +74,7 @@ export const createApiKey = createServerFn()
           keyHint
         }
       }`,
-      { input: { name: data.name, mode: "managed" } },
+      { input: { name: data.name, mode: "manual" } },
     );
 
     return result.generateApiKey;

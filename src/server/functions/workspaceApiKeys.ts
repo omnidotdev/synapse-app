@@ -69,7 +69,7 @@ export const createWorkspaceApiKey = createServerFn()
       {
         input: {
           name: data.name,
-          mode: "managed",
+          mode: "manual",
           workspaceId: data.workspaceId,
         },
       },
