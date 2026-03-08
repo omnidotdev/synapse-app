@@ -403,7 +403,6 @@
     background: var(--surface-elevated);
     box-shadow: inset 2px 0 0 var(--primary);
   }
-
 }
 
 @keyframes accordion-down {
