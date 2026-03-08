@@ -404,84 +404,6 @@
     box-shadow: inset 2px 0 0 var(--primary);
   }
 
-  /* Soma (hero) pill node */
-  .soma-pill {
-    background: radial-gradient(
-      ellipse at center,
-      oklch(0.66 0.24 264 / 0.14),
-      oklch(0.66 0.24 264 / 0.04)
-    );
-    border: 1.5px solid oklch(0.66 0.24 264 / 0.6);
-    position: relative;
-  }
-
-  /* Pulse ring */
-  .soma-pill::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    border: 1.5px solid oklch(0.66 0.24 264 / 0.1);
-    animation: soma-pulse 3s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  /* Inner dashed ring */
-  .soma-pill::after {
-    content: "";
-    position: absolute;
-    inset: 12px;
-    border-radius: inherit;
-    border: 1px dashed oklch(0.66 0.24 264 / 0.15);
-    pointer-events: none;
-  }
-
-  .soma-ring {
-    filter: drop-shadow(0 0 20px oklch(0.66 0.24 264 / 0.6));
-  }
-
-  /* Satellite node glow */
-  .satellite-glow {
-    filter: drop-shadow(0 0 10px oklch(0.68 0.18 175 / 0.55));
-  }
-
-  /* Satellite halo pulse */
-  .satellite-halo {
-    animation: halo-pulse 2s ease-in-out infinite;
-  }
-
-  /* Node panel — glass card styled as a network node */
-  .node-panel {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    position: relative;
-    isolation: isolate;
-  }
-
-  .node-panel::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    background: linear-gradient(
-      135deg,
-      oklch(0.66 0.24 264 / 0.25),
-      oklch(0.68 0.18 175 / 0.18)
-    );
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  /* Axon spine — vertical connecting line between below-fold sections */
-  .axon-spine {
-    background: linear-gradient(
-      to bottom,
-      oklch(0.66 0.24 264 / 0.45),
-      oklch(0.68 0.18 175 / 0.3),
-      oklch(0.66 0.24 264 / 0.15)
-    );
-  }
 }
 
 @keyframes accordion-down {
@@ -515,64 +437,7 @@
   }
 }
 
-@keyframes soma-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.12);
-    opacity: 0;
-  }
-}
-
-@keyframes pulse-glow {
-  0%,
-  100% {
-    opacity: 0.4;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
-  }
-}
-
-@keyframes halo-pulse {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0;
-  }
-}
-
-@keyframes neural-float {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  33% {
-    transform: translate(3px, -4px);
-  }
-  66% {
-    transform: translate(-2px, 3px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .satellite-halo,
-  .soma-ring,
-  .soma-pill::before,
-  .satellite-glow {
-    animation: none;
-    filter: none;
-  }
-
   .text-shimmer {
     animation: none;
     background: var(--primary);

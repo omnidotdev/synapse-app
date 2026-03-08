@@ -1,13 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { ActivityIcon, ShieldCheckIcon, ZapIcon } from "lucide-react";
-import { useRef } from "react";
+import {
+  ActivityIcon,
+  LayersIcon,
+  ShieldCheckIcon,
+  ZapIcon,
+} from "lucide-react";
 
 import { InternalLink } from "@/components/core";
-import {
-  HeroGraph,
-  MetricsCharts,
-  NeuralBackground,
-} from "@/components/landing";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -17,20 +16,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-/** Small label chip shown on each node section. */
-function NodeChip({ id, label }: { id: string; label: string }) {
-  return (
-    <div className="mb-4 inline-flex items-center gap-2">
-      <span className="font-mono text-primary/60 text-xs">{id}</span>
-      <span className="h-px w-8 bg-primary/20" />
-      <span className="font-mono text-muted-foreground text-xs uppercase tracking-widest">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-/** Animated SVG showing request routing through the Synapse hub. */
+/** Static SVG showing request routing through the Synapse hub. */
 function RoutingDiagram() {
   const providers = [
     { cx: 240, cy: 40, label: "LLM" },
@@ -83,28 +69,6 @@ function RoutingDiagram() {
         stroke="var(--primary)"
         strokeWidth={1.5}
       />
-      <circle
-        cx="142"
-        cy="103"
-        r="24"
-        fill="none"
-        stroke="var(--primary)"
-        strokeOpacity={0.15}
-        strokeWidth={1.5}
-      >
-        <animate
-          attributeName="r"
-          values="24;34;24"
-          dur="2.5s"
-          repeatCount="indefinite"
-        />
-        <animate
-          attributeName="opacity"
-          values="0.6;0;0.6"
-          dur="2.5s"
-          repeatCount="indefinite"
-        />
-      </circle>
       <text
         x={142}
         y={100}
@@ -158,16 +122,8 @@ function RoutingDiagram() {
         strokeWidth={1.5}
         strokeDasharray="6 4"
         strokeLinecap="round"
-      >
-        <animate
-          attributeName="stroke-dashoffset"
-          from="0"
-          to="-10"
-          dur="1s"
-          repeatCount="indefinite"
-        />
-      </line>
-      {outputPaths.map((d, i) => (
+      />
+      {outputPaths.map((d) => (
         <path
           key={d}
           d={d}
@@ -176,60 +132,60 @@ function RoutingDiagram() {
           strokeWidth={1.5}
           strokeDasharray="6 4"
           strokeLinecap="round"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            from="0"
-            to="-10"
-            dur="1.2s"
-            begin={`${i * 0.15}s`}
-            repeatCount="indefinite"
-          />
-        </path>
+        />
       ))}
     </svg>
   );
 }
 
-/**
- * Home page — neural network node graph layout.
- */
+const features = [
+  {
+    icon: ZapIcon,
+    title: "Unified Routing",
+    description:
+      "Route to any model with automatic fallback chains, cost optimization, and latency-aware selection",
+    color: "primary" as const,
+  },
+  {
+    icon: ActivityIcon,
+    title: "Live Analytics",
+    description:
+      "Track tokens, latency, and spend across every provider in real time with per-key breakdowns",
+    color: "secondary" as const,
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: "Scoped Keys",
+    description:
+      "Fine-grained API keys with auto-rotation, audit trails, rate limits, and per-model permissions",
+    color: "primary" as const,
+  },
+  {
+    icon: LayersIcon,
+    title: "Multi-Provider",
+    description:
+      "Connect OpenAI, Anthropic, and more through a single endpoint with unified request formatting",
+    color: "secondary" as const,
+  },
+];
+
+/** Landing page */
 function HomePage() {
-  const heroRef = useRef<HTMLElement>(null);
-
   return (
-    <div className="relative z-[1]">
-      <NeuralBackground />
-
-      {/* Hero: full-viewport neural graph */}
-      <section
-        ref={heroRef}
-        className="relative flex flex-col items-center overflow-hidden"
-        style={{ height: "calc(100vh - 66px)" }}
-      >
-        <HeroGraph heroRef={heroRef} />
-
-        {/* Hero text — pill-shaped soma node */}
-        <div
-          data-node="soma"
-          className="soma-pill soma-ring relative z-10 flex flex-col items-center rounded-full px-10 py-8 text-center sm:px-16 sm:py-10"
-          style={{ marginTop: "calc((100vh - 66px) / 2 - 5rem)" }}
-        >
-          <NodeChip id="node_00" label="soma" />
-          <h1 className="pb-1 font-bold text-4xl text-shimmer sm:text-5xl lg:text-7xl">
-            Synapse
-          </h1>
-          <p className="mt-3 font-medium text-base text-foreground lg:text-lg">
-            The cortex for your AI stack
-          </p>
-          <p className="mt-3 max-w-xs text-muted-foreground text-sm leading-relaxed sm:max-w-sm">
-            Route to any model, track every token, and manage your keys through
-            one unified control plane
-          </p>
-        </div>
-
-        {/* CTA buttons — below soma ring */}
-        <div className="relative z-10 mt-6 flex flex-wrap justify-center gap-3">
+    <div className="flex flex-col">
+      {/* hero */}
+      <section className="flex flex-col items-center px-4 pt-20 pb-24 text-center sm:pt-28 sm:pb-32 lg:pt-36 lg:pb-40">
+        <h1 className="pb-1 font-bold text-4xl text-shimmer sm:text-5xl lg:text-7xl">
+          Synapse
+        </h1>
+        <p className="mt-3 font-medium text-base text-foreground lg:text-lg">
+          The cortex for your AI stack
+        </p>
+        <p className="mt-4 max-w-md text-muted-foreground text-sm leading-relaxed sm:max-w-lg sm:text-base">
+          Route to any model, track every token, and manage your keys through
+          one unified control plane
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <InternalLink to="/dashboard" variant="unstyled">
             <Button variant="gradient" size="lg">
               Get Started
@@ -241,74 +197,47 @@ function HomePage() {
             </Button>
           </InternalLink>
         </div>
+      </section>
 
-        {/* Scroll hint */}
-        <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 opacity-40">
-          <span className="font-mono text-muted-foreground text-xs">
-            explore network
-          </span>
-          <svg
-            width="16"
-            height="24"
-            viewBox="0 0 16 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <g>
-              <path
-                d="M8 4 L8 20 M4 16 L8 20 L12 16"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.4;1;0.4"
-                dur="2s"
-                repeatCount="indefinite"
-              />
-            </g>
-          </svg>
+      {/* features */}
+      <section className="mx-auto w-full max-w-5xl px-4 pb-24">
+        <div className="grid gap-6 sm:grid-cols-2">
+          {features.map(({ icon: Icon, title, description, color }) => (
+            <div
+              key={title}
+              className="card-glow-hover rounded-xl border border-border bg-card p-6 transition-shadow"
+            >
+              <div
+                className={`mb-4 flex size-10 items-center justify-center rounded-lg bg-${color}/10 text-${color}`}
+              >
+                <Icon className="size-5" />
+              </div>
+              <h3 className="font-semibold text-foreground">{title}</h3>
+              <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+                {description}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Below-fold content nodes */}
-      <div className="relative mx-auto max-w-5xl px-4 py-20">
-        {/* Axon spine */}
-        <div
-          aria-hidden="true"
-          className="axon-spine pointer-events-none absolute top-0 bottom-0 left-1/2 w-px"
-        />
-
-        {/* Node 01: Metrics charts */}
-        <div className="mb-24 flex justify-end">
-          <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
-            <NodeChip id="node_01" label="metrics" />
-            <MetricsCharts />
-          </div>
-        </div>
-
-        {/* Node 02: Routing diagram */}
-        <div className="mb-24 flex justify-start">
-          <div className="node-panel w-full max-w-md rounded-2xl p-8 lg:max-w-lg">
-            <NodeChip id="node_02" label="routing engine" />
-            <h3 className="mb-4 font-semibold text-lg">Intelligent Routing</h3>
-            <p className="mb-6 text-muted-foreground text-sm">
-              Auto-select the best model based on cost, latency, or capability —
-              with built-in fallback chains that never let you down.
+      {/* routing diagram + code snippet */}
+      <section className="mx-auto w-full max-w-5xl px-4 pb-24">
+        <div className="grid items-start gap-8 lg:grid-cols-2">
+          {/* routing diagram */}
+          <div className="flex flex-col items-center rounded-xl border border-border bg-card p-8">
+            <h3 className="mb-2 font-semibold text-foreground text-lg">
+              Intelligent Routing
+            </h3>
+            <p className="mb-6 text-center text-muted-foreground text-sm">
+              Auto-select the best model based on cost, latency, or capability
+              -- with built-in fallback chains
             </p>
             <RoutingDiagram />
           </div>
-        </div>
 
-        {/* Node 03: Code snippet */}
-        <div className="mb-24 flex justify-end">
-          <div className="node-panel w-full max-w-md overflow-hidden rounded-2xl lg:max-w-lg">
-            <div className="p-8 pb-0">
-              <NodeChip id="node_03" label="api terminal" />
-            </div>
-            {/* Terminal chrome */}
+          {/* code snippet */}
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
             <div className="flex items-center gap-2 border-border border-b px-6 py-2.5">
               <div className="size-2.5 rounded-full bg-primary/20" />
               <div className="size-2.5 rounded-full bg-secondary/20" />
@@ -353,69 +282,30 @@ function HomePage() {
             </pre>
           </div>
         </div>
+      </section>
 
-        {/* Nodes 04–06: Feature leaf nodes */}
-        <div className="grid gap-6 sm:grid-cols-3">
-          <div className="node-panel rounded-2xl p-6">
-            <NodeChip id="node_04" label="routing" />
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <ZapIcon className="size-5" />
-            </div>
-            <h3 className="font-semibold">Auto Routing</h3>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Auto-select the best model based on cost, latency, or capability.
-              Built-in fallback chains
-            </p>
-          </div>
-
-          <div className="node-panel rounded-2xl p-6">
-            <NodeChip id="node_05" label="analytics" />
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
-              <ActivityIcon className="size-5" />
-            </div>
-            <h3 className="font-semibold">Live Analytics</h3>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Track tokens, latency, and spend across every provider in real
-              time
-            </p>
-          </div>
-
-          <div className="node-panel rounded-2xl p-6">
-            <NodeChip id="node_06" label="keys" />
-            <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <ShieldCheckIcon className="size-5" />
-            </div>
-            <h3 className="font-semibold">Scoped Keys</h3>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Fine-grained API keys with auto-rotation, audit trails, and rate
-              limits
-            </p>
-          </div>
+      {/* bottom cta */}
+      <section className="flex flex-col items-center px-4 pb-24 text-center">
+        <h2 className="font-bold text-2xl text-shimmer sm:text-3xl">
+          Ready to unify your AI stack?
+        </h2>
+        <p className="mt-3 max-w-md text-muted-foreground text-sm">
+          Start routing requests through Synapse in minutes. Free tier included,
+          no credit card required.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <InternalLink to="/dashboard" variant="unstyled">
+            <Button variant="gradient" size="lg">
+              Get Started
+            </Button>
+          </InternalLink>
+          <InternalLink to="/pricing" variant="unstyled">
+            <Button variant="outline" size="lg">
+              View Pricing
+            </Button>
+          </InternalLink>
         </div>
-
-        {/* Bottom CTA */}
-        <div className="mt-24 flex flex-col items-center text-center">
-          <h2 className="font-bold text-2xl text-shimmer sm:text-3xl">
-            Ready to unify your AI stack?
-          </h2>
-          <p className="mt-3 max-w-md text-muted-foreground text-sm">
-            Start routing requests through Synapse in minutes. Free tier
-            included, no credit card required.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <InternalLink to="/dashboard" variant="unstyled">
-              <Button variant="gradient" size="lg">
-                Get Started
-              </Button>
-            </InternalLink>
-            <InternalLink to="/pricing" variant="unstyled">
-              <Button variant="outline" size="lg">
-                View Pricing
-              </Button>
-            </InternalLink>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

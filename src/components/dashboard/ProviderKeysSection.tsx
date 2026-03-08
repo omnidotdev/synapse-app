@@ -313,9 +313,7 @@ function ProviderKeysSection({ subscription }: ProviderKeysSectionProps) {
               <TableRow className="bg-primary/10">
                 <TableHead className="px-4 py-3">Provider</TableHead>
                 <TableHead className="px-4 py-3">Key</TableHead>
-                <TableHead className="px-4 py-3">
-                  Model preference
-                </TableHead>
+                <TableHead className="px-4 py-3">Model preference</TableHead>
                 <TableHead className="px-4 py-3">Created</TableHead>
                 <TableHead className="px-4 py-3" />
               </TableRow>
