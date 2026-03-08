@@ -45,7 +45,9 @@ test.describe("Authentication", () => {
   test("pricing link is always visible in header", async ({ homePage }) => {
     await homePage.goto();
     await expect(
-      homePage.page.getByRole("link", { name: "Pricing" }),
+      homePage.page
+        .locator("header")
+        .getByRole("link", { name: "Pricing", exact: true }),
     ).toBeVisible();
   });
 

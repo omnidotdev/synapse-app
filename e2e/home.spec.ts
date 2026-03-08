@@ -10,7 +10,9 @@ test.describe("Home Page", () => {
     await homePage.goto();
     await expect(homePage.getHeader()).toBeVisible();
     await expect(
-      homePage.page.getByRole("heading", { name: "Synapse", level: 1 }),
+      homePage.page
+        .locator("header")
+        .getByRole("heading", { name: "Synapse", level: 1 }),
     ).toBeVisible();
   });
 
@@ -42,7 +44,7 @@ test.describe("Home Page", () => {
   test("renders feature leaf nodes", async ({ homePage }) => {
     await homePage.goto();
     await expect(
-      homePage.page.getByRole("heading", { name: "Auto Routing" }),
+      homePage.page.getByRole("heading", { name: "Unified Routing" }),
     ).toBeVisible();
     await expect(
       homePage.page.getByRole("heading", { name: "Live Analytics" }),

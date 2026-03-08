@@ -13,7 +13,10 @@ const createHomePageObject = ({ page, context }: PageObjectContext) =>
     baseUrl: "/",
     // Page-specific helpers
     getSignInButton: () => page.getByRole("button", { name: "Sign In" }),
-    getPricingLink: () => page.getByRole("link", { name: "Pricing" }),
+    getPricingLink: () =>
+      page
+        .locator("header")
+        .getByRole("link", { name: "Pricing", exact: true }),
     getThemeToggle: () => page.getByRole("button").first(),
     getHeader: () => page.locator("header"),
   });
