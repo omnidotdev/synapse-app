@@ -117,7 +117,7 @@ function DashboardOverview() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           to="/dashboard/usage"
-          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
+          className="glass-panel card-glow-hover flex items-start gap-3 rounded-xl p-4 transition-all"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <BarChart3Icon className="h-5 w-5" />
@@ -131,7 +131,7 @@ function DashboardOverview() {
         </Link>
         <Link
           to="/dashboard/billing"
-          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
+          className="glass-panel card-glow-hover flex items-start gap-3 rounded-xl p-4 transition-all"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
             <CreditCardIcon className="h-5 w-5" />
