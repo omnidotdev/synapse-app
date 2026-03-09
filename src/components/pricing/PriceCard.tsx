@@ -198,7 +198,7 @@ const PriceCard = ({
 
               {isProTier && (
                 <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-shimmer text-xs">
-                  Popular
+                  Recommended
                 </span>
               )}
             </div>
