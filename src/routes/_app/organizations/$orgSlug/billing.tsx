@@ -9,7 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
-import { getTierFromEntitlements } from "@/lib/util";
+import {
+  formatFeatureKey,
+  formatFeatureValue,
+  getTierFromEntitlements,
+} from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -112,9 +116,14 @@ function OrgBillingPage() {
                     key={entitlement.featureKey}
                     className="flex items-center justify-between"
                   >
-                    <span>{entitlement.featureKey}</span>
+                    <span>{formatFeatureKey(entitlement.featureKey)}</span>
                     <span className="text-muted-foreground">
-                      {entitlement.value}
+                      {entitlement.value != null
+                        ? formatFeatureValue(
+                            entitlement.featureKey,
+                            entitlement.value,
+                          )
+                        : "—"}
                     </span>
                   </li>
                 ))}
