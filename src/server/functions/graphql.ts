@@ -1,8 +1,14 @@
-import { API_BASE_URL, SYNAPSE_API_URL } from "@/lib/config/env.config";
+import { API_BASE_URL } from "@/lib/config/env.config";
 
-// Prefer SYNAPSE_API_URL (server-only, for internal networking), fall back to
-// the public API_BASE_URL which is always set via VITE_API_BASE_URL
-export const API_GRAPHQL_URL = `${SYNAPSE_API_URL || API_BASE_URL}/graphql`;
+/**
+ * Resolve the GraphQL URL at call time so runtime env vars are respected.
+ * Prefers SYNAPSE_API_URL (server-only, for Railway internal networking),
+ * falls back to the public API_BASE_URL.
+ */
+const getGraphQLUrl = () => {
+  const base = process.env.SYNAPSE_API_URL || API_BASE_URL;
+  return `${base}/graphql`;
+};
 
 /**
  * Execute a GraphQL query against synapse-api
@@ -12,7 +18,9 @@ export const graphql = async <T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> => {
-  const res = await fetch(API_GRAPHQL_URL, {
+  const url = getGraphQLUrl();
+
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

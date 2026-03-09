@@ -1,7 +1,15 @@
 import { MenuRootProvider, useMenu } from "@ark-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation, useRouteContext } from "@tanstack/react-router";
-import { MenuIcon, XIcon } from "lucide-react";
+import {
+  BarChart3Icon,
+  CreditCardIcon,
+  KeyIcon,
+  LayoutDashboardIcon,
+  MenuIcon,
+  SettingsIcon,
+  XIcon,
+} from "lucide-react";
 import { useState } from "react";
 
 import { InternalLink } from "@/components/core";
@@ -34,6 +42,8 @@ const Header = () => {
   const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isDashboardRoute = location.pathname.startsWith("/dashboard");
 
   const accountMenu = useMenu();
 
@@ -183,6 +193,56 @@ const Header = () => {
               >
                 Dashboard
               </InternalLink>
+            )}
+
+            {auth && isDashboardRoute && (
+              <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
+                <InternalLink
+                  to="/dashboard"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LayoutDashboardIcon className="size-4" />
+                  Overview
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/keys"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <KeyIcon className="size-4" />
+                  API Keys
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/usage"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart3Icon className="size-4" />
+                  Usage
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/billing"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <CreditCardIcon className="size-4" />
+                  Billing
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/settings"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <SettingsIcon className="size-4" />
+                  Settings
+                </InternalLink>
+              </div>
             )}
 
             {auth && (

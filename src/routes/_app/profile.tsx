@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { Loader2Icon } from "lucide-react";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { RouteErrorFallback } from "@/components/layout";
@@ -92,28 +93,52 @@ const ProfilePage = () => {
   );
 };
 
+/**
+ * Skeleton placeholder shown while profile loader resolves.
+ */
+function ProfilePending() {
+  return (
+    <div className="mx-auto flex h-full max-w-7xl flex-col px-4 py-8">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Loader2Icon className="size-4 animate-spin" />
+        <span className="text-sm">Loading profile…</span>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/_app/profile")({
   errorComponent: RouteErrorFallback,
+  pendingComponent: ProfilePending,
   loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+    try {
+      const { session } = await fetchSession();
+      if (!session?.user.identityProviderId) {
+        return {
+          subscription: null,
+          entitlements: null,
+          entityType: "user" as const,
+          entityId: "",
+        };
+      }
+
+      const entityType = "user" as const;
+      const entityId = session.user.identityProviderId;
+
+      const [subscription, entitlements] = await Promise.all([
+        getSubscription({ data: { entityType, entityId } }).catch(() => null),
+        getEntitlements({ data: { entityType, entityId } }).catch(() => null),
+      ]);
+
+      return { subscription, entitlements, entityType, entityId };
+    } catch {
       return {
         subscription: null,
         entitlements: null,
-        entityType: "user",
+        entityType: "user" as const,
         entityId: "",
       };
     }
-
-    const entityType = "user";
-    const entityId = session.user.identityProviderId;
-
-    const [subscription, entitlements] = await Promise.all([
-      getSubscription({ data: { entityType, entityId } }).catch(() => null),
-      getEntitlements({ data: { entityType, entityId } }).catch(() => null),
-    ]);
-
-    return { subscription, entitlements, entityType, entityId };
   },
   component: ProfilePage,
 });
