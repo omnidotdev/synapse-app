@@ -121,7 +121,7 @@ function OrgBillingPage() {
                       {entitlement.value != null
                         ? formatFeatureValue(
                             entitlement.featureKey,
-                            entitlement.value,
+                            entitlement.value!,
                           )
                         : "—"}
                     </span>

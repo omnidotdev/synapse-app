@@ -106,7 +106,7 @@ function BillingPage() {
                       {entitlement.value != null
                         ? formatFeatureValue(
                             entitlement.featureKey,
-                            entitlement.value,
+                            entitlement.value!,
                           )
                         : "—"}
                     </span>
