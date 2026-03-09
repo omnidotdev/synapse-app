@@ -51,17 +51,17 @@ test.describe("Authentication", () => {
     ).toBeVisible();
   });
 
-  test("unauthenticated visit to /dashboard redirects to home", async ({
+  test("unauthenticated visit to /dashboard redirects to pricing signin", async ({
     page,
   }) => {
     await page.goto("/dashboard");
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/pricing?signin=true");
   });
 
-  test("unauthenticated visit to /profile redirects to home", async ({
+  test("unauthenticated visit to /profile redirects to pricing signin", async ({
     page,
   }) => {
     await page.goto("/profile");
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/pricing?signin=true");
   });
 });
