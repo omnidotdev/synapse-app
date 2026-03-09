@@ -47,4 +47,9 @@ describe("formatFeatureValue", () => {
   it("passes through non-numeric values", () => {
     expect(formatFeatureValue("custom_field", "hello")).toBe("hello");
   });
+
+  it("handles null and undefined values", () => {
+    expect(formatFeatureValue("any_key", null)).toBe("—");
+    expect(formatFeatureValue("any_key", undefined)).toBe("—");
+  });
 });

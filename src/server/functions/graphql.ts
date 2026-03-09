@@ -1,6 +1,8 @@
-import { SYNAPSE_API_URL } from "@/lib/config/env.config";
+import { API_BASE_URL, SYNAPSE_API_URL } from "@/lib/config/env.config";
 
-export const API_GRAPHQL_URL = `${SYNAPSE_API_URL}/graphql`;
+// Prefer SYNAPSE_API_URL (server-only, for internal networking), fall back to
+// the public API_BASE_URL which is always set via VITE_API_BASE_URL
+export const API_GRAPHQL_URL = `${SYNAPSE_API_URL || API_BASE_URL}/graphql`;
 
 /**
  * Execute a GraphQL query against synapse-api

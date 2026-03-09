@@ -21,7 +21,9 @@ const formatFeatureKey = (key: string) =>
 /**
  * Format an entitlement value for display.
  */
-const formatFeatureValue = (key: string, value: string) => {
+const formatFeatureValue = (key: string, value: string | null | undefined) => {
+  if (value == null) return "—";
+
   if (value === "-1") return "Unlimited";
 
   if (BOOLEAN_KEYS.has(key)) {
