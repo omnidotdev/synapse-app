@@ -1,8 +1,6 @@
 import { API_BASE_URL, SYNAPSE_API_URL } from "@/lib/config/env.config";
 
-const INTERNAL_URL = SYNAPSE_API_URL
-  ? `${SYNAPSE_API_URL}/graphql`
-  : undefined;
+const INTERNAL_URL = SYNAPSE_API_URL ? `${SYNAPSE_API_URL}/graphql` : undefined;
 const PUBLIC_URL = `${API_BASE_URL}/graphql`;
 
 /**

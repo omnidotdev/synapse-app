@@ -52,4 +52,10 @@ describe("formatFeatureValue", () => {
     expect(formatFeatureValue("any_key", null)).toBe("—");
     expect(formatFeatureValue("any_key", undefined)).toBe("—");
   });
+
+  it("handles numeric values (non-string)", () => {
+    expect(formatFeatureValue("max_requests_per_month", 1000)).toBe("1,000");
+    expect(formatFeatureValue("stt_enabled", 1)).toBe("Yes");
+    expect(formatFeatureValue("models_allowed", -1)).toBe("Unlimited");
+  });
 });

@@ -118,12 +118,10 @@ function OrgBillingPage() {
                   >
                     <span>{formatFeatureKey(entitlement.featureKey)}</span>
                     <span className="text-muted-foreground">
-                      {entitlement.value != null
-                        ? formatFeatureValue(
-                            entitlement.featureKey,
-                            entitlement.value!,
-                          )
-                        : "—"}
+                      {formatFeatureValue(
+                        entitlement.featureKey,
+                        entitlement.value,
+                      )}
                     </span>
                   </li>
                 ))}

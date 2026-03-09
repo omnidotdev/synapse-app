@@ -21,23 +21,28 @@ const formatFeatureKey = (key: string) =>
 /**
  * Format an entitlement value for display.
  */
-const formatFeatureValue = (key: string, value: string | null | undefined) => {
+const formatFeatureValue = (
+  key: string,
+  value: string | number | null | undefined,
+) => {
   if (value == null) return "—";
 
-  if (value === "-1") return "Unlimited";
+  const str = String(value);
+
+  if (str === "-1") return "Unlimited";
 
   if (BOOLEAN_KEYS.has(key)) {
-    return value === "1" ? "Yes" : "No";
+    return str === "1" ? "Yes" : "No";
   }
 
-  if (key === "tier") return capitalize(value);
+  if (key === "tier") return capitalize(str);
 
-  const num = Number(value);
-  if (!Number.isNaN(num) && value.trim() !== "") {
+  const num = Number(str);
+  if (!Number.isNaN(num) && str.trim() !== "") {
     return num.toLocaleString("en-US");
   }
 
-  return value;
+  return str;
 };
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
