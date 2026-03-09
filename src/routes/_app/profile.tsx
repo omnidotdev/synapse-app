@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { RouteErrorFallback } from "@/components/layout";
 import {
   CardContent,
   CardDescription,
@@ -8,7 +9,6 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
-import { RouteErrorFallback } from "@/components/layout";
 import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
