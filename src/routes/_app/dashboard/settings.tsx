@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BellIcon, Loader2Icon, SlidersHorizontalIcon } from "lucide-react";
+import { Loader2Icon, SlidersHorizontalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -44,15 +44,11 @@ function SettingsPage() {
   });
 
   const [defaultProvider, setDefaultProvider] = useState("");
-  const [notifyUsageThreshold, setNotifyUsageThreshold] = useState(true);
-  const [notifyKeyExpiry, setNotifyKeyExpiry] = useState(true);
 
   // Sync local state with loaded prefs
   useEffect(() => {
     if (prefs) {
       setDefaultProvider(prefs.defaultProvider ?? "");
-      setNotifyUsageThreshold(prefs.notifyUsageThreshold);
-      setNotifyKeyExpiry(prefs.notifyKeyExpiry);
     }
   }, [prefs]);
 
@@ -61,8 +57,6 @@ function SettingsPage() {
       await updateUserPreferences({
         data: {
           defaultProvider: defaultProvider || null,
-          notifyUsageThreshold,
-          notifyKeyExpiry,
         },
       }),
     onSuccess: () => {
@@ -125,45 +119,6 @@ function SettingsPage() {
               &quot;Auto&quot; uses Synapse&apos;s smart routing.
             </p>
           </div>
-        </CardContent>
-      </CardRoot>
-
-      {/* Notifications */}
-      <CardRoot>
-        <CardHeader className="flex flex-row items-center gap-3">
-          <BellIcon className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-base">Notifications</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={notifyUsageThreshold}
-              onChange={(e) => setNotifyUsageThreshold(e.target.checked)}
-              className="h-4 w-4 rounded border accent-primary"
-            />
-            <div>
-              <p className="font-medium text-sm">Usage threshold alerts</p>
-              <p className="text-muted-foreground text-xs">
-                Get notified when your usage approaches plan limits
-              </p>
-            </div>
-          </label>
-
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={notifyKeyExpiry}
-              onChange={(e) => setNotifyKeyExpiry(e.target.checked)}
-              className="h-4 w-4 rounded border accent-primary"
-            />
-            <div>
-              <p className="font-medium text-sm">API key expiry warnings</p>
-              <p className="text-muted-foreground text-xs">
-                Get notified before your API keys expire
-              </p>
-            </div>
-          </label>
         </CardContent>
       </CardRoot>
 
