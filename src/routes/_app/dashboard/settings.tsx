@@ -1,12 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  BellIcon,
-  Loader2Icon,
-  SlidersHorizontalIcon,
-} from "lucide-react";
+import { BellIcon, Loader2Icon, SlidersHorizontalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import {

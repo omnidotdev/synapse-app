@@ -53,6 +53,16 @@ const FREE_PRICE: Price = {
   metadata: {},
 };
 
+const ENTERPRISE_FEATURES = [
+  { name: "Unlimited requests" },
+  { name: "Unlimited tokens" },
+  { name: "All models and modalities" },
+  { name: "Dedicated capacity" },
+  { name: "SSO / SAML" },
+  { name: "Custom SLA" },
+  { name: "Priority support" },
+];
+
 /**
  * Free tier card with auth-aware CTA.
  */
@@ -109,6 +119,55 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
 
       <CardContent className="flex-1 p-4">
         {price.product.marketing_features.map((feature) => (
+          <div key={feature.name} className="flex items-start gap-2 text-left">
+            <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+            <p>{feature.name}</p>
+          </div>
+        ))}
+      </CardContent>
+    </CardRoot>
+  );
+};
+
+/**
+ * Enterprise tier card with "Contact Sales" CTA.
+ */
+const EnterpriseTierCard = ({ tier }: { tier: string | null }) => {
+  const isCurrentPlan = tier === "Enterprise";
+
+  return (
+    <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
+      <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
+        <div className="flex flex-1 flex-col">
+          <CardTitle className="text-lg">Enterprise</CardTitle>
+
+          <CardDescription className="mt-2 mb-4 flex-1">
+            Custom capacity for your organization
+          </CardDescription>
+
+          <p className="font-semibold text-lg">
+            <span className="text-gradient">Custom</span>
+          </p>
+        </div>
+
+        {isCurrentPlan ? (
+          <Button variant="solid" disabled>
+            Current plan
+          </Button>
+        ) : (
+          <Button
+            variant="solid"
+            onClick={() => {
+              window.location.href = "mailto:sales@omni.dev";
+            }}
+          >
+            Contact Sales
+          </Button>
+        )}
+      </CardHeader>
+
+      <CardContent className="flex-1 p-4">
+        {ENTERPRISE_FEATURES.map((feature) => (
           <div key={feature.name} className="flex items-start gap-2 text-left">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
             <p>{feature.name}</p>
@@ -197,6 +256,8 @@ const PricingPage = () => {
                 organizations={organizations}
               />
             ))}
+
+            <EnterpriseTierCard tier={tier} />
           </TabsContent>
         )}
       </TabsRootProvider>
