@@ -52,7 +52,7 @@ const DashboardSidebar = () => {
   const matchRoute = useMatchRoute();
 
   return (
-    <nav className="hidden w-48 shrink-0 md:block">
+    <nav className="relative z-10 hidden w-48 shrink-0 md:block">
       <div className="glass-panel rounded-xl p-2">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ to, label, icon }) => {

@@ -23,14 +23,12 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
   ];
 
   return (
-    <div className="h-64 w-full">
-      <ResponsiveContainer
-        width="100%"
-        height="100%"
-        minWidth={1}
-        minHeight={1}
-      >
-        <BarChart data={data} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+    <div className="h-64 min-h-1 w-full min-w-1">
+      <ResponsiveContainer width="100%" height="100%" debounce={1}>
+        <BarChart
+          data={data}
+          margin={{ top: 8, right: 8, bottom: 16, left: 8 }}
+        >
           <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
           <XAxis dataKey="name" className="text-xs" />
           <YAxis className="text-xs" />

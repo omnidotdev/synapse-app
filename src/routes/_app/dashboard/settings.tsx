@@ -37,10 +37,15 @@ const PROVIDERS = [
 function SettingsPage() {
   const queryClient = useQueryClient();
 
-  const { data: prefs, isLoading } = useQuery({
+  const {
+    data: prefs,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["userPreferences"],
     queryFn: () => getUserPreferences(),
-    retry: false,
+    retry: 2,
   });
 
   const [defaultProvider, setDefaultProvider] = useState("");
@@ -77,6 +82,27 @@ function SettingsPage() {
         </div>
         <div className="flex justify-center py-12">
           <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="font-bold text-2xl text-gradient">Settings</h1>
+          <p className="text-muted-foreground text-sm">
+            Configure your Synapse preferences
+          </p>
+        </div>
+        <div className="flex flex-col items-center gap-3 py-12">
+          <p className="text-muted-foreground text-sm">
+            Failed to load preferences
+          </p>
+          <Button variant="outline" onClick={() => refetch()}>
+            Retry
+          </Button>
         </div>
       </div>
     );

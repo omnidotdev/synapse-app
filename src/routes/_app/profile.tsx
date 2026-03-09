@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getTierFromEntitlements } from "@/lib/util";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -109,6 +110,7 @@ function ProfilePending() {
 
 export const Route = createFileRoute("/_app/profile")({
   errorComponent: RouteErrorFallback,
+  head: () => ({ meta: createMetaTags({ title: "Profile" }) }),
   pendingComponent: ProfilePending,
   loader: async () => {
     try {

@@ -101,7 +101,10 @@ const Header = () => {
 
               {auth ? (
                 <MenuRootProvider value={accountMenu}>
-                  <MenuTrigger className="avatar-glow cursor-pointer rounded-full">
+                  <MenuTrigger
+                    aria-label="Account menu"
+                    className="avatar-glow cursor-pointer rounded-full"
+                  >
                     <AvatarRoot>
                       <AvatarImage src={auth.user.image ?? undefined} />
                       <AvatarFallback>
@@ -173,116 +176,125 @@ const Header = () => {
 
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
-        <div className="border-border border-t bg-background sm:hidden">
-          <nav className="flex flex-col gap-1 px-4 py-3">
-            <InternalLink
-              to="/pricing"
-              variant="ghost"
-              className="justify-start"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Pricing
-            </InternalLink>
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 top-16 z-40 bg-black/50 sm:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
 
-            {auth && (
+          <div className="relative z-50 border-border border-t bg-background sm:hidden">
+            <nav className="flex flex-col gap-1 px-4 py-3">
               <InternalLink
-                to="/dashboard"
+                to="/pricing"
                 variant="ghost"
                 className="justify-start"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Dashboard
+                Pricing
               </InternalLink>
-            )}
 
-            {auth && isDashboardRoute && (
-              <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
+              {auth && (
                 <InternalLink
                   to="/dashboard"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="justify-start"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <LayoutDashboardIcon className="size-4" />
-                  Overview
+                  Dashboard
                 </InternalLink>
-                <InternalLink
-                  to="/dashboard/keys"
-                  variant="ghost"
-                  className="justify-start gap-2 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <KeyIcon className="size-4" />
-                  API Keys
-                </InternalLink>
-                <InternalLink
-                  to="/dashboard/usage"
-                  variant="ghost"
-                  className="justify-start gap-2 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <BarChart3Icon className="size-4" />
-                  Usage
-                </InternalLink>
-                <InternalLink
-                  to="/dashboard/billing"
-                  variant="ghost"
-                  className="justify-start gap-2 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <CreditCardIcon className="size-4" />
-                  Billing
-                </InternalLink>
-                <InternalLink
-                  to="/dashboard/settings"
-                  variant="ghost"
-                  className="justify-start gap-2 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <SettingsIcon className="size-4" />
-                  Settings
-                </InternalLink>
-              </div>
-            )}
+              )}
 
-            {auth && (
-              <InternalLink
-                to="/profile"
-                variant="ghost"
-                className="justify-start"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Profile
-              </InternalLink>
-            )}
-          </nav>
+              {auth && isDashboardRoute && (
+                <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
+                  <InternalLink
+                    to="/dashboard"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <LayoutDashboardIcon className="size-4" />
+                    Overview
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/keys"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <KeyIcon className="size-4" />
+                    API Keys
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/usage"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <BarChart3Icon className="size-4" />
+                    Usage
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/billing"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <CreditCardIcon className="size-4" />
+                    Billing
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/settings"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <SettingsIcon className="size-4" />
+                    Settings
+                  </InternalLink>
+                </div>
+              )}
 
-          <div className="flex items-center justify-between border-border border-t px-4 py-3">
-            <ThemeToggle />
+              {auth && (
+                <InternalLink
+                  to="/profile"
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Profile
+                </InternalLink>
+              )}
+            </nav>
 
-            {auth ? (
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleSignOut();
-                }}
-              >
-                Sign Out
-              </Button>
-            ) : (
-              <Button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signIn();
-                }}
-                disabled={isSignInPending}
-              >
-                Sign In
-              </Button>
-            )}
+            <div className="flex items-center justify-between border-border border-t px-4 py-3">
+              <ThemeToggle />
+
+              {auth ? (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSignOut();
+                  }}
+                >
+                  Sign Out
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signIn();
+                  }}
+                  disabled={isSignInPending}
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

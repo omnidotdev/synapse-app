@@ -18,6 +18,7 @@ import {
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import authClient from "@/lib/auth/authClient";
 import { getTierFromEntitlements } from "@/lib/util";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
@@ -47,7 +48,7 @@ const FREE_PRICE: Price = {
     marketing_features: [
       { name: "1,000 requests per month" },
       { name: "500K tokens per month (400K in / 100K out)" },
-      { name: "All models" },
+      { name: "All text models" },
     ],
   },
   metadata: {},
@@ -269,6 +270,7 @@ const PricingPage = () => {
 
 export const Route = createFileRoute("/pricing")({
   errorComponent: RouteErrorFallback,
+  head: () => ({ meta: createMetaTags({ title: "Pricing" }) }),
   validateSearch: (search) => searchSchema.parse(search),
   loader: async () => {
     const [prices, sessionData] = await Promise.all([
