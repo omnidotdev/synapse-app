@@ -1,6 +1,13 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@/components/ui/card";
 import { RouteErrorFallback } from "@/components/layout";
 import { getTierFromEntitlements } from "@/lib/util";
 import { fetchSession } from "@/server/functions/auth";
@@ -26,6 +33,30 @@ const ProfilePage = () => {
         <h2 className="text-muted-foreground text-sm sm:text-lg">
           Review and manage details about your account below.
         </h2>
+      </div>
+
+      <div className="mt-8 flex flex-col text-start">
+        <h1 className="font-bold sm:text-xl">Account</h1>
+        <h2 className="text-muted-foreground text-xs sm:text-sm">
+          View your account details.
+        </h2>
+
+        <CardRoot className="mt-6 max-w-md">
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Your basic account information</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div>
+              <span className="text-muted-foreground">Email: </span>
+              <span>{auth?.user.email ?? "—"}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Name: </span>
+              <span>{auth?.user.name ?? "—"}</span>
+            </div>
+          </CardContent>
+        </CardRoot>
       </div>
 
       <div className="mt-8 flex flex-col text-start">
