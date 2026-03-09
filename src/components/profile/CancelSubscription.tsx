@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cancelSubscription as cancelSubscriptionFn } from "@/server/functions/subscriptions";
@@ -21,9 +22,10 @@ const CancelSubscription = ({ entityType, entityId }: Props) => {
         data: { entityType, entityId },
       }),
     onSuccess: () => {
-      // Invalidate subscription query to refetch
+      toast("Subscription cancelled");
       queryClient.invalidateQueries({ queryKey: ["subscription"] });
     },
+    onError: (error) => toast.error(error.message),
   });
 
   return (

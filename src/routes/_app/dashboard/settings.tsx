@@ -3,13 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   BellIcon,
   Loader2Icon,
-  RadioIcon,
   SlidersHorizontalIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-import ProviderKeysSection from "@/components/dashboard/ProviderKeysSection";
 import { RouteErrorFallback } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,32 +15,13 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchSession } from "@/server/functions/auth";
 import {
   getUserPreferences,
   updateUserPreferences,
 } from "@/server/functions/preferences";
-import { getSubscription } from "@/server/functions/subscriptions";
-
-type RoutingMode = "managed" | "byok";
 
 export const Route = createFileRoute("/_app/dashboard/settings")({
   errorComponent: RouteErrorFallback,
-  loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
-      return { subscription: null };
-    }
-
-    const subscription = await getSubscription({
-      data: {
-        entityType: "user",
-        entityId: session.user.identityProviderId,
-      },
-    }).catch(() => null);
-
-    return { subscription };
-  },
   component: SettingsPage,
 });
 
@@ -60,7 +38,6 @@ const PROVIDERS = [
  * Settings page
  */
 function SettingsPage() {
-  const { subscription } = Route.useLoaderData();
   const queryClient = useQueryClient();
 
   const { data: prefs, isLoading } = useQuery({
@@ -69,7 +46,6 @@ function SettingsPage() {
     retry: false,
   });
 
-  const [routingMode, setRoutingMode] = useState<RoutingMode>("managed");
   const [defaultProvider, setDefaultProvider] = useState("");
   const [notifyUsageThreshold, setNotifyUsageThreshold] = useState(true);
   const [notifyKeyExpiry, setNotifyKeyExpiry] = useState(true);
@@ -123,57 +99,6 @@ function SettingsPage() {
           Fine-tune how Synapse routes for you
         </p>
       </div>
-
-      {/* Routing Mode */}
-      <CardRoot>
-        <CardHeader className="flex flex-row items-center gap-3">
-          <RadioIcon className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-base">Routing Mode</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <label className="flex items-start gap-3">
-            <input
-              type="radio"
-              name="routingMode"
-              value="managed"
-              checked={routingMode === "managed"}
-              onChange={() => setRoutingMode("managed")}
-              className="mt-1 h-4 w-4 accent-primary"
-            />
-            <div>
-              <p className="font-medium text-sm">Omni-managed</p>
-              <p className="text-muted-foreground text-xs">
-                Requests are routed through Omni's provider accounts. Usage is
-                billed to your plan
-              </p>
-            </div>
-          </label>
-
-          <label className="flex items-start gap-3">
-            <input
-              type="radio"
-              name="routingMode"
-              value="byok"
-              checked={routingMode === "byok"}
-              onChange={() => setRoutingMode("byok")}
-              className="mt-1 h-4 w-4 accent-primary"
-            />
-            <div>
-              <p className="font-medium text-sm">Use your own keys</p>
-              <p className="text-muted-foreground text-xs">
-                Route requests through your own provider accounts using keys you
-                manage below
-              </p>
-            </div>
-          </label>
-
-          {routingMode === "byok" && (
-            <div className="mt-2 border-t pt-4">
-              <ProviderKeysSection subscription={subscription} />
-            </div>
-          )}
-        </CardContent>
-      </CardRoot>
 
       {/* Default Provider */}
       <CardRoot>

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { EditIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { getBillingPortalUrl } from "@/server/functions/subscriptions";
@@ -22,6 +23,7 @@ const ManageSubscription = ({ entityType, entityId }: Props) => {
         data: { entityType, entityId },
       }),
     onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
+    onError: (error) => toast.error(error.message),
   });
 
   return (
