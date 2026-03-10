@@ -83,7 +83,7 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
               border: `1px solid ${resolveColor("--border", "#e5e7eb")}`,
               borderRadius: "0.5rem",
             }}
-            formatter={(value?: number) => (value ?? 0).toLocaleString()}
+            formatter={(value) => Number(value ?? 0).toLocaleString()}
           />
           <Legend />
           <Bar
