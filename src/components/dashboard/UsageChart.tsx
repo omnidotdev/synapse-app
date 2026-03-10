@@ -17,9 +17,31 @@ interface UsageChartProps {
 /**
  * Bar chart comparing input vs output token usage.
  */
+/**
+ * Resolve a CSS custom property to a computed color string.
+ */
+function resolveColor(varName: string, fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+  return value || fallback;
+}
+
 const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [colors, setColors] = useState({
+    primary: "#3b82f6",
+    secondary: "#10b981",
+  });
+
+  useEffect(() => {
+    setColors({
+      primary: resolveColor("--primary", "#3b82f6"),
+      secondary: resolveColor("--secondary", "#10b981"),
+    });
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -57,8 +79,8 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
           <YAxis className="text-xs" />
           <Tooltip
             contentStyle={{
-              backgroundColor: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
+              backgroundColor: resolveColor("--card", "#fff"),
+              border: `1px solid ${resolveColor("--border", "#e5e7eb")}`,
               borderRadius: "0.5rem",
             }}
             formatter={(value?: number) => (value ?? 0).toLocaleString()}
@@ -67,13 +89,13 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
           <Bar
             dataKey="input"
             name="Input Tokens"
-            fill="hsl(var(--primary))"
+            fill={colors.primary}
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="output"
             name="Output Tokens"
-            fill="hsl(var(--secondary))"
+            fill={colors.secondary}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>
