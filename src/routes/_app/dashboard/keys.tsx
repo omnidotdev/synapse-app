@@ -254,8 +254,12 @@ function KeysPage() {
               <TableRow className="bg-primary/10">
                 <TableHead className="px-4 py-3">Name</TableHead>
                 <TableHead className="px-4 py-3">Key</TableHead>
-                <TableHead className="px-4 py-3">Created</TableHead>
-                <TableHead className="px-4 py-3">Last used</TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">
+                  Created
+                </TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">
+                  Last used
+                </TableHead>
                 <TableHead className="w-12 px-4 py-3" />
               </TableRow>
             </TableHeader>
@@ -280,10 +284,10 @@ function KeysPage() {
                       synapse_****{key.keyHint}
                     </code>
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground text-sm">
+                  <TableCell className="hidden px-4 py-3 text-muted-foreground text-sm md:table-cell">
                     {formatDate(key.createdAt)}
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground text-sm">
+                  <TableCell className="hidden px-4 py-3 text-muted-foreground text-sm md:table-cell">
                     {formatDate(key.lastUsedAt)}
                   </TableCell>
                   <TableCell className="px-4 py-3">

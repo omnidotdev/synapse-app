@@ -22,9 +22,15 @@ const createMetaTags = ({
   image,
   keywords,
 }: Params = {}) => {
+  const baseUrl = BASE_URL || app.url;
+
+  const DEFAULT_KEYWORDS =
+    "AI router, LLM gateway, inference routing, MCP, STT, TTS, API management, multi-provider, Synapse, Omni";
+
   const title = _title ? `${_title} | ${app.name}` : app.name,
     description = _description ?? app.description,
-    url = _url ?? BASE_URL;
+    url = _url ?? baseUrl,
+    resolvedKeywords = keywords ?? DEFAULT_KEYWORDS;
 
   const tags = [
     { title },
@@ -32,7 +38,7 @@ const createMetaTags = ({
       name: "description",
       content: description,
     },
-    { name: "keywords", content: keywords },
+    { name: "keywords", content: resolvedKeywords },
     { name: "twitter:title", content: title },
     {
       name: "twitter:description",
@@ -57,9 +63,9 @@ const createMetaTags = ({
         ]
       : [
           // TODO dynamic OG/static improve
-          { name: "twitter:image", content: `${BASE_URL}/og.png` },
+          { name: "twitter:image", content: `${baseUrl}/og.png` },
           { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:image", content: `${BASE_URL}/og.png` },
+          { property: "og:image", content: `${baseUrl}/og.png` },
           { property: "og:image:width", content: "1200" },
           { property: "og:image:height", content: "630" },
         ]),

@@ -25,7 +25,7 @@ const FAQ = [
   },
   {
     question: "Can I self-host this software?",
-    answer: `Yes! ${app.name} is open source software. Instructions for self-hosting will be available soon.`,
+    answer: `Yes! ${app.name} is open source software. Self-hosting instructions are available in the repository's Docker Compose configuration.`,
   },
 ];
 
