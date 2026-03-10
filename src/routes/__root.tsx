@@ -27,9 +27,9 @@ export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   beforeLoad: async () => {
-    const { session } = await fetchSession();
+    const { session, organizations } = await fetchSession();
 
-    return { auth: session };
+    return { auth: session, organizations };
   },
   head: () => ({
     meta: [

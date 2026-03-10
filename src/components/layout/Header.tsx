@@ -10,7 +10,7 @@ import {
   SettingsIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { InternalLink } from "@/components/core";
 import { ThemeToggle } from "@/components/layout";
@@ -42,6 +42,14 @@ const Header = () => {
   const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   const isDashboardRoute = location.pathname.startsWith("/dashboard");
 

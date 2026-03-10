@@ -1,6 +1,14 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useRouteContext,
+} from "@tanstack/react-router";
 
+import { OrganizationProvider } from "@/lib/context/organization.context";
 import { EventsProvider } from "@/providers/EventsProvider";
+
+import type { Organization } from "@/lib/context/organization.context";
 
 // Noop provider for client-side (main @omnidotdev/providers entry requires Node.js)
 const eventsProvider = {
@@ -23,9 +31,15 @@ export const Route = createFileRoute("/_app")({
  * Auth layout.
  */
 function AuthLayout() {
+  const { organizations } = useRouteContext({ strict: false }) as {
+    organizations?: Organization[];
+  };
+
   return (
-    <EventsProvider provider={eventsProvider}>
-      <Outlet />
-    </EventsProvider>
+    <OrganizationProvider organizations={organizations ?? []}>
+      <EventsProvider provider={eventsProvider}>
+        <Outlet />
+      </EventsProvider>
+    </OrganizationProvider>
   );
 }

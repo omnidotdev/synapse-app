@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   ActivityIcon,
   LayersIcon,
@@ -10,9 +10,6 @@ import { InternalLink } from "@/components/core";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: ({ context: { auth } }) => {
-    if (auth) throw redirect({ to: "/dashboard" });
-  },
   component: HomePage,
 });
 
