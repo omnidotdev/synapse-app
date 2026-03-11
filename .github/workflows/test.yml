@@ -55,3 +55,8 @@ jobs:
           name: test-artifacts
           path: src/generated/test-artifacts/
           retention-days: 7
+      - name: Type check
+        run: bunx tsc --noEmit
+
+      - name: Knip
+        run: bun knip
