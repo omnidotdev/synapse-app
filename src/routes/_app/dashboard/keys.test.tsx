@@ -21,9 +21,7 @@ const mockKeys = [
 
 mock.module("@/server/functions/apiKeys", () => ({
   listApiKeys: mock(() => Promise.resolve(mockKeys)),
-  createApiKey: mock(() =>
-    Promise.resolve({ rawKey: "synapse_test_key_123" }),
-  ),
+  createApiKey: mock(() => Promise.resolve({ rawKey: "synapse_test_key_123" })),
   revokeApiKey: mock(() => Promise.resolve()),
 }));
 
@@ -49,17 +47,13 @@ describe("KeysPage", () => {
   test("renders page heading", () => {
     renderKeysPage();
 
-    expect(
-      screen.getByRole("heading", { name: "API Keys" }),
-    ).toBeDefined();
+    expect(screen.getByRole("heading", { name: "API Keys" })).toBeDefined();
   });
 
   test("renders create key button", () => {
     renderKeysPage();
 
-    expect(
-      screen.getByRole("button", { name: /create key/i }),
-    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /create key/i })).toBeDefined();
   });
 
   test("header uses flex-wrap for mobile responsiveness", () => {

@@ -286,8 +286,12 @@ function WorkspaceKeysPage() {
               <TableRow className="bg-primary/10">
                 <TableHead className="px-4 py-3">Name</TableHead>
                 <TableHead className="px-4 py-3">Key</TableHead>
-                <TableHead className="hidden px-4 py-3 md:table-cell">Created</TableHead>
-                <TableHead className="hidden px-4 py-3 md:table-cell">Last used</TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">
+                  Created
+                </TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">
+                  Last used
+                </TableHead>
                 <TableHead className="px-4 py-3" />
               </TableRow>
             </TableHeader>
