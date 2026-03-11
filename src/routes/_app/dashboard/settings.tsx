@@ -12,12 +12,16 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
+import createMetaTags from "@/lib/util/createMetaTags";
 import {
   getUserPreferences,
   updateUserPreferences,
 } from "@/server/functions/preferences";
 
 export const Route = createFileRoute("/_app/dashboard/settings")({
+  head: () => ({
+    meta: createMetaTags({ title: "Settings" }),
+  }),
   errorComponent: RouteErrorFallback,
   component: SettingsPage,
 });

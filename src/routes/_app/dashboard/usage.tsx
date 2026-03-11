@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import { getUsageSummary } from "@/server/functions/usage";
 import { getUsageBreakdown } from "@/server/functions/usageBreakdown";
@@ -43,6 +44,9 @@ const daysAgo = (n: number) => {
 };
 
 export const Route = createFileRoute("/_app/dashboard/usage")({
+  head: () => ({
+    meta: createMetaTags({ title: "Usage" }),
+  }),
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

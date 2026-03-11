@@ -11,6 +11,7 @@ import StatCard from "@/components/dashboard/StatCard";
 import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import { getTierFromEntitlements } from "@/lib/util";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
@@ -19,6 +20,9 @@ import { getSubscription } from "@/server/functions/subscriptions";
 import { getUsageSummary } from "@/server/functions/usage";
 
 export const Route = createFileRoute("/_app/dashboard/")({
+  head: () => ({
+    meta: createMetaTags({ title: "Overview" }),
+  }),
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

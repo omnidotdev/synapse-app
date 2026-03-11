@@ -14,6 +14,7 @@ import {
   formatFeatureValue,
   getTierFromEntitlements,
 } from "@/lib/util";
+import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -21,6 +22,9 @@ import { getSubscription } from "@/server/functions/subscriptions";
 import type { Entitlement } from "@omnidotdev/providers";
 
 export const Route = createFileRoute("/_app/dashboard/billing")({
+  head: () => ({
+    meta: createMetaTags({ title: "Billing" }),
+  }),
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {

@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import createMetaTags from "@/lib/util/createMetaTags";
 import {
   createApiKey,
   listApiKeys,
@@ -37,6 +38,9 @@ import {
 import type { ApiKey } from "@/server/functions/apiKeys";
 
 export const Route = createFileRoute("/_app/dashboard/keys")({
+  head: () => ({
+    meta: createMetaTags({ title: "API Keys" }),
+  }),
   errorComponent: RouteErrorFallback,
   component: KeysPage,
 });
@@ -208,7 +212,7 @@ function KeysPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-bold text-2xl text-gradient">API Keys</h1>
           <p className="text-muted-foreground text-sm">
@@ -248,7 +252,7 @@ function KeysPage() {
           </CardContent>
         </CardRoot>
       ) : (
-        <CardRoot>
+        <CardRoot className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">

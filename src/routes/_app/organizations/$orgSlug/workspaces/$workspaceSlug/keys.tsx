@@ -231,7 +231,7 @@ function WorkspaceKeysPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-bold text-2xl text-gradient">API Keys</h1>
           <p className="text-muted-foreground text-sm">
@@ -280,14 +280,14 @@ function WorkspaceKeysPage() {
           </CardContent>
         </CardRoot>
       ) : (
-        <CardRoot>
+        <CardRoot className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/10">
                 <TableHead className="px-4 py-3">Name</TableHead>
                 <TableHead className="px-4 py-3">Key</TableHead>
-                <TableHead className="px-4 py-3">Created</TableHead>
-                <TableHead className="px-4 py-3">Last used</TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">Created</TableHead>
+                <TableHead className="hidden px-4 py-3 md:table-cell">Last used</TableHead>
                 <TableHead className="px-4 py-3" />
               </TableRow>
             </TableHeader>
@@ -312,10 +312,10 @@ function WorkspaceKeysPage() {
                       synapse_****{key.keyHint}
                     </code>
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground text-sm">
+                  <TableCell className="hidden px-4 py-3 text-muted-foreground text-sm md:table-cell">
                     {formatDate(key.createdAt)}
                   </TableCell>
-                  <TableCell className="px-4 py-3 text-muted-foreground text-sm">
+                  <TableCell className="hidden px-4 py-3 text-muted-foreground text-sm md:table-cell">
                     {formatDate(key.lastUsedAt)}
                   </TableCell>
                   <TableCell className="px-4 py-3">
