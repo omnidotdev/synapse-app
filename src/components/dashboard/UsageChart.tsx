@@ -60,9 +60,14 @@ const UsageChart = ({ inputTokens, outputTokens }: UsageChartProps) => {
     return () => observer.disconnect();
   }, []);
 
+  const compact = dimensions.width < 400;
   const data = [
-    { name: "Input Tokens", input: inputTokens, output: 0 },
-    { name: "Output Tokens", input: 0, output: outputTokens },
+    { name: compact ? "Input" : "Input Tokens", input: inputTokens, output: 0 },
+    {
+      name: compact ? "Output" : "Output Tokens",
+      input: 0,
+      output: outputTokens,
+    },
   ];
 
   return (
