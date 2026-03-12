@@ -19,7 +19,7 @@ RUN bun run build
 # into .output but Bun's module resolver fails on the virtual entry chunk.
 # Using Node 22-alpine as the production runtime until Bun resolves this.
 # Track: https://github.com/oven-sh/bun/issues/16493
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
