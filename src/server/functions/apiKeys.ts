@@ -1,0 +1,110 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { authMiddleware } from "@/server/middleware";
+import { graphql } from "./graphql";
+
+/** How an API key was provisioned */
+type ApiKeyMode = "manual" | "managed";
+
+interface ApiKey {
+  id: string;
+  name: string;
+  keyHint: string;
+  mode: ApiKeyMode;
+  createdAt: string;
+  lastUsedAt: string | null;
+  expiresAt: string | null;
+  revokedAt: string | null;
+}
+
+interface CreateApiKeyResult {
+  rawKey: string;
+  apiKeyId: string;
+  keyHint: string;
+}
+
+/**
+ * List active API keys for the current user
+ */
+export const listApiKeys = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<ApiKey[]> => {
+    const { accessToken } = context.session;
+
+    const data = await graphql<{
+      observer: { apiKeys: ApiKey[] };
+    }>(
+      accessToken,
+      `query {
+        observer {
+          apiKeys {
+            id
+            name
+            keyHint
+            mode
+            createdAt
+            lastUsedAt
+            expiresAt
+            revokedAt
+          }
+        }
+      }`,
+    );
+
+    return data.observer?.apiKeys ?? [];
+  });
+
+const createKeySchema = z.object({
+  name: z.string().min(1).max(100),
+});
+
+/**
+ * Create a new API key
+ */
+export const createApiKey = createServerFn()
+  .middleware([authMiddleware])
+  .inputValidator((data) => createKeySchema.parse(data))
+  .handler(async ({ data, context }): Promise<CreateApiKeyResult> => {
+    const { accessToken } = context.session;
+
+    const result = await graphql<{ generateApiKey: CreateApiKeyResult }>(
+      accessToken,
+      `mutation GenerateApiKey($input: GenerateApiKeyInput!) {
+        generateApiKey(input: $input) {
+          rawKey
+          apiKeyId
+          keyHint
+        }
+      }`,
+      { input: { name: data.name, mode: "manual" } },
+    );
+
+    return result.generateApiKey;
+  });
+
+const revokeKeySchema = z.object({
+  id: z.string().uuid(),
+});
+
+/**
+ * Revoke an API key
+ */
+export const revokeApiKey = createServerFn()
+  .middleware([authMiddleware])
+  .inputValidator((data) => revokeKeySchema.parse(data))
+  .handler(async ({ data, context }): Promise<boolean> => {
+    const { accessToken } = context.session;
+
+    const result = await graphql<{ revokeApiKey: boolean }>(
+      accessToken,
+      `mutation RevokeApiKey($id: UUID!) {
+        revokeApiKey(id: $id)
+      }`,
+      { id: data.id },
+    );
+
+    return result.revokeApiKey;
+  });
+
+export type { ApiKey, ApiKeyMode, CreateApiKeyResult };

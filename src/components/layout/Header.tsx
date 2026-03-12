@@ -1,0 +1,311 @@
+import { MenuRootProvider, useMenu } from "@ark-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { useLocation, useRouteContext } from "@tanstack/react-router";
+import {
+  BarChart3Icon,
+  CreditCardIcon,
+  KeyIcon,
+  LayoutDashboardIcon,
+  MenuIcon,
+  SettingsIcon,
+  XIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { InternalLink } from "@/components/core";
+import { ThemeToggle } from "@/components/layout";
+import {
+  AvatarFallback,
+  AvatarImage,
+  AvatarRoot,
+} from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  MenuContent,
+  MenuItem,
+  MenuItemGroup,
+  MenuItemGroupLabel,
+  MenuItemText,
+  MenuPositioner,
+  MenuSeparator,
+  MenuTrigger,
+} from "@/components/ui/menu";
+import authClient from "@/lib/auth/authClient";
+import signOut from "@/lib/auth/signOut";
+import app from "@/lib/config/app.config";
+
+/**
+ * Layout header.
+ */
+const Header = () => {
+  const { auth } = useRouteContext({ strict: false });
+  const location = useLocation();
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  const isDashboardRoute = location.pathname.startsWith("/dashboard");
+
+  const accountMenu = useMenu();
+
+  const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
+    mutationFn: async () =>
+      await authClient.signIn.oauth2({
+        providerId: "omni",
+        callbackURL: location.pathname,
+        disableRedirect: false,
+      }),
+  });
+
+  const handleSignOut = async () => {
+    accountMenu.api.setOpen(false);
+    await signOut();
+  };
+
+  return (
+    <header className="fixed top-0 z-50 w-full border-border border-b bg-background/90 backdrop-blur-lg">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Left: logo + nav links */}
+          <div className="flex gap-2">
+            <InternalLink to="/" variant="unstyled" className="-ml-4">
+              <h1 className="font-bold text-gradient text-xl">{app.name}</h1>
+            </InternalLink>
+
+            <span className="hidden select-none self-center rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs sm:inline-flex">
+              Early Access
+            </span>
+
+            <InternalLink
+              to="/pricing"
+              variant="ghost"
+              className="hidden sm:inline-flex"
+            >
+              Pricing
+            </InternalLink>
+
+            {auth && (
+              <InternalLink
+                to="/dashboard"
+                variant="ghost"
+                className="hidden sm:inline-flex"
+              >
+                Dashboard
+              </InternalLink>
+            )}
+          </div>
+
+          {/* Right: desktop controls + mobile hamburger */}
+          <div className="flex items-center gap-4">
+            <div className="hidden items-center gap-4 sm:flex">
+              <ThemeToggle />
+
+              {auth ? (
+                <MenuRootProvider value={accountMenu}>
+                  <MenuTrigger
+                    aria-label="Account menu"
+                    className="avatar-glow cursor-pointer rounded-full"
+                  >
+                    <AvatarRoot>
+                      <AvatarImage src={auth.user.image ?? undefined} />
+                      <AvatarFallback>
+                        {auth.user.name.charAt(0)}
+                      </AvatarFallback>
+                    </AvatarRoot>
+                  </MenuTrigger>
+
+                  <MenuPositioner>
+                    <MenuContent className="min-w-48">
+                      <MenuItemGroup>
+                        <MenuItemGroupLabel>My Account</MenuItemGroupLabel>
+
+                        <MenuItem value="dashboard" asChild>
+                          <InternalLink
+                            to="/dashboard"
+                            variant="unstyled"
+                            className="justify-start"
+                          >
+                            <MenuItemText>Dashboard</MenuItemText>
+                          </InternalLink>
+                        </MenuItem>
+
+                        <MenuItem value="profile" asChild>
+                          <InternalLink
+                            to="/profile"
+                            variant="unstyled"
+                            className="justify-start"
+                          >
+                            <MenuItemText>Profile</MenuItemText>
+                          </InternalLink>
+                        </MenuItem>
+                      </MenuItemGroup>
+
+                      <MenuSeparator />
+
+                      <MenuItem
+                        value="signOut"
+                        className="text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
+                        onClick={handleSignOut}
+                      >
+                        <MenuItemText>Sign Out</MenuItemText>
+                      </MenuItem>
+                    </MenuContent>
+                  </MenuPositioner>
+                </MenuRootProvider>
+              ) : (
+                <Button onClick={() => signIn()} disabled={isSignInPending}>
+                  Sign In
+                </Button>
+              )}
+            </div>
+
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent sm:hidden"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+            >
+              {mobileMenuOpen ? (
+                <XIcon className="size-5" />
+              ) : (
+                <MenuIcon className="size-5" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu dropdown */}
+      {mobileMenuOpen && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 top-16 z-40 bg-black/50 sm:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          <div className="relative z-50 border-border border-t bg-background sm:hidden">
+            <nav className="flex flex-col gap-1 px-4 py-3">
+              <InternalLink
+                to="/pricing"
+                variant="ghost"
+                className="justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </InternalLink>
+
+              {auth && (
+                <InternalLink
+                  to="/dashboard"
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </InternalLink>
+              )}
+
+              {auth && isDashboardRoute && (
+                <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
+                  <InternalLink
+                    to="/dashboard"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <LayoutDashboardIcon className="size-4" />
+                    Overview
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/keys"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <KeyIcon className="size-4" />
+                    API Keys
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/usage"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <BarChart3Icon className="size-4" />
+                    Usage
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/billing"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <CreditCardIcon className="size-4" />
+                    Billing
+                  </InternalLink>
+                  <InternalLink
+                    to="/dashboard/settings"
+                    variant="ghost"
+                    className="justify-start gap-2 text-sm"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <SettingsIcon className="size-4" />
+                    Settings
+                  </InternalLink>
+                </div>
+              )}
+
+              {auth && (
+                <InternalLink
+                  to="/profile"
+                  variant="ghost"
+                  className="justify-start"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Profile
+                </InternalLink>
+              )}
+            </nav>
+
+            <div className="flex items-center justify-between border-border border-t px-4 py-3">
+              <ThemeToggle />
+
+              {auth ? (
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleSignOut();
+                  }}
+                >
+                  Sign Out
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signIn();
+                  }}
+                  disabled={isSignInPending}
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </header>
+  );
+};
+
+export default Header;

@@ -1,0 +1,114 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { SYNAPSE_API_URL } from "@/lib/config/env.config";
+import { authMiddleware } from "@/server/middleware";
+
+const API_GRAPHQL_URL = `${SYNAPSE_API_URL}/graphql`;
+
+interface UserPreferences {
+  defaultProvider: string | null;
+  notifyUsageThreshold: boolean;
+  notifyKeyExpiry: boolean;
+}
+
+/**
+ * Execute a GraphQL query against synapse-api
+ */
+const graphql = async <T>(
+  accessToken: string,
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<T> => {
+  const res = await fetch(API_GRAPHQL_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`GraphQL request failed: ${res.status}`);
+  }
+
+  const json = await res.json();
+
+  if (json.errors?.length) {
+    throw new Error(json.errors[0].message);
+  }
+
+  return json.data;
+};
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  defaultProvider: null,
+  notifyUsageThreshold: true,
+  notifyKeyExpiry: true,
+};
+
+/**
+ * Fetch user preferences
+ */
+export const getUserPreferences = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<UserPreferences> => {
+    const { accessToken } = context.session;
+
+    try {
+      const data = await graphql<{
+        observer: { preferences: UserPreferences } | null;
+      }>(
+        accessToken,
+        `query {
+          observer {
+            preferences {
+              defaultProvider
+              notifyUsageThreshold
+              notifyKeyExpiry
+            }
+          }
+        }`,
+      );
+
+      return data.observer?.preferences ?? DEFAULT_PREFERENCES;
+    } catch {
+      // Return defaults when the API is unreachable or the query fails
+      return DEFAULT_PREFERENCES;
+    }
+  });
+
+const updateSchema = z.object({
+  defaultProvider: z.string().nullable().optional(),
+  notifyUsageThreshold: z.boolean().optional(),
+  notifyKeyExpiry: z.boolean().optional(),
+});
+
+/**
+ * Update user preferences
+ */
+export const updateUserPreferences = createServerFn()
+  .middleware([authMiddleware])
+  .inputValidator((data) => updateSchema.parse(data))
+  .handler(async ({ data, context }): Promise<UserPreferences> => {
+    const { accessToken } = context.session;
+
+    const result = await graphql<{
+      updateUserPreferences: UserPreferences;
+    }>(
+      accessToken,
+      `mutation UpdateUserPreferences($input: UpdateUserPreferencesInput!) {
+        updateUserPreferences(input: $input) {
+          defaultProvider
+          notifyUsageThreshold
+          notifyKeyExpiry
+        }
+      }`,
+      { input: data },
+    );
+
+    return result.updateUserPreferences;
+  });
+
+export type { UserPreferences };
