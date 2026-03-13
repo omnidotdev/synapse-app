@@ -1,0 +1,9 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Arrow: upper-left to lower-right (passes under at crossing) -->
+  <path d="M 16,28 C 32,28 40,34 46,42" stroke="#6366f1" stroke-width="7" stroke-linecap="round" />
+  <path d="M 58,58 C 68,64 76,70 82,70" stroke="#6366f1" stroke-width="7" stroke-linecap="round" />
+  <path d="M 82,60 L 90,70 L 82,80" stroke="#6366f1" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Arrow: lower-left to upper-right (passes over at crossing) -->
+  <path d="M 16,72 C 32,72 42,62 52,50 C 62,38 76,30 82,30" stroke="#6366f1" stroke-width="7" stroke-linecap="round" />
+  <path d="M 82,20 L 90,30 L 82,40" stroke="#6366f1" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
