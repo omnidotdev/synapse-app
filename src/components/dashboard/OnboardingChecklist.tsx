@@ -19,7 +19,7 @@ const allSteps = [
   },
   {
     label: "Add a provider key",
-    to: "/dashboard/settings" as const,
+    to: "/dashboard/providers" as const,
     key: "hasProviderKeys" as const,
     byokOnly: true,
   },
