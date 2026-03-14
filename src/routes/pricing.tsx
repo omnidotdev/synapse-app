@@ -26,11 +26,12 @@ import { getOrgSubscription } from "@/server/functions/subscriptions";
 
 import type { Subscription } from "@omnidotdev/providers";
 import type { Price } from "@/components/pricing";
+import type { Organization } from "@/lib/context/organization.context";
 
 const searchSchema = z.object({
   tier: z
     .string()
-    .pipe(z.enum(["free", "pro", "enterprise"]))
+    .pipe(z.enum(["free", "pro", "team"]))
     .optional(),
   signin: z.boolean().optional(),
 });
@@ -44,23 +45,26 @@ const FREE_PRICE: Price = {
   product: {
     id: "free-product",
     name: "Free",
-    description: "Start for free.",
+    description: "Start with your own API keys.",
     marketing_features: [
       { name: "1,000 requests per month" },
-      { name: "500K tokens per month (400K in / 100K out)" },
-      { name: "All text models" },
+      { name: "Bring your own provider keys" },
+      { name: "All models supported" },
+      { name: "Basic analytics (7-day retention)" },
     ],
   },
   metadata: {},
 };
 
-const ENTERPRISE_FEATURES = [
-  { name: "Unlimited requests" },
-  { name: "Unlimited tokens" },
-  { name: "All models and modalities" },
-  { name: "Dedicated capacity" },
-  { name: "SSO / SAML" },
-  { name: "Custom SLA" },
+const TEAM_FEATURES = [
+  { name: "200,000 requests per month" },
+  { name: "BYOK + managed keys (pass-through + 10%)" },
+  { name: "25M managed tokens/month included" },
+  { name: "Unlimited API keys" },
+  { name: "Full analytics (1-year retention)" },
+  { name: "Team RBAC" },
+  { name: "Audit logs with export" },
+  { name: "SSO" },
   { name: "Priority support" },
 ];
 
@@ -131,23 +135,54 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
 };
 
 /**
- * Enterprise tier card with "Contact Sales" CTA.
+ * Team tier card with Stripe-backed subscribe CTA.
  */
-const EnterpriseTierCard = ({ tier }: { tier: string | null }) => {
-  const isCurrentPlan = tier === "Enterprise";
+const TeamTierCard = ({
+  tier,
+  teamPrice,
+  orgSubscriptions,
+  organizations,
+}: {
+  tier: string | null;
+  teamPrice: Price | null;
+  orgSubscriptions: Record<string, Subscription | null>;
+  organizations: Organization[];
+}) => {
+  const isCurrentPlan = tier === "Team";
 
+  // When a Stripe price exists for Team, render via PriceCard for checkout
+  if (teamPrice) {
+    return (
+      <PriceCard
+        price={{
+          ...teamPrice,
+          product: {
+            ...teamPrice.product,
+            marketing_features: TEAM_FEATURES,
+          },
+        }}
+        orgSubscriptions={orgSubscriptions}
+        organizations={organizations}
+      />
+    );
+  }
+
+  // Static fallback when Team price isn't in Stripe yet
   return (
     <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
-          <CardTitle className="text-lg">Enterprise</CardTitle>
+          <CardTitle className="text-lg">Team</CardTitle>
 
           <CardDescription className="mt-2 mb-4 flex-1">
-            Custom capacity for your organization
+            Collaborate with managed keys and RBAC
           </CardDescription>
 
           <p className="font-semibold text-lg">
-            <span className="text-gradient">Custom</span>
+            <span className="text-gradient">$39</span>
+            <span className="pl-1 font-normal text-muted-foreground text-sm">
+              /month
+            </span>
           </p>
         </div>
 
@@ -156,19 +191,14 @@ const EnterpriseTierCard = ({ tier }: { tier: string | null }) => {
             Current plan
           </Button>
         ) : (
-          <Button
-            variant="solid"
-            onClick={() => {
-              window.location.href = "mailto:sales@omni.dev";
-            }}
-          >
-            Contact Sales
+          <Button variant="solid" disabled>
+            Coming soon
           </Button>
         )}
       </CardHeader>
 
       <CardContent className="flex-1 p-4">
-        {ENTERPRISE_FEATURES.map((feature) => (
+        {TEAM_FEATURES.map((feature) => (
           <div key={feature.name} className="flex items-start gap-2 text-left">
             <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
             <p>{feature.name}</p>
@@ -215,6 +245,16 @@ const PricingPage = () => {
       return true;
     });
 
+  // Extract Team price from Stripe (if it exists) so it renders via TeamTierCard
+  const teamPrice =
+    filteredPrices.find(
+      (p: Price) =>
+        p.metadata?.tier === "team" || p.product.name.toLowerCase() === "team",
+    ) ?? null;
+
+  // Remaining prices (exclude Team since it has its own card)
+  const cardPrices = filteredPrices.filter((p: Price) => p !== teamPrice);
+
   return (
     <div className="relative flex h-full flex-col items-center px-4 py-8 text-center">
       {/* Background glow orb */}
@@ -249,7 +289,7 @@ const PricingPage = () => {
           >
             <FreeTierCard tier={tier} />
 
-            {filteredPrices.map((price: Price) => (
+            {cardPrices.map((price: Price) => (
               <PriceCard
                 key={price.id}
                 price={price}
@@ -258,10 +298,22 @@ const PricingPage = () => {
               />
             ))}
 
-            <EnterpriseTierCard tier={tier} />
+            <TeamTierCard
+              tier={tier}
+              teamPrice={teamPrice}
+              orgSubscriptions={orgSubscriptions}
+              organizations={organizations}
+            />
           </TabsContent>
         )}
       </TabsRootProvider>
+
+      <p className="mt-8 text-center text-muted-foreground text-sm">
+        Need dedicated capacity?{" "}
+        <a href="mailto:sales@omni.dev" className="text-primary underline">
+          Contact Sales
+        </a>
+      </p>
 
       <FrequentlyAskedQuestions className="mt-12 w-full" />
     </div>

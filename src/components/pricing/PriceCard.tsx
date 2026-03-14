@@ -46,14 +46,14 @@ type Props = {
 };
 
 // Synapse tier hierarchy for upgrade logic
-const TIER_ORDER = ["free", "pro", "enterprise"] as const;
+const TIER_ORDER = ["free", "pro", "team"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
 // Stripe metadata uses "basic" for the first paid tier; normalize to "pro"
 const normalizeTier = (raw: string | undefined): Tier => {
   if (raw === "basic") return "pro";
   if (raw === "pro") return raw;
-  if (raw === "enterprise") return "enterprise";
+  if (raw === "team") return "team";
   return "free";
 };
 
@@ -71,7 +71,6 @@ const PriceCard = ({
   const tier = normalizeTier(price.metadata?.tier);
   const isProTier = tier === "pro";
   const isFreeTier = tier === "free";
-  const isEnterpriseTier = tier === "enterprise";
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
@@ -86,7 +85,7 @@ const PriceCard = ({
     const subscription = orgSubscriptions[orgId];
     if (!subscription) return "free";
     const productName = subscription.product?.name?.toLowerCase() ?? "";
-    if (productName.includes("enterprise")) return "enterprise";
+    if (productName.includes("team")) return "team";
     if (productName.includes("pro")) return "pro";
     return "free";
   };
@@ -157,11 +156,6 @@ const PriceCard = ({
       return;
     }
 
-    if (isEnterpriseTier) {
-      window.location.href = "mailto:sales@omni.dev";
-      return;
-    }
-
     // Paid tier without orgs - open create workspace modal
     if (!allOrgs.length) {
       setIsCreateModalOpen(true);
@@ -169,14 +163,12 @@ const PriceCard = ({
     }
   };
 
-  const showDropdown =
-    !!auth && !isFreeTier && !isEnterpriseTier && !!allOrgs.length;
+  const showDropdown = !!auth && !isFreeTier && !!allOrgs.length;
 
   const buttonVariant = isProTier ? "gradient" : "solid";
 
   const getButtonContent = () => {
     if (isFreeTier) return "Get Started";
-    if (isEnterpriseTier) return "Contact Sales";
     return `Continue with ${capitalizeFirstLetter(tier)}`;
   };
 
@@ -320,15 +312,6 @@ const PriceCard = ({
               onClick={handleClick}
             >
               {isCheckoutLoading ? "Loading..." : getButtonContent()}
-            </Button>
-          ) : isEnterpriseTier ? (
-            <Button
-              variant={buttonVariant}
-              onClick={() => {
-                window.location.href = "mailto:sales@omni.dev";
-              }}
-            >
-              Contact Sales
             </Button>
           ) : (
             <Button
