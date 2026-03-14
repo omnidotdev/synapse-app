@@ -199,7 +199,12 @@ const SynapseNode: FC<{ node: NodeDef; isSoma?: boolean }> = ({
         <Html
           center
           distanceFactor={isSoma ? 5 : 7}
-          style={{ pointerEvents: "none", userSelect: "none" }}
+          zIndexRange={[100, 0]}
+          style={{
+            pointerEvents: "none",
+            userSelect: "none",
+            overflow: "visible",
+          }}
         >
           <div className="flex flex-col items-center whitespace-nowrap">
             {isSoma && (
@@ -386,10 +391,11 @@ const ResponsiveCamera: FC = () => {
 
   useMemo(() => {
     const aspect = size.width / size.height;
+    // Keep scene large on mobile — closer camera instead of pulling back
     if (aspect < 0.8) {
-      camera.position.z = 10;
+      camera.position.z = 8;
     } else if (aspect < 1.2) {
-      camera.position.z = 8.5;
+      camera.position.z = 7.5;
     } else {
       camera.position.z = 7;
     }

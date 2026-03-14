@@ -398,6 +398,11 @@
     transform: translateY(-1px);
   }
 
+  /* Animated flowing dashes for card connection lines */
+  .animate-dash-flow {
+    animation: dash-flow 20s linear infinite;
+  }
+
   /* Sidebar active state */
   .nav-active {
     background: var(--surface-elevated);
@@ -427,6 +432,12 @@
   }
 }
 
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% center;
@@ -442,5 +453,9 @@
     background: var(--primary);
     background-clip: text;
     -webkit-background-clip: text;
+  }
+
+  .animate-dash-flow {
+    animation: none;
   }
 }

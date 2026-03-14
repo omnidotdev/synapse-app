@@ -242,11 +242,11 @@ const LandingHybrid: FC = () => {
       </div>
 
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[480px] w-full sm:h-[80vh] sm:min-h-[560px] lg:h-[85vh] lg:min-h-[640px]">
-        <div className="absolute inset-0">
+      <section className="relative h-[70vh] min-h-[480px] w-full overflow-visible sm:h-[80vh] sm:min-h-[560px] lg:h-[85vh] lg:min-h-[640px]">
+        <div className="absolute inset-0 overflow-visible">
           <Canvas
             camera={{ position: [0, 0, 7], fov: 50 }}
-            style={{ background: "transparent" }}
+            style={{ background: "transparent", overflow: "visible" }}
             gl={{ alpha: true, antialias: true }}
             dpr={[1, 2]}
           >
