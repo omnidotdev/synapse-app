@@ -21,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FREE_PLAN_LIMITS } from "@/lib/config/plans.config";
 import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
 import { getUsageSummary } from "@/server/functions/usage";
@@ -101,13 +100,14 @@ function DailyBar({
 /**
  * Usage details page
  */
+// Source of truth: Omni API plan_feature (kind="operational") → Aether entitlements
 const EMPTY_USAGE: UsageSummary = {
   inputTokens: 0,
   outputTokens: 0,
   requests: 0,
-  inputTokensLimit: FREE_PLAN_LIMITS.inputTokens,
-  outputTokensLimit: FREE_PLAN_LIMITS.outputTokens,
-  requestsLimit: FREE_PLAN_LIMITS.requests,
+  inputTokensLimit: 0,
+  outputTokensLimit: 0,
+  requestsLimit: 0,
 };
 
 function UsagePage() {
@@ -115,10 +115,9 @@ function UsagePage() {
   const resolved = rawUsage ?? EMPTY_USAGE;
   const usage: UsageSummary = {
     ...resolved,
-    inputTokensLimit: resolved.inputTokensLimit ?? FREE_PLAN_LIMITS.inputTokens,
-    outputTokensLimit:
-      resolved.outputTokensLimit ?? FREE_PLAN_LIMITS.outputTokens,
-    requestsLimit: resolved.requestsLimit ?? FREE_PLAN_LIMITS.requests,
+    inputTokensLimit: resolved.inputTokensLimit ?? 0,
+    outputTokensLimit: resolved.outputTokensLimit ?? 0,
+    requestsLimit: resolved.requestsLimit ?? 0,
   };
   const [rangeDays, setRangeDays] = useState(30);
 
