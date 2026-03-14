@@ -21,6 +21,7 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppOrganizationsOrgSlugRouteImport } from './routes/_app/organizations/$orgSlug'
 import { Route as AppDashboardUsageRouteImport } from './routes/_app/dashboard/usage'
 import { Route as AppDashboardSettingsRouteImport } from './routes/_app/dashboard/settings'
+import { Route as AppDashboardProvidersRouteImport } from './routes/_app/dashboard/providers'
 import { Route as AppDashboardKeysRouteImport } from './routes/_app/dashboard/keys'
 import { Route as AppDashboardBillingRouteImport } from './routes/_app/dashboard/billing'
 import { Route as AppOrganizationsOrgSlugIndexRouteImport } from './routes/_app/organizations/$orgSlug/index'
@@ -91,6 +92,11 @@ const AppDashboardUsageRoute = AppDashboardUsageRouteImport.update({
 const AppDashboardSettingsRoute = AppDashboardSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppDashboardRoute,
+} as any)
+const AppDashboardProvidersRoute = AppDashboardProvidersRouteImport.update({
+  id: '/providers',
+  path: '/providers',
   getParentRoute: () => AppDashboardRoute,
 } as any)
 const AppDashboardKeysRoute = AppDashboardKeysRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/dashboard/billing': typeof AppDashboardBillingRoute
   '/dashboard/keys': typeof AppDashboardKeysRoute
+  '/dashboard/providers': typeof AppDashboardProvidersRoute
   '/dashboard/settings': typeof AppDashboardSettingsRoute
   '/dashboard/usage': typeof AppDashboardUsageRoute
   '/organizations/$orgSlug': typeof AppOrganizationsOrgSlugRouteWithChildren
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/dashboard/billing': typeof AppDashboardBillingRoute
   '/dashboard/keys': typeof AppDashboardKeysRoute
+  '/dashboard/providers': typeof AppDashboardProvidersRoute
   '/dashboard/settings': typeof AppDashboardSettingsRoute
   '/dashboard/usage': typeof AppDashboardUsageRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -221,6 +229,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/_app/dashboard/billing': typeof AppDashboardBillingRoute
   '/_app/dashboard/keys': typeof AppDashboardKeysRoute
+  '/_app/dashboard/providers': typeof AppDashboardProvidersRoute
   '/_app/dashboard/settings': typeof AppDashboardSettingsRoute
   '/_app/dashboard/usage': typeof AppDashboardUsageRoute
   '/_app/organizations/$orgSlug': typeof AppOrganizationsOrgSlugRouteWithChildren
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/dashboard/billing'
     | '/dashboard/keys'
+    | '/dashboard/providers'
     | '/dashboard/settings'
     | '/dashboard/usage'
     | '/organizations/$orgSlug'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/dashboard/billing'
     | '/dashboard/keys'
+    | '/dashboard/providers'
     | '/dashboard/settings'
     | '/dashboard/usage'
     | '/api/auth/$'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/_app/dashboard/billing'
     | '/_app/dashboard/keys'
+    | '/_app/dashboard/providers'
     | '/_app/dashboard/settings'
     | '/_app/dashboard/usage'
     | '/_app/organizations/$orgSlug'
@@ -408,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardSettingsRouteImport
       parentRoute: typeof AppDashboardRoute
     }
+    '/_app/dashboard/providers': {
+      id: '/_app/dashboard/providers'
+      path: '/providers'
+      fullPath: '/dashboard/providers'
+      preLoaderRoute: typeof AppDashboardProvidersRouteImport
+      parentRoute: typeof AppDashboardRoute
+    }
     '/_app/dashboard/keys': {
       id: '/_app/dashboard/keys'
       path: '/keys'
@@ -498,6 +517,7 @@ declare module '@tanstack/react-router' {
 interface AppDashboardRouteChildren {
   AppDashboardBillingRoute: typeof AppDashboardBillingRoute
   AppDashboardKeysRoute: typeof AppDashboardKeysRoute
+  AppDashboardProvidersRoute: typeof AppDashboardProvidersRoute
   AppDashboardSettingsRoute: typeof AppDashboardSettingsRoute
   AppDashboardUsageRoute: typeof AppDashboardUsageRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
@@ -506,6 +526,7 @@ interface AppDashboardRouteChildren {
 const AppDashboardRouteChildren: AppDashboardRouteChildren = {
   AppDashboardBillingRoute: AppDashboardBillingRoute,
   AppDashboardKeysRoute: AppDashboardKeysRoute,
+  AppDashboardProvidersRoute: AppDashboardProvidersRoute,
   AppDashboardSettingsRoute: AppDashboardSettingsRoute,
   AppDashboardUsageRoute: AppDashboardUsageRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
@@ -591,12 +612,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
