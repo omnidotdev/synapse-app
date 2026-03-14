@@ -1,9 +1,7 @@
-import { lazy, Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense, lazy } from "react";
 
-const LandingHybrid = lazy(
-  () => import("@/components/landing/LandingHybrid"),
-);
+const LandingHybrid = lazy(() => import("@/components/landing/LandingHybrid"));
 
 export const Route = createFileRoute("/")({
   component: HomePage,
