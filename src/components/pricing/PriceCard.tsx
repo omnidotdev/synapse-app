@@ -177,8 +177,8 @@ const PriceCard = ({
       <CardRoot
         key={price.product.name}
         className={cn(
-          "card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
-          isProTier && "glow-primary border-primary/30",
+          "flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
+          isProTier && "border-primary/30",
         )}
       >
         <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">

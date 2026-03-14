@@ -389,12 +389,10 @@
     );
     color: white;
     border: none;
-    box-shadow: var(--glow-soft);
     transition: all 0.2s ease;
   }
 
   .btn-gradient:hover {
-    box-shadow: var(--glow-primary);
     transform: translateY(-1px);
   }
 

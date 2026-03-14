@@ -86,7 +86,7 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
   });
 
   return (
-    <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
+    <CardRoot className="flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
           <CardTitle className="text-lg">Free</CardTitle>
@@ -169,7 +169,7 @@ const TeamTierCard = ({
 
   // Static fallback when Team price isn't in Stripe yet
   return (
-    <CardRoot className="card-glow-hover flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
+    <CardRoot className="flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80">
       <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
         <div className="flex flex-1 flex-col">
           <CardTitle className="text-lg">Team</CardTitle>
@@ -270,7 +270,7 @@ const PricingPage = () => {
 
       <TabsRootProvider
         value={tabs}
-        className="mt-8 flex w-full flex-col lg:w-fit"
+        className="mt-12 flex w-full flex-col lg:w-fit"
       >
         <TabsList className="place-self-center">
           <TabsTrigger value="month">Monthly</TabsTrigger>
@@ -285,7 +285,7 @@ const PricingPage = () => {
         {tabs.value != null && (
           <TabsContent
             value={tabs.value}
-            className="flex flex-col items-center gap-4 lg:flex-row lg:items-stretch"
+            className="mt-4 flex flex-col items-center gap-6 lg:flex-row lg:items-stretch"
           >
             <FreeTierCard tier={tier} />
 
