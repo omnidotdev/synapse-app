@@ -50,7 +50,7 @@ const FREE_PRICE: Price = {
       { name: "1,000 requests per month" },
       { name: "Bring your own provider keys" },
       { name: "All models supported" },
-      { name: "Basic analytics (7-day retention)" },
+      { name: "Usage analytics" },
     ],
   },
   metadata: {},
@@ -58,13 +58,10 @@ const FREE_PRICE: Price = {
 
 const TEAM_FEATURES = [
   { name: "200,000 requests per month" },
-  { name: "BYOK + managed keys (pass-through + 10%)" },
-  { name: "25M managed tokens/month included" },
+  { name: "Bring your own provider keys" },
   { name: "Unlimited API keys" },
-  { name: "Full analytics (1-year retention)" },
-  { name: "Team RBAC" },
-  { name: "Audit logs with export" },
-  { name: "SSO" },
+  { name: "Usage analytics" },
+  { name: "Team workspaces with roles" },
   { name: "Priority support" },
 ];
 
