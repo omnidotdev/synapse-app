@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
 import {
-  listOrganizationMembers,
   inviteOrganizationMember,
+  listOrganizationMembers,
   removeOrganizationMember,
   updateOrganizationMemberRole,
 } from "@/server/functions/organizations";
