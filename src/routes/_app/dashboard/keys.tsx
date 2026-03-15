@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   ClipboardCopyIcon,
   InfoIcon,
@@ -34,14 +34,46 @@ import {
   listApiKeys,
   revokeApiKey,
 } from "@/server/functions/apiKeys";
+import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
 
+import type { EntitlementsResponse } from "@omnidotdev/providers";
 import type { ApiKey } from "@/server/functions/apiKeys";
+
+/**
+ * Extract the max API keys limit from entitlements.
+ * Returns null for unlimited, or a number for the cap.
+ */
+const getMaxApiKeys = (
+  entitlements: EntitlementsResponse | null,
+): number | null => {
+  if (!entitlements) return 1;
+  const entry = entitlements.entitlements?.find(
+    (e) => e.featureKey === "max_api_keys",
+  );
+  if (!entry?.value) return 1;
+  const val = Number.parseInt(entry.value.replace(/"/g, ""), 10);
+  return val === -1 ? null : val;
+};
 
 export const Route = createFileRoute("/_app/dashboard/keys")({
   head: () => ({
     meta: createMetaTags({ title: "API Keys" }),
   }),
   errorComponent: RouteErrorFallback,
+  loader: async () => {
+    const { session } = await fetchSession();
+    if (!session?.user.identityProviderId) {
+      return { entitlements: null };
+    }
+    const entitlements = await getEntitlements({
+      data: {
+        entityType: "user",
+        entityId: session.user.identityProviderId,
+      },
+    }).catch(() => null);
+    return { entitlements };
+  },
   component: KeysPage,
 });
 
@@ -202,6 +234,7 @@ function RevokeConfirm({
  * API keys management page
  */
 function KeysPage() {
+  const { entitlements } = Route.useLoaderData();
   const [showCreate, setShowCreate] = useState(false);
   const [revoking, setRevoking] = useState<ApiKey | null>(null);
 
@@ -211,6 +244,9 @@ function KeysPage() {
     // Ensure fresh data on every mount (e.g. after navigating away and back)
     staleTime: 0,
   });
+
+  const maxKeys = getMaxApiKeys(entitlements);
+  const atLimit = maxKeys !== null && keys.length >= maxKeys;
 
   return (
     <div className="flex flex-col gap-6">
@@ -222,10 +258,23 @@ function KeysPage() {
           </p>
         </div>
         {!showCreate && (
-          <Button variant="solid" onClick={() => setShowCreate(true)}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            Create key
-          </Button>
+          <div className="flex items-center gap-3">
+            {maxKeys !== null && (
+              <span className="text-muted-foreground text-sm">
+                {keys.length}/{maxKeys} keys
+              </span>
+            )}
+            {atLimit ? (
+              <Button variant="outline" asChild>
+                <Link to="/pricing">Upgrade for more keys</Link>
+              </Button>
+            ) : (
+              <Button variant="solid" onClick={() => setShowCreate(true)}>
+                <PlusIcon className="mr-2 h-4 w-4" />
+                Create key
+              </Button>
+            )}
+          </div>
         )}
       </div>
 

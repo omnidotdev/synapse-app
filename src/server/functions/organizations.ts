@@ -2,173 +2,201 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { AUTH_BASE_URL } from "@/lib/config/env.config";
+import gatekeeperOrg from "@/lib/config/gatekeeper";
 import { authMiddleware } from "@/server/middleware";
 import { requirePermission } from "./authorization";
 
-interface Member {
-  id: string;
-  userId: string;
-  role: string;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  };
-}
+export type { GatekeeperOrganization as Organization } from "@omnidotdev/providers";
+
+const createOrganizationSchema = z.object({
+  name: z.string().min(3, "Organization name must be at least 3 characters"),
+  slug: z.string().optional(),
+});
+
+const getOrganizationBySlugSchema = z.object({
+  slug: z.string().min(1),
+});
 
 /**
- * Fetch organization members from Gatekeeper
+ * Create a new organization via Gatekeeper
+ * @knipignore
  */
-export const getOrgMembers = createServerFn()
+export const createOrganization = createServerFn({ method: "POST" })
+  .inputValidator((data) => createOrganizationSchema.parse(data))
   .middleware([authMiddleware])
-  .inputValidator((data) =>
-    z.object({ organizationId: z.string().min(1) }).parse(data),
-  )
-  .handler(async ({ data, context }): Promise<Member[]> => {
-    await requirePermission(
-      context.session.user.id,
-      "organization",
-      data.organizationId,
-      "viewer",
-    );
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
 
-    const { accessToken } = context.session;
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
 
-    const res = await fetch(
-      `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      },
-    );
-
-    if (!res.ok) throw new Error(`Failed to fetch members: ${res.status}`);
-
-    const json = await res.json();
-
-    return json.data ?? [];
+    return gatekeeperOrg.createOrganization(data, accessToken);
   });
 
-const inviteSchema = z.object({
-  organizationId: z.string().min(1),
+const inviteOrganizationMemberSchema = z.object({
+  organizationId: z.string(),
   email: z.string().email(),
   role: z.enum(["admin", "member"]),
 });
 
 /**
- * Invite a member to an organization via Gatekeeper
+ * Invite a member to an organization via Gatekeeper.
+ * Runs server-side to avoid CORS issues with the IDP's Better Auth endpoint
  */
-export const inviteOrgMember = createServerFn()
+export const inviteOrganizationMember = createServerFn({ method: "POST" })
+  .inputValidator((data) => inviteOrganizationMemberSchema.parse(data))
   .middleware([authMiddleware])
-  .inputValidator((data) => inviteSchema.parse(data))
-  .handler(async ({ data, context }): Promise<boolean> => {
-    await requirePermission(
-      context.session.user.id,
-      "organization",
-      data.organizationId,
-      "admin",
-    );
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
 
-    const { accessToken } = context.session;
-
-    const res = await fetch(
-      `${AUTH_BASE_URL}/api/auth/organization/invite-member`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          // Satisfy Better Auth CSRF check for server-to-server calls
-          Origin: AUTH_BASE_URL ?? "",
-        },
-        body: JSON.stringify({
-          organizationId: data.organizationId,
-          email: data.email,
-          role: data.role,
-        }),
-      },
-    );
-
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.message ?? `Invite failed: ${res.status}`);
+    if (!accessToken) {
+      throw new Error("No access token available");
     }
 
-    return true;
+    return gatekeeperOrg.inviteMember(data, accessToken);
   });
 
-const updateRoleSchema = z.object({
-  organizationId: z.string().min(1),
-  memberId: z.string().min(1),
+const listOrganizationInvitationsSchema = z.object({
+  organizationId: z.string(),
+});
+
+/**
+ * List invitations for an organization via Gatekeeper.
+ * Runs server-side to avoid CORS issues with the IDP's Better Auth endpoint
+ */
+export const listOrganizationInvitations = createServerFn({ method: "GET" })
+  .inputValidator((data) => listOrganizationInvitationsSchema.parse(data))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
+
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
+
+    return gatekeeperOrg.listInvitations(data.organizationId, accessToken);
+  });
+
+const cancelOrganizationInvitationSchema = z.object({
+  invitationId: z.string(),
+});
+
+/**
+ * Cancel an organization invitation via Gatekeeper.
+ * Runs server-side to avoid CORS issues with the IDP's Better Auth endpoint
+ */
+export const cancelOrganizationInvitation = createServerFn({ method: "POST" })
+  .inputValidator((data) => cancelOrganizationInvitationSchema.parse(data))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
+
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
+
+    return gatekeeperOrg.cancelInvitation(data.invitationId, accessToken);
+  });
+
+/**
+ * Get an organization by slug.
+ * Used when JWT claims are stale and don't include a newly created org
+ */
+export const getOrganizationBySlug = createServerFn({ method: "GET" })
+  .inputValidator((data) => getOrganizationBySlugSchema.parse(data))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
+
+    if (!accessToken) {
+      return null;
+    }
+
+    return gatekeeperOrg.getOrganizationBySlug(data.slug, accessToken);
+  });
+
+/**
+ * Fetch an organization by slug without authentication.
+ * Used for public board access when no JWT is available
+ */
+export const fetchOrganizationBySlug = createServerFn()
+  .inputValidator((data) => getOrganizationBySlugSchema.parse(data))
+  .handler(async ({ data }) => {
+    try {
+      return await gatekeeperOrg.fetchOrganizationBySlug(data.slug);
+    } catch (error) {
+      console.error("Error fetching organization by slug:", error);
+      return null;
+    }
+  });
+
+const listOrganizationMembersSchema = z.object({
+  organizationId: z.string(),
+});
+
+/**
+ * List members for an organization via Gatekeeper
+ */
+export const listOrganizationMembers = createServerFn({ method: "GET" })
+  .inputValidator((data) => listOrganizationMembersSchema.parse(data))
+  .middleware([authMiddleware])
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
+
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
+
+    const result = await gatekeeperOrg.listMembers(
+      data.organizationId,
+      accessToken,
+    );
+
+    return result.data ?? [];
+  });
+
+const updateOrganizationMemberRoleSchema = z.object({
+  organizationId: z.string(),
+  memberId: z.string(),
   role: z.enum(["admin", "member"]),
 });
 
 /**
- * Update a member's role in an organization
+ * Update a member's role via Gatekeeper
  */
-export const updateMemberRole = createServerFn()
+export const updateOrganizationMemberRole = createServerFn({ method: "POST" })
+  .inputValidator((data) => updateOrganizationMemberRoleSchema.parse(data))
   .middleware([authMiddleware])
-  .inputValidator((data) => updateRoleSchema.parse(data))
-  .handler(async ({ data, context }): Promise<boolean> => {
-    await requirePermission(
-      context.session.user.id,
-      "organization",
-      data.organizationId,
-      "admin",
-    );
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
 
-    const { accessToken } = context.session;
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
 
-    const res = await fetch(
-      `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}&memberId=${data.memberId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ role: data.role }),
-      },
-    );
-
-    if (!res.ok) throw new Error(`Role update failed: ${res.status}`);
-
-    return true;
+    return gatekeeperOrg.updateMemberRole(data, accessToken);
   });
 
-const removeMemberSchema = z.object({
-  organizationId: z.string().min(1),
-  memberId: z.string().min(1),
+const removeOrganizationMemberSchema = z.object({
+  organizationId: z.string(),
+  memberId: z.string(),
 });
 
 /**
- * Remove a member from an organization
+ * Remove a member from an organization via Gatekeeper
  */
-export const removeMember = createServerFn()
+export const removeOrganizationMember = createServerFn({ method: "POST" })
+  .inputValidator((data) => removeOrganizationMemberSchema.parse(data))
   .middleware([authMiddleware])
-  .inputValidator((data) => removeMemberSchema.parse(data))
-  .handler(async ({ data, context }): Promise<boolean> => {
-    await requirePermission(
-      context.session.user.id,
-      "organization",
-      data.organizationId,
-      "admin",
-    );
+  .handler(async ({ data, context }) => {
+    const accessToken = context.session.accessToken;
 
-    const { accessToken } = context.session;
+    if (!accessToken) {
+      throw new Error("No access token available");
+    }
 
-    const res = await fetch(
-      `${AUTH_BASE_URL}/api/organization/members?orgId=${data.organizationId}&memberId=${data.memberId}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${accessToken}` },
-      },
-    );
-
-    if (!res.ok) throw new Error(`Remove member failed: ${res.status}`);
-
-    return true;
+    return gatekeeperOrg.removeMember(data, accessToken);
   });
 
 const updateOrgSchema = z.object({
@@ -256,5 +284,3 @@ export const deleteOrganization = createServerFn()
 
     return true;
   });
-
-export type { Member };

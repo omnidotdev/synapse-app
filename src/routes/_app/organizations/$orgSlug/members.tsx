@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/card";
 import { useOrganization } from "@/lib/context";
 import {
-  getOrgMembers,
-  inviteOrgMember,
-  removeMember,
-  updateMemberRole,
+  listOrganizationMembers,
+  inviteOrganizationMember,
+  removeOrganizationMember,
+  updateOrganizationMemberRole,
 } from "@/server/functions/organizations";
 
 export const Route = createFileRoute("/_app/organizations/$orgSlug/members")({
@@ -42,7 +42,7 @@ function InviteForm({
 
   const { mutateAsync: invite, isPending } = useMutation({
     mutationFn: async () =>
-      await inviteOrgMember({ data: { organizationId, email, role } }),
+      await inviteOrganizationMember({ data: { organizationId, email, role } }),
     onSuccess: () => {
       toast("Invitation sent");
       queryClient.invalidateQueries({
@@ -118,7 +118,10 @@ function OrgMembersPage() {
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["orgMembers", org?.id],
-    queryFn: () => getOrgMembers({ data: { organizationId: org?.id ?? "" } }),
+    queryFn: () =>
+      listOrganizationMembers({
+        data: { organizationId: org?.id ?? "" },
+      }),
     enabled: !!org && !isPersonal,
   });
 
@@ -130,7 +133,7 @@ function OrgMembersPage() {
       memberId: string;
       role: "admin" | "member";
     }) =>
-      await updateMemberRole({
+      await updateOrganizationMemberRole({
         data: { organizationId: org?.id ?? "", memberId, role },
       }),
     onSuccess: () => {
@@ -142,7 +145,7 @@ function OrgMembersPage() {
 
   const { mutateAsync: remove } = useMutation({
     mutationFn: async (memberId: string) =>
-      await removeMember({
+      await removeOrganizationMember({
         data: { organizationId: org?.id ?? "", memberId },
       }),
     onSuccess: () => {

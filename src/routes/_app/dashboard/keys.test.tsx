@@ -27,6 +27,14 @@ mock.module("@/server/functions/apiKeys", () => ({
 
 // Import after mocking
 const { Route } = await import("./keys");
+
+// Mock loader data with unlimited keys entitlement
+spyOn(Route, "useLoaderData").mockReturnValue({
+  entitlements: {
+    entitlements: [{ featureKey: "max_api_keys", value: '"-1"' }],
+  },
+});
+
 const KeysPage = Route.options.component as NonNullable<
   typeof Route.options.component
 >;

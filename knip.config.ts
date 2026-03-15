@@ -28,7 +28,7 @@ const knipConfig: KnipConfig = {
     "src/lib/config/env.config.ts",
     "src/lib/context/workspace.context.tsx",
     "src/server/functions/entitlements.ts",
-    "src/server/functions/providerKeys.ts",
+    "src/server/functions/organizations.ts",
   ],
   ignoreDependencies: [
     "dotenv",
