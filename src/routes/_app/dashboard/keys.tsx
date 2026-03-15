@@ -104,7 +104,16 @@ function CreateKeyForm({ onClose }: { onClose: () => void }) {
       setCreatedKey(result.rawKey);
       queryClient.invalidateQueries({ queryKey: ["apiKeys"] });
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      if (error.message.includes("limit reached")) {
+        toast.error(
+          "API key limit reached. Upgrade your plan for more keys",
+        );
+        onClose();
+        return;
+      }
+      toast.error(error.message);
+    },
   });
 
   const copyKey = async () => {

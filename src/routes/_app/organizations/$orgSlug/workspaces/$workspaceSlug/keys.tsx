@@ -36,8 +36,8 @@ import {
   revokeWorkspaceApiKey,
 } from "@/server/functions/workspaceApiKeys";
 
-import type { ApiKey } from "@/server/functions/apiKeys";
 import type { EntitlementsResponse } from "@omnidotdev/providers";
+import type { ApiKey } from "@/server/functions/apiKeys";
 
 /**
  * Extract the max API keys limit from entitlements.
@@ -110,7 +110,16 @@ function CreateKeyForm({
         queryKey: ["workspaceApiKeys", workspaceId],
       });
     },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      if (error.message.includes("limit reached")) {
+        toast.error(
+          "API key limit reached. Upgrade your plan for more keys",
+        );
+        onClose();
+        return;
+      }
+      toast.error(error.message);
+    },
   });
 
   const copyKey = async () => {
