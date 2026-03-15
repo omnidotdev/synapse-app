@@ -49,6 +49,7 @@ const FREE_PRICE: Price = {
     marketing_features: [
       { name: "1,000 requests per month" },
       { name: "Bring your own provider keys" },
+      { name: "1 API key" },
       { name: "All models supported" },
       { name: "Usage analytics" },
     ],
