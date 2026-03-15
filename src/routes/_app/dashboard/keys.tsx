@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import createMetaTags from "@/lib/util/createMetaTags";
+import getMaxApiKeys from "@/lib/util/getMaxApiKeys";
 import {
   createApiKey,
   listApiKeys,
@@ -37,24 +38,7 @@ import {
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 
-import type { EntitlementsResponse } from "@omnidotdev/providers";
 import type { ApiKey } from "@/server/functions/apiKeys";
-
-/**
- * Extract the max API keys limit from entitlements.
- * Returns null for unlimited, or a number for the cap.
- */
-const getMaxApiKeys = (
-  entitlements: EntitlementsResponse | null,
-): number | null => {
-  if (!entitlements) return 1;
-  const entry = entitlements.entitlements?.find(
-    (e) => e.featureKey === "max_api_keys",
-  );
-  if (!entry?.value) return 1;
-  const val = Number.parseInt(entry.value.replace(/"/g, ""), 10);
-  return val === -1 ? null : val;
-};
 
 export const Route = createFileRoute("/_app/dashboard/keys")({
   head: () => ({
@@ -106,9 +90,7 @@ function CreateKeyForm({ onClose }: { onClose: () => void }) {
     },
     onError: (error) => {
       if (error.message.includes("limit reached")) {
-        toast.error(
-          "API key limit reached. Upgrade your plan for more keys",
-        );
+        toast.error("API key limit reached. Upgrade your plan for more keys");
         onClose();
         return;
       }

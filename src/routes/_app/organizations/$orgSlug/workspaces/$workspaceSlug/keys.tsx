@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useWorkspace } from "@/lib/context";
+import getMaxApiKeys from "@/lib/util/getMaxApiKeys";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import {
@@ -36,24 +37,7 @@ import {
   revokeWorkspaceApiKey,
 } from "@/server/functions/workspaceApiKeys";
 
-import type { EntitlementsResponse } from "@omnidotdev/providers";
 import type { ApiKey } from "@/server/functions/apiKeys";
-
-/**
- * Extract the max API keys limit from entitlements.
- * Returns null for unlimited, or a number for the cap.
- */
-const getMaxApiKeys = (
-  entitlements: EntitlementsResponse | null,
-): number | null => {
-  if (!entitlements) return 1;
-  const entry = entitlements.entitlements?.find(
-    (e) => e.featureKey === "max_api_keys",
-  );
-  if (!entry?.value) return 1;
-  const val = Number.parseInt(entry.value.replace(/"/g, ""), 10);
-  return val === -1 ? null : val;
-};
 
 export const Route = createFileRoute(
   "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/keys",
@@ -112,9 +96,7 @@ function CreateKeyForm({
     },
     onError: (error) => {
       if (error.message.includes("limit reached")) {
-        toast.error(
-          "API key limit reached. Upgrade your plan for more keys",
-        );
+        toast.error("API key limit reached. Upgrade your plan for more keys");
         onClose();
         return;
       }
@@ -267,6 +249,7 @@ function WorkspaceKeysPage() {
     queryFn: () =>
       listWorkspaceApiKeys({ data: { workspaceId: workspace?.id as string } }),
     enabled: !!workspace,
+    staleTime: 0,
   });
 
   const maxKeys = getMaxApiKeys(entitlements);
