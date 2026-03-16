@@ -18,7 +18,7 @@ import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
 
-import type { Entitlement } from "@omnidotdev/providers";
+import type { Entitlement } from "@omnidotdev/providers/billing";
 
 export const Route = createFileRoute("/_app/organizations/$orgSlug/billing")({
   loader: async ({ params }) => {

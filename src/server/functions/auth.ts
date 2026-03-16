@@ -1,4 +1,4 @@
-import { ensureFreshAccessToken } from "@omnidotdev/providers";
+import { ensureFreshAccessToken } from "@omnidotdev/providers/auth";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeaders } from "@tanstack/react-start/server";

@@ -34,7 +34,7 @@ import { capitalizeFirstLetter } from "@/lib/util";
 import cn from "@/lib/utils";
 import { createCheckoutWithWorkspace } from "@/server/functions/subscriptions";
 
-import type { Price, Subscription } from "@omnidotdev/providers";
+import type { Price, Subscription } from "@omnidotdev/providers/billing";
 import type { Organization } from "@/lib/context/organization.context";
 
 export type { Price };

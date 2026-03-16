@@ -1,8 +1,8 @@
-import { createAuthzProvider } from "@omnidotdev/providers";
+import { createAuthzProvider } from "@omnidotdev/providers/authz";
 
 import { AUTHZ_API_URL, AUTHZ_ENABLED } from "@/lib/config/env.config";
 
-import type { AuthzProvider } from "@omnidotdev/providers";
+import type { AuthzProvider } from "@omnidotdev/providers/authz";
 
 let instance: AuthzProvider | null | undefined;
 

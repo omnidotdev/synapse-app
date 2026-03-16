@@ -1,6 +1,6 @@
 import capitalizeFirstLetter from "./capitalizeFirstLetter";
 
-import type { EntitlementsResponse } from "@omnidotdev/providers";
+import type { EntitlementsResponse } from "@omnidotdev/providers/billing";
 
 /**
  * Extract the plan tier from an entitlements response.

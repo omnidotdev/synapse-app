@@ -1,4 +1,4 @@
-import type { EntitlementsResponse } from "@omnidotdev/providers";
+import type { EntitlementsResponse } from "@omnidotdev/providers/billing";
 
 /**
  * Extract max_api_keys limit from entitlements.

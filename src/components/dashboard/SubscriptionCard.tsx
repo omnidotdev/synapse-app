@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import type { Subscription } from "@omnidotdev/providers";
+import type { Subscription } from "@omnidotdev/providers/billing";
 
 interface SubscriptionCardProps {
   subscription: Subscription;

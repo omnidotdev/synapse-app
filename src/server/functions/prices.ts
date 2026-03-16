@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import app from "@/lib/config/app.config";
 import getBilling from "@/lib/providers/billing";
 
-import type { Price } from "@omnidotdev/providers";
+import type { Price } from "@omnidotdev/providers/billing";
 
 /**
  * Fetch all prices for this app.

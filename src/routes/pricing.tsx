@@ -24,7 +24,7 @@ import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
 import { getOrgSubscription } from "@/server/functions/subscriptions";
 
-import type { Subscription } from "@omnidotdev/providers";
+import type { Subscription } from "@omnidotdev/providers/billing";
 import type { Price } from "@/components/pricing";
 import type { Organization } from "@/lib/context/organization.context";
 
