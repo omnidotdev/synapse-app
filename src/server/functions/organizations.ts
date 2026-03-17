@@ -54,6 +54,33 @@ export const inviteOrganizationMember = createServerFn({ method: "POST" })
       throw new Error("No access token available");
     }
 
+    // Check for duplicate pending invitations and existing members
+    const [invitations, membersResponse] = await Promise.all([
+      gatekeeperOrg.listInvitations(data.organizationId, accessToken),
+      gatekeeperOrg.listMembers(data.organizationId, accessToken),
+    ]);
+
+    const normalizedEmail = data.email.toLowerCase();
+
+    const hasActivePendingInvite = invitations.some(
+      (inv) =>
+        inv.status === "pending" &&
+        new Date(inv.expiresAt) > new Date() &&
+        inv.email.toLowerCase() === normalizedEmail,
+    );
+
+    if (hasActivePendingInvite) {
+      throw new Error("An invitation is already pending for this email");
+    }
+
+    const isExistingMember = membersResponse.data.some(
+      (m) => m.user.email.toLowerCase() === normalizedEmail,
+    );
+
+    if (isExistingMember) {
+      throw new Error("This email is already a member of the organization");
+    }
+
     return gatekeeperOrg.inviteMember(data, accessToken);
   });
 
