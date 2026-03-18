@@ -213,7 +213,7 @@ const AmbientBackground: FC = () => {
     <instancedMesh ref={ref} args={[undefined, undefined, count]}>
       <sphereGeometry args={[0.02, 6, 6]} />
       <meshBasicMaterial
-        color={new THREE.Color("oklch(0.66 0.22 264)")}
+        color={new THREE.Color("#6366f1")}
         transparent
         opacity={0.08}
       />

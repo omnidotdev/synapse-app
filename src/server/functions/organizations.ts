@@ -48,6 +48,13 @@ export const inviteOrganizationMember = createServerFn({ method: "POST" })
   .inputValidator((data) => inviteOrganizationMemberSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "admin",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {
@@ -96,6 +103,13 @@ export const listOrganizationInvitations = createServerFn({ method: "GET" })
   .inputValidator((data) => listOrganizationInvitationsSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "viewer",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {
@@ -106,6 +120,7 @@ export const listOrganizationInvitations = createServerFn({ method: "GET" })
   });
 
 const cancelOrganizationInvitationSchema = z.object({
+  organizationId: z.string(),
   invitationId: z.string(),
 });
 
@@ -117,6 +132,13 @@ export const cancelOrganizationInvitation = createServerFn({ method: "POST" })
   .inputValidator((data) => cancelOrganizationInvitationSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "admin",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {
@@ -169,6 +191,13 @@ export const listOrganizationMembers = createServerFn({ method: "GET" })
   .inputValidator((data) => listOrganizationMembersSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "viewer",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {
@@ -196,6 +225,13 @@ export const updateOrganizationMemberRole = createServerFn({ method: "POST" })
   .inputValidator((data) => updateOrganizationMemberRoleSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "admin",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {
@@ -217,6 +253,13 @@ export const removeOrganizationMember = createServerFn({ method: "POST" })
   .inputValidator((data) => removeOrganizationMemberSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
+    await requirePermission(
+      context.session.user.id,
+      "organization",
+      data.organizationId,
+      "admin",
+    );
+
     const accessToken = context.session.accessToken;
 
     if (!accessToken) {

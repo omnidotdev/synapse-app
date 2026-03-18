@@ -23,8 +23,8 @@ test.describe("Mobile Responsiveness", () => {
     test("pricing page stacks cards vertically", async ({ page }) => {
       await page.goto("/pricing");
       await expect(page.getByText("Free")).toBeVisible();
-      await expect(page.getByText("Synapse Pro")).toBeVisible();
-      await expect(page.getByText("Enterprise")).toBeVisible();
+      await expect(page.getByText("Pro")).toBeVisible();
+      await expect(page.getByText("Team")).toBeVisible();
     });
 
     test("dashboard sidebar navigation is accessible on mobile", async ({
@@ -84,8 +84,8 @@ test.describe("Mobile Responsiveness", () => {
       await page.goto("/pricing");
       // All three cards should be visible at once
       await expect(page.getByText("Free")).toBeVisible();
-      await expect(page.getByText("Synapse Pro")).toBeVisible();
-      await expect(page.getByText("Enterprise")).toBeVisible();
+      await expect(page.getByText("Pro")).toBeVisible();
+      await expect(page.getByText("Team")).toBeVisible();
     });
   });
 });

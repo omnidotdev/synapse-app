@@ -9,9 +9,9 @@ export const Route = createFileRoute(
   beforeLoad: async ({ params }) => {
     const workspaceSlug = params.workspaceSlug;
 
-    // Workspace-level read permission check via Warden
-    // workspaceId is resolved in the component from context;
-    // the beforeLoad check uses slug-based lookup for now
+    // TODO(warden): add workspace-level read permission check via Warden
+    // once slug-to-ID resolution is available in beforeLoad context.
+    // Data-level authZ is enforced by synapse-api's workspaces.plugin
     return { workspaceSlug };
   },
   component: WorkspaceLayout,

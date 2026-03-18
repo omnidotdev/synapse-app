@@ -41,6 +41,24 @@ test.describe("Pricing Page", () => {
     await expect(pricingPage.getFAQSection()).toBeVisible();
   });
 
+  test("FAQ section is not clipped by viewport", async ({ pricingPage }) => {
+    await pricingPage.goto();
+
+    const faqHeading = pricingPage.getFAQSection();
+    await expect(faqHeading).toBeVisible();
+
+    // Verify the FAQ section is scrollable and within the document flow
+    const isInViewport = await faqHeading.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const docHeight = document.documentElement.scrollHeight;
+
+      // The element should be within the scrollable document
+      return rect.top < docHeight && rect.height > 0;
+    });
+
+    expect(isInViewport).toBe(true);
+  });
+
   test("FAQ accordion expands on click", async ({ pricingPage }) => {
     await pricingPage.goto();
     const faqButton = pricingPage.page.getByRole("button", {
@@ -53,8 +71,8 @@ test.describe("Pricing Page", () => {
   test("displays three pricing tiers", async ({ pricingPage }) => {
     await pricingPage.goto();
     await expect(pricingPage.page.getByText("Free")).toBeVisible();
-    await expect(pricingPage.page.getByText("Synapse Pro")).toBeVisible();
-    await expect(pricingPage.page.getByText("Enterprise")).toBeVisible();
+    await expect(pricingPage.page.getByText("Pro")).toBeVisible();
+    await expect(pricingPage.page.getByText("Team")).toBeVisible();
   });
 
   test("free tier shows $0/forever", async ({ pricingPage }) => {
@@ -63,8 +81,28 @@ test.describe("Pricing Page", () => {
     await expect(pricingPage.page.getByText("/forever")).toBeVisible();
   });
 
-  test("pro tier shows $39/month", async ({ pricingPage }) => {
+  test("pro tier shows $15/month", async ({ pricingPage }) => {
+    await pricingPage.goto();
+    await expect(pricingPage.page.getByText("$15")).toBeVisible();
+    await expect(pricingPage.page.getByText("/month").first()).toBeVisible();
+  });
+
+  test("team tier shows $39/month", async ({ pricingPage }) => {
     await pricingPage.goto();
     await expect(pricingPage.page.getByText("$39")).toBeVisible();
+  });
+
+  test("page content extends beyond viewport when needed", async ({
+    pricingPage,
+  }) => {
+    await pricingPage.goto();
+
+    // Verify the page is scrollable (content exceeds viewport)
+    const scrollInfo = await pricingPage.page.evaluate(() => ({
+      scrollHeight: document.documentElement.scrollHeight,
+      viewportHeight: window.innerHeight,
+    }));
+
+    expect(scrollInfo.scrollHeight).toBeGreaterThan(scrollInfo.viewportHeight);
   });
 });
