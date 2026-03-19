@@ -6,7 +6,7 @@ import {
   ShieldCheckIcon,
   ZapIcon,
 } from "lucide-react";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { InternalLink } from "@/components/core";
@@ -221,8 +221,25 @@ const AmbientBackground: FC = () => {
   );
 };
 
+/** Detect mobile viewport for disabling touch-based orbit controls */
+const useIsMobile = (breakpoint = 640) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    setIsMobile(mq.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
 /** 3D hero graph + ambient background behind scrollable content */
 const LandingHybrid: FC = () => {
+  const isMobile = useIsMobile();
   return (
     <div className="relative flex flex-col">
       {/* Fixed ambient background */}
@@ -243,10 +260,17 @@ const LandingHybrid: FC = () => {
 
       {/* Hero */}
       <section className="relative h-[70vh] min-h-[480px] w-full overflow-visible sm:h-[80vh] sm:min-h-[560px] lg:h-[85vh] lg:min-h-[640px]">
-        <div className="absolute inset-0 overflow-visible">
+        <div
+          className="absolute inset-0 overflow-visible"
+          style={isMobile ? { touchAction: "pan-y" } : undefined}
+        >
           <Canvas
             camera={{ position: [0, 0, 7], fov: 50 }}
-            style={{ background: "transparent", overflow: "visible" }}
+            style={{
+              background: "transparent",
+              overflow: "visible",
+              ...(isMobile && { touchAction: "pan-y" }),
+            }}
             gl={{ alpha: true, antialias: true }}
             dpr={[1, 2]}
           >
@@ -255,6 +279,7 @@ const LandingHybrid: FC = () => {
               <OrbitControls
                 enablePan={false}
                 enableZoom={false}
+                enableRotate={!isMobile}
                 autoRotate
                 autoRotateSpeed={0.25}
                 maxPolarAngle={Math.PI * 0.62}
