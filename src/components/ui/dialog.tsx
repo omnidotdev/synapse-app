@@ -85,4 +85,4 @@ const DialogDescription = ({
   />
 );
 
-export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription };
+export { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle };

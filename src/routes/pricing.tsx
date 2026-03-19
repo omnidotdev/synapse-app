@@ -138,11 +138,13 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
 const TeamTierCard = ({
   tier,
   teamPrice,
+  interval,
   orgSubscriptions,
   organizations,
 }: {
   tier: string | null;
   teamPrice: Price | null;
+  interval: "month" | "year";
   orgSubscriptions: Record<string, Subscription | null>;
   organizations: Organization[];
 }) => {
@@ -177,9 +179,11 @@ const TeamTierCard = ({
           </CardDescription>
 
           <p className="font-semibold text-lg">
-            <span className="text-gradient">$39</span>
+            <span className="text-gradient">
+              ${interval === "year" ? Math.round(39 * 12 * 0.8) : 39}
+            </span>
             <span className="pl-1 font-normal text-muted-foreground text-sm">
-              /month
+              /{interval === "year" ? "year" : "month"}
             </span>
           </p>
         </div>
@@ -299,6 +303,7 @@ const PricingPage = () => {
             <TeamTierCard
               tier={tier}
               teamPrice={teamPrice}
+              interval={tabs.value as "month" | "year"}
               orgSubscriptions={orgSubscriptions}
               organizations={organizations}
             />

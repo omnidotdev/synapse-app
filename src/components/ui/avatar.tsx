@@ -93,7 +93,13 @@ const Avatar = ({
   </AvatarRoot>
 );
 
-export { AvatarRoot, AvatarFallback, AvatarImage, type AvatarProps };
-
 /** @knipignore */
-export { Avatar, AvatarProvider, useAvatar };
+export {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  type AvatarProps,
+  AvatarProvider,
+  AvatarRoot,
+  useAvatar,
+};

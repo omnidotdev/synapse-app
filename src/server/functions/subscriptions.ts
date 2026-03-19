@@ -162,7 +162,6 @@ export const cancelSubscription = createServerFn({ method: "POST" })
 
 /**
  * Renew a subscription (remove scheduled cancellation).
- * @knipignore
  */
 export const renewSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])

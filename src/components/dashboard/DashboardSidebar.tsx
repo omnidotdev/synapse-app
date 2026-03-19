@@ -94,6 +94,11 @@ const DashboardSidebar = () => {
 /**
  * Single nav item for the mobile horizontal tab bar.
  */
+// Shorter labels for mobile tab bar to prevent overflow
+const mobileLabels: Record<string, string> = {
+  "Provider Keys": "Providers",
+};
+
 const MobileNavItem = ({ to, label, icon }: NavItem) => {
   const isActive = useNavActive(to);
 
@@ -101,15 +106,16 @@ const MobileNavItem = ({ to, label, icon }: NavItem) => {
     <li>
       <Link
         to={to}
+        title={label}
         className={cn(
-          "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 font-medium text-xs transition-all duration-200",
+          "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 font-medium text-xs transition-all duration-200",
           isActive
             ? "bg-primary/10 text-primary"
             : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
         )}
       >
         {icon}
-        {label}
+        {mobileLabels[label] ?? label}
       </Link>
     </li>
   );

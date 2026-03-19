@@ -73,8 +73,8 @@ const AccordionItemContent = ({
 );
 
 export {
-  AccordionRoot,
   AccordionItem,
-  AccordionItemTrigger,
   AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
 };

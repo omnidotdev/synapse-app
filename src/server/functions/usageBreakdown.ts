@@ -86,4 +86,4 @@ export const getUsageBreakdown = createServerFn()
     return json.data.usageBreakdown ?? { byModel: [], byDay: [] };
   });
 
-export type { UsageBreakdown, ModelBreakdown, DailyUsage };
+export type { DailyUsage, ModelBreakdown, UsageBreakdown };

@@ -39,4 +39,4 @@ const CardContent = ({
   <ark.div className={cn("p-6 pt-0", className)} {...rest} />
 );
 
-export { CardRoot, CardHeader, CardTitle, CardDescription, CardContent };
+export { CardContent, CardDescription, CardHeader, CardRoot, CardTitle };

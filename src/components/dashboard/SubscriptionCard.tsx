@@ -1,4 +1,8 @@
-import { CancelSubscription, ManageSubscription } from "@/components/profile";
+import {
+  CancelSubscription,
+  ManageSubscription,
+  RenewSubscription,
+} from "@/components/profile";
 import {
   CardContent,
   CardHeader,
@@ -38,7 +42,9 @@ const SubscriptionCard = ({
         </CardTitle>
         <div className="flex gap-1">
           <ManageSubscription entityType={entityType} entityId={entityId} />
-          {!isPendingCancellation && (
+          {isPendingCancellation ? (
+            <RenewSubscription entityType={entityType} entityId={entityId} />
+          ) : (
             <CancelSubscription entityType={entityType} entityId={entityId} />
           )}
         </div>
