@@ -184,128 +184,145 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile menu — rendered outside header to fix z-index stacking */}
-      {mobileMenuOpen && (
-        <>
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 top-16 z-40 bg-black/50 sm:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
+      {/* Mobile sidebar */}
+      <div
+        className={`fixed inset-0 z-40 sm:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${mobileMenuOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
 
-          <div className="fixed top-16 right-0 left-0 z-50 border-border border-t bg-background sm:hidden">
-            <nav className="flex flex-col gap-1 px-4 py-3">
+        {/* Sidebar panel */}
+        <aside
+          className={`absolute inset-y-0 right-0 flex w-72 flex-col border-border border-l bg-background shadow-xl transition-transform duration-300 ease-in-out ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+        >
+          {/* Sidebar header */}
+          <div className="flex h-16 items-center justify-between border-border border-b px-4">
+            <span className="font-semibold text-sm">{app.name}</span>
+            <button
+              type="button"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <XIcon className="size-5" />
+            </button>
+          </div>
+
+          {/* Nav links */}
+          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+            <InternalLink
+              to="/pricing"
+              variant="ghost"
+              className="justify-start"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Pricing
+            </InternalLink>
+
+            {auth && (
               <InternalLink
-                to="/pricing"
+                to="/dashboard"
                 variant="ghost"
                 className="justify-start"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Pricing
+                Dashboard
               </InternalLink>
+            )}
 
-              {auth && (
+            {auth && isDashboardRoute && (
+              <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
                 <InternalLink
                   to="/dashboard"
                   variant="ghost"
-                  className="justify-start"
+                  className="justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Dashboard
+                  <LayoutDashboardIcon className="size-4" />
+                  Overview
                 </InternalLink>
-              )}
-
-              {auth && isDashboardRoute && (
-                <div className="ml-2 flex flex-col gap-1 border-border border-l pl-3">
-                  <InternalLink
-                    to="/dashboard"
-                    variant="ghost"
-                    className="justify-start gap-2 text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <LayoutDashboardIcon className="size-4" />
-                    Overview
-                  </InternalLink>
-                  <InternalLink
-                    to="/dashboard/keys"
-                    variant="ghost"
-                    className="justify-start gap-2 text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <KeyIcon className="size-4" />
-                    API Keys
-                  </InternalLink>
-                  <InternalLink
-                    to="/dashboard/usage"
-                    variant="ghost"
-                    className="justify-start gap-2 text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <BarChart3Icon className="size-4" />
-                    Usage
-                  </InternalLink>
-                  <InternalLink
-                    to="/dashboard/billing"
-                    variant="ghost"
-                    className="justify-start gap-2 text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <CreditCardIcon className="size-4" />
-                    Billing
-                  </InternalLink>
-                  <InternalLink
-                    to="/dashboard/settings"
-                    variant="ghost"
-                    className="justify-start gap-2 text-sm"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <SettingsIcon className="size-4" />
-                    Settings
-                  </InternalLink>
-                </div>
-              )}
-
-              {auth && (
                 <InternalLink
-                  to="/profile"
+                  to="/dashboard/keys"
                   variant="ghost"
-                  className="justify-start"
+                  className="justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Profile
+                  <KeyIcon className="size-4" />
+                  API Keys
                 </InternalLink>
-              )}
-            </nav>
-
-            <div className="flex items-center justify-between border-border border-t px-4 py-3">
-              <ThemeToggle />
-
-              {auth ? (
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    handleSignOut();
-                  }}
+                <InternalLink
+                  to="/dashboard/usage"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign Out
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    signIn();
-                  }}
-                  disabled={isSignInPending}
+                  <BarChart3Icon className="size-4" />
+                  Usage
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/billing"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign In
-                </Button>
-              )}
-            </div>
+                  <CreditCardIcon className="size-4" />
+                  Billing
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/settings"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <SettingsIcon className="size-4" />
+                  Settings
+                </InternalLink>
+              </div>
+            )}
+
+            {auth && (
+              <InternalLink
+                to="/profile"
+                variant="ghost"
+                className="justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Profile
+              </InternalLink>
+            )}
+          </nav>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between border-border border-t px-4 py-3">
+            <ThemeToggle />
+
+            {auth ? (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleSignOut();
+                }}
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  signIn();
+                }}
+                disabled={isSignInPending}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
-        </>
-      )}
+        </aside>
+      </div>
     </>
   );
 };
