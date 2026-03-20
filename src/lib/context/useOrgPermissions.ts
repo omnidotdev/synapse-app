@@ -11,28 +11,32 @@ import { batchCheckPermissions } from "@/server/functions/authorization";
 export function useOrgPermissions(organizationId: string | undefined) {
   const { data, isLoading } = useQuery({
     queryKey: ["orgPermissions", organizationId],
-    queryFn: () =>
-      batchCheckPermissions({
+    queryFn: () => {
+      // Safe cast: queryFn only runs when `enabled` is true (organizationId is defined)
+      const orgId = organizationId as string;
+
+      return batchCheckPermissions({
         data: {
           checks: [
             {
               resourceType: "organization",
-              resourceId: organizationId!,
+              resourceId: orgId,
               permission: "viewer",
             },
             {
               resourceType: "organization",
-              resourceId: organizationId!,
+              resourceId: orgId,
               permission: "editor",
             },
             {
               resourceType: "organization",
-              resourceId: organizationId!,
+              resourceId: orgId,
               permission: "admin",
             },
           ],
         },
-      }),
+      });
+    },
     enabled: !!organizationId,
     staleTime: 5 * 60 * 1000,
   });

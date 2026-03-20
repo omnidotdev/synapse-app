@@ -71,7 +71,6 @@ export const checkPermission = createServerFn()
  * Batch check permissions for multiple resources.
  * Returns an array of booleans corresponding to each check.
  * All return true if authz is not configured.
- * @knipignore
  */
 export const batchCheckPermissions = createServerFn()
   .inputValidator((data) => batchCheckSchema.parse(data))

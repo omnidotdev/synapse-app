@@ -29,9 +29,14 @@ export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   beforeLoad: async () => {
-    const { session, organizations } = await fetchSession();
-
-    return { auth: session, organizations };
+    try {
+      const { session, organizations } = await fetchSession();
+      return { auth: session, organizations };
+    } catch {
+      // Gracefully degrade so public pages (landing, pricing) still render
+      // when the auth service is unreachable or misconfigured
+      return { auth: null, organizations: [] };
+    }
   },
   head: () => ({
     meta: [
