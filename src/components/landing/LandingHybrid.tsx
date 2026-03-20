@@ -9,13 +9,12 @@ import {
 import { Suspense, useMemo, useRef } from "react";
 import { Color, Matrix4 } from "three";
 
-import type { InstancedMesh } from "three";
-
 import { InternalLink } from "@/components/core";
 import NeuralGraph from "@/components/landing/NeuralGraph";
 import { Button } from "@/components/ui/button";
 
 import type { FC } from "react";
+import type { InstancedMesh } from "three";
 
 const contentNodes = [
   {
@@ -326,7 +325,7 @@ const LandingHybrid: FC = () => {
             ({ icon: Icon, title, description, iconClasses, nodeId }) => (
               <div
                 key={title}
-                className="relative rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm dark:bg-white/[0.06] sm:p-6"
+                className="relative rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6 dark:bg-white/[0.06]"
               >
                 <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
                   {nodeId}
@@ -337,7 +336,7 @@ const LandingHybrid: FC = () => {
                 >
                   <Icon className="size-4 sm:size-5" />
                 </div>
-                <h3 className="font-semibold text-base text-foreground dark:text-white sm:text-lg">
+                <h3 className="font-semibold text-base text-foreground sm:text-lg dark:text-white">
                   {title}
                 </h3>
                 <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed sm:mt-2 sm:text-sm">
@@ -348,11 +347,11 @@ const LandingHybrid: FC = () => {
           )}
 
           {/* Routing diagram (node_05) */}
-          <div className="relative flex flex-col items-center rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm dark:bg-white/[0.06] sm:p-6">
+          <div className="relative flex flex-col items-center rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6 dark:bg-white/[0.06]">
             <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
               node_05
             </span>
-            <h3 className="mb-2 font-semibold text-base text-foreground dark:text-white sm:text-lg">
+            <h3 className="mb-2 font-semibold text-base text-foreground sm:text-lg dark:text-white">
               Intelligent Routing
             </h3>
             <p className="mb-4 text-center text-muted-foreground text-xs sm:text-sm">

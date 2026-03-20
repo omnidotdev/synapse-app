@@ -1,20 +1,10 @@
 import { Float, Html, QuadraticBezierLine } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
-import {
-  Color,
-  Matrix4,
-  QuadraticBezierCurve3,
-  Vector3,
-} from "three";
-
-import type {
-  InstancedMesh,
-  Mesh,
-  MeshBasicMaterial,
-} from "three";
+import { Color, Matrix4, QuadraticBezierCurve3, Vector3 } from "three";
 
 import type { FC } from "react";
+import type { InstancedMesh, Mesh, MeshBasicMaterial } from "three";
 
 type NodeDef = {
   id: string;
