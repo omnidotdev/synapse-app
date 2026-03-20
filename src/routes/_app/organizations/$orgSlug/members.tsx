@@ -116,7 +116,11 @@ function OrgMembersPage() {
 
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
-  const { canView, canAdmin, isLoading: permissionsLoading } = useOrgPermissions(org?.id);
+  const {
+    canView,
+    canAdmin,
+    isLoading: permissionsLoading,
+  } = useOrgPermissions(org?.id);
 
   // Redirect if user lacks view permission
   useEffect(() => {

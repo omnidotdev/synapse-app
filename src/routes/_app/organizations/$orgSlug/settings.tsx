@@ -26,7 +26,11 @@ function OrgSettingsPage() {
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
-  const { canEdit, canAdmin, isLoading: permissionsLoading } = useOrgPermissions(org?.id);
+  const {
+    canEdit,
+    canAdmin,
+    isLoading: permissionsLoading,
+  } = useOrgPermissions(org?.id);
 
   // Redirect if user lacks edit permission
   useEffect(() => {

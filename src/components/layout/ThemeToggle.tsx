@@ -12,7 +12,13 @@ const ThemeToggle = () => {
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   return (
-    <Button variant="ghost" onClick={toggleTheme} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
+    <Button
+      variant="ghost"
+      onClick={toggleTheme}
+      aria-label={
+        theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+      }
+    >
       {theme === "light" ? <MoonIcon /> : <SunIcon />}
     </Button>
   );
