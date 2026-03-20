@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, UserPlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import MembersListSkeleton from "@/components/dashboard/MembersListSkeleton";
@@ -109,13 +109,21 @@ function InviteForm({
  */
 function OrgMembersPage() {
   const { orgSlug } = Route.useParams();
+  const navigate = Route.useNavigate();
   const { organizations } = useOrganization();
   const queryClient = useQueryClient();
   const [showInvite, setShowInvite] = useState(false);
 
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
-  const { canAdmin } = useOrgPermissions(org?.id);
+  const { canView, canAdmin, isLoading: permissionsLoading } = useOrgPermissions(org?.id);
+
+  // Redirect if user lacks view permission
+  useEffect(() => {
+    if (!permissionsLoading && !canView) {
+      navigate({ to: "/organizations/$orgSlug", params: { orgSlug } });
+    }
+  }, [canView, permissionsLoading, navigate, orgSlug]);
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["orgMembers", org?.id],

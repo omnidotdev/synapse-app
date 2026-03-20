@@ -25,3 +25,10 @@ export const API_GRAPHQL_URL = `${API_BASE_URL}/graphql`;
 
 // environment helpers
 export const isDevEnv = import.meta.env.DEV;
+
+// Warn if authZ is enabled but the API URL is missing (fail-open risk)
+if (AUTHZ_ENABLED === "true" && !AUTHZ_API_URL) {
+  console.warn(
+    "[AuthZ] VITE_AUTHZ_ENABLED is true but VITE_AUTHZ_API_URL is not set — authorization checks will be skipped",
+  );
+}

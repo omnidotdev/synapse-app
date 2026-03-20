@@ -10,8 +10,8 @@ const registerServiceWorker = async () => {
       scope: "/",
       type: "classic",
     });
-  } catch (error) {
-    console.error("Service worker registration failed:", error);
+  } catch {
+    // Silently ignore — sw.js may not be present in all deployment environments
   }
 };
 

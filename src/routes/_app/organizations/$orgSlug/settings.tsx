@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,14 @@ function OrgSettingsPage() {
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
-  const { canEdit, canAdmin } = useOrgPermissions(org?.id);
+  const { canEdit, canAdmin, isLoading: permissionsLoading } = useOrgPermissions(org?.id);
+
+  // Redirect if user lacks edit permission
+  useEffect(() => {
+    if (!permissionsLoading && !canEdit) {
+      navigate({ to: "/organizations/$orgSlug", params: { orgSlug } });
+    }
+  }, [canEdit, permissionsLoading, navigate, orgSlug]);
 
   const [name, setName] = useState(org?.name ?? org?.slug ?? "");
   const [slug, setSlug] = useState(org?.slug ?? "");

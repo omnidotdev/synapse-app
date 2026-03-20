@@ -5,6 +5,7 @@ import {
   BarChart3Icon,
   CreditCardIcon,
   KeyIcon,
+  KeyRoundIcon,
   LayoutDashboardIcon,
   MenuIcon,
   SettingsIcon,
@@ -170,6 +171,7 @@ const Header = () => {
               {/* Mobile hamburger */}
               <button
                 type="button"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent sm:hidden"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
               >
@@ -252,6 +254,15 @@ const Header = () => {
                 >
                   <KeyIcon className="size-4" />
                   API Keys
+                </InternalLink>
+                <InternalLink
+                  to="/dashboard/providers"
+                  variant="ghost"
+                  className="justify-start gap-2 text-sm"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <KeyRoundIcon className="size-4" />
+                  Provider Keys
                 </InternalLink>
                 <InternalLink
                   to="/dashboard/usage"

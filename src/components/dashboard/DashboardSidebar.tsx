@@ -74,8 +74,8 @@ const DashboardSidebar = () => {
   return (
     <>
       {/* Mobile horizontal tab bar */}
-      <nav className="glass-panel overflow-x-auto rounded-xl p-1 md:hidden">
-        <ul className="flex gap-1 px-1">
+      <nav className="glass-panel overflow-x-auto rounded-xl p-1 scrollbar-hide md:hidden">
+        <ul className="flex w-max gap-1 px-1">
           {navItems.map((item) => (
             <MobileNavItem key={item.to} {...item} />
           ))}
