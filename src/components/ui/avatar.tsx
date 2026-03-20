@@ -63,14 +63,20 @@ const AvatarFallback = ({
 
 const AvatarImage = ({
   className,
+  src,
   ...rest
-}: ComponentProps<typeof ArkAvatar.Image>) => (
-  <ArkAvatar.Image
-    className={cn("aspect-square size-full", className)}
-    alt="Avatar"
-    {...rest}
-  />
-);
+}: ComponentProps<typeof ArkAvatar.Image>) => {
+  if (!src) return null;
+
+  return (
+    <ArkAvatar.Image
+      className={cn("aspect-square size-full", className)}
+      alt="Avatar"
+      src={src}
+      {...rest}
+    />
+  );
+};
 
 interface AvatarProps extends ComponentProps<typeof AvatarRoot> {
   src: string | undefined;

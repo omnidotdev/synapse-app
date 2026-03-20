@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { useOrganization } from "@/lib/context";
+import { useOrganization, useOrgPermissions } from "@/lib/context";
 import {
   deleteOrganization,
   updateOrganization,
@@ -26,6 +26,7 @@ function OrgSettingsPage() {
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
+  const { canEdit, canAdmin } = useOrgPermissions(org?.id);
 
   const [name, setName] = useState(org?.name ?? org?.slug ?? "");
   const [slug, setSlug] = useState(org?.slug ?? "");
@@ -86,7 +87,7 @@ function OrgSettingsPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={isPersonal}
+                disabled={isPersonal || !canEdit}
                 className="mt-1 w-full rounded-md border bg-transparent px-3 py-2 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
@@ -99,7 +100,7 @@ function OrgSettingsPage() {
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                disabled={isPersonal}
+                disabled={isPersonal || !canEdit}
                 className="mt-1 w-full rounded-md border bg-transparent px-3 py-2 outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-50"
               />
               {!isPersonal && (
@@ -108,7 +109,7 @@ function OrgSettingsPage() {
                 </p>
               )}
             </div>
-            {!isPersonal && (
+            {!isPersonal && canEdit && (
               <Button
                 variant="solid"
                 disabled={isSaving || (!name.trim() && !slug.trim())}
@@ -123,7 +124,7 @@ function OrgSettingsPage() {
           </div>
         </section>
 
-        {!isPersonal && isOwner && (
+        {!isPersonal && isOwner && canAdmin && (
           <section className="rounded-lg border border-destructive/50 p-6">
             <h2 className="mb-4 font-semibold text-destructive text-lg">
               Danger Zone

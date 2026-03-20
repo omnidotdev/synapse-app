@@ -9,7 +9,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Toaster } from "sonner";
 
-import { ErrorBoundary, Footer, Header } from "@/components/layout";
+import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
 import app from "@/lib/config/app.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{
     ],
   }),
   loader: () => getThemeServerFn(),
-  errorComponent: ErrorBoundary,
+  errorComponent: DefaultCatchBoundary,
   component: RootComponent,
 });
 

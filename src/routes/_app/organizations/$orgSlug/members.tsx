@@ -13,7 +13,7 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
-import { useOrganization } from "@/lib/context";
+import { useOrganization, useOrgPermissions } from "@/lib/context";
 import {
   inviteOrganizationMember,
   listOrganizationMembers,
@@ -115,6 +115,7 @@ function OrgMembersPage() {
 
   const org = organizations.find((o) => o.slug === orgSlug);
   const isPersonal = org?.type === "personal";
+  const { canAdmin } = useOrgPermissions(org?.id);
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["orgMembers", org?.id],
@@ -161,7 +162,7 @@ function OrgMembersPage() {
     <div className="container mx-auto py-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-bold text-2xl">Members</h1>
-        {!isPersonal && !showInvite && (
+        {!isPersonal && !showInvite && canAdmin && (
           <Button variant="solid" onClick={() => setShowInvite(true)}>
             <UserPlusIcon className="mr-2 h-4 w-4" />
             Invite Member
@@ -255,9 +256,9 @@ function OrgMembersPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    {member.role === "owner" ? (
+                    {member.role === "owner" || !canAdmin ? (
                       <span className="rounded bg-primary/10 px-2 py-1 text-primary text-xs">
-                        owner
+                        {member.role}
                       </span>
                     ) : (
                       <select
@@ -276,7 +277,7 @@ function OrgMembersPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {member.role !== "owner" && (
+                    {member.role !== "owner" && canAdmin && (
                       <Button
                         variant="ghost"
                         size="sm"

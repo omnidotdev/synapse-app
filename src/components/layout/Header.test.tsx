@@ -90,15 +90,17 @@ describe("Header", () => {
   test("renders pricing link", () => {
     renderHeader();
 
-    const pricingLink = screen.getByRole("link", { name: "Pricing" });
-    expect(pricingLink).toBeDefined();
+    // Pricing appears in both desktop nav and mobile sidebar
+    const pricingLinks = screen.getAllByRole("link", { name: "Pricing" });
+    expect(pricingLinks.length).toBeGreaterThanOrEqual(1);
   });
 
   test("shows Sign In button when unauthenticated", () => {
     renderHeader(null);
 
-    const signInButton = screen.getByRole("button", { name: "Sign In" });
-    expect(signInButton).toBeDefined();
+    // Sign In appears in both desktop and mobile sidebar footer
+    const signInButtons = screen.getAllByRole("button", { name: "Sign In" });
+    expect(signInButtons.length).toBeGreaterThanOrEqual(1);
   });
 
   test("shows user avatar when authenticated", () => {
@@ -133,7 +135,7 @@ describe("Header", () => {
     expect(signInButton).toBeNull();
   });
 
-  test("renders Sign Out menu item when authenticated", () => {
+  test("renders Sign Out when authenticated", () => {
     const auth = {
       user: {
         id: "user-1",
@@ -145,8 +147,9 @@ describe("Header", () => {
 
     renderHeader(auth);
 
-    // Menu item is in the DOM (Ark UI renders it even when closed)
-    expect(screen.getByText("Sign Out")).toBeDefined();
+    // Sign Out appears in both desktop account menu and mobile sidebar footer
+    const signOutElements = screen.getAllByText("Sign Out");
+    expect(signOutElements.length).toBeGreaterThanOrEqual(1);
   });
 
   test("renders account menu items when authenticated", () => {
@@ -162,9 +165,11 @@ describe("Header", () => {
     renderHeader(auth);
 
     expect(screen.getByText("My Account")).toBeDefined();
-    // Dashboard appears in both nav and menu
+    // Dashboard appears in desktop nav, mobile sidebar, and account menu
     expect(screen.getAllByText("Dashboard").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText("Profile")).toBeDefined();
+    // Profile appears in both account menu and mobile sidebar
+    const profileElements = screen.getAllByText("Profile");
+    expect(profileElements.length).toBeGreaterThanOrEqual(1);
   });
 
   test("does not render account menu when unauthenticated", () => {
@@ -172,5 +177,46 @@ describe("Header", () => {
 
     expect(screen.queryByText("My Account")).toBeNull();
     expect(screen.queryByText("Sign Out")).toBeNull();
+  });
+
+  test("mobile sidebar container has overflow-hidden to prevent bleed", () => {
+    renderHeader();
+
+    // The mobile sidebar wrapper should have overflow-hidden to prevent
+    // the translated-off-screen panel from causing horizontal scroll
+    const sidebar = document.querySelector(".fixed.overflow-hidden.sm\\:hidden");
+    expect(sidebar).toBeDefined();
+    expect(sidebar).not.toBeNull();
+  });
+
+  test("mobile sidebar panel has z-50 to sit above the header", () => {
+    renderHeader();
+
+    // The aside panel should have z-50 so its close button is clickable
+    // above the z-50 header
+    const aside = document.querySelector("aside.z-50");
+    expect(aside).toBeDefined();
+    expect(aside).not.toBeNull();
+  });
+
+  test("does not render broken avatar img when user has no image", () => {
+    const auth = {
+      user: {
+        id: "user-1",
+        email: "test@example.com",
+        name: "Test User",
+        image: null,
+      },
+    };
+
+    renderHeader(auth);
+
+    // Avatar should show fallback text, not a broken <img> with empty src
+    const imgs = document.querySelectorAll('img[alt="Avatar"]');
+    for (const img of imgs) {
+      const src = img.getAttribute("src");
+      expect(src).not.toBe("");
+      expect(src).not.toBeNull();
+    }
   });
 });
