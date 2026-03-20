@@ -7,12 +7,14 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
 import app from "@/lib/config/app.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
+import registerServiceWorker from "@/lib/util/registerServiceWorker";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
 import { getThemeServerFn } from "@/server/functions/theme";
@@ -116,19 +118,15 @@ function RootComponent() {
   );
 }
 
-// TODO: re-enable once serwist output is compatible with TanStack Start's Nitro build
-// See src/sw.ts for the service worker source
-
 /**
  * Root document.
  */
 function RootDocument({ children }: PropsWithChildren) {
   const theme = Route.useLoaderData();
 
-  // TODO: re-enable once serwist output is compatible with TanStack Start's Nitro build
-  // useEffect(() => {
-  //   registerServiceWorker();
-  // }, []);
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   return (
     <html suppressHydrationWarning lang="en" className={theme}>

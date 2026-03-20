@@ -1,4 +1,5 @@
 import { SECURITY_HEADERS } from "@omnidotdev/providers/server";
+import { serwist } from "@serwist/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin";
@@ -39,14 +40,16 @@ const config = defineConfig(({ command }) => ({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
-    // TODO: re-enable once serwist output is compatible with TanStack Start's Nitro build
-    // serwist({
-    //   swSrc: "src/sw.ts",
-    //   swDest: "sw.js",
-    //   globDirectory: ".output/public",
-    //   injectionPoint: "self.__SW_MANIFEST",
-    //   rollupFormat: "iife",
-    // }),
+    serwist({
+      swSrc: "src/sw.ts",
+      swDest: "sw.js",
+      // Use `dist/client` (Vite's client output dir) instead of `.output/public`
+      // (Nitro's final output). The SW is built during Vite's `closeBundle` hook,
+      // before Nitro runs -- Nitro then copies `dist/client/` to `.output/public/`
+      globDirectory: "dist/client",
+      injectionPoint: "self.__SW_MANIFEST",
+      rollupFormat: "iife",
+    }),
   ],
 }));
 

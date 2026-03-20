@@ -1,7 +1,18 @@
 import { Float, Html, QuadraticBezierLine } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
-import * as THREE from "three";
+import {
+  Color,
+  Matrix4,
+  QuadraticBezierCurve3,
+  Vector3,
+} from "three";
+
+import type {
+  InstancedMesh,
+  Mesh,
+  MeshBasicMaterial,
+} from "three";
 
 import type { FC } from "react";
 
@@ -95,13 +106,13 @@ const EDGES = [
 ];
 
 // Hex colors that render reliably across all three.js versions
-const PRIMARY_COLOR = new THREE.Color("#6366f1");
-const SECONDARY_COLOR = new THREE.Color("#14b8a6");
-const SIGNAL_COLOR = new THREE.Color("#67e8f9");
-const PRIMARY_GLOW = new THREE.Color("#a5b4fc");
-const SECONDARY_GLOW = new THREE.Color("#5eead4");
-const EDGE_COLOR = new THREE.Color("#818cf8");
-const EDGE_GLOW = new THREE.Color("#c7d2fe");
+const PRIMARY_COLOR = new Color("#6366f1");
+const SECONDARY_COLOR = new Color("#14b8a6");
+const SIGNAL_COLOR = new Color("#67e8f9");
+const PRIMARY_GLOW = new Color("#a5b4fc");
+const SECONDARY_GLOW = new Color("#5eead4");
+const EDGE_COLOR = new Color("#818cf8");
+const EDGE_GLOW = new Color("#c7d2fe");
 
 function getColor(c: "primary" | "secondary") {
   return c === "primary" ? PRIMARY_COLOR : SECONDARY_COLOR;
@@ -116,8 +127,8 @@ const SynapseNode: FC<{ node: NodeDef; isSoma?: boolean }> = ({
   node,
   isSoma = false,
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const auraRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<Mesh>(null);
+  const auraRef = useRef<Mesh>(null);
   const [hovered, setHovered] = useState(false);
   const color = getColor(node.color);
   const glow = getGlow(node.color);
@@ -133,7 +144,7 @@ const SynapseNode: FC<{ node: NodeDef; isSoma?: boolean }> = ({
     }
 
     // Breathe the aura
-    (auraRef.current.material as THREE.MeshBasicMaterial).opacity =
+    (auraRef.current.material as MeshBasicMaterial).opacity =
       (isSoma ? 0.18 : 0.14) + Math.sin(t * 1.5 + (isSoma ? 0 : 1.5)) * 0.06;
   });
 
@@ -246,13 +257,13 @@ const SignalDot: FC<{
   speed?: number;
   delay?: number;
 }> = ({ from, to, mid, speed = 0.35, delay = 0 }) => {
-  const ref = useRef<THREE.Mesh>(null);
+  const ref = useRef<Mesh>(null);
   const curve = useMemo(
     () =>
-      new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3(...from),
-        new THREE.Vector3(...mid),
-        new THREE.Vector3(...to),
+      new QuadraticBezierCurve3(
+        new Vector3(...from),
+        new Vector3(...mid),
+        new Vector3(...to),
       ),
     [from, mid, to],
   );
@@ -268,7 +279,7 @@ const SignalDot: FC<{
     const pos = curve.getPoint(t);
     ref.current.position.copy(pos);
     const fade = Math.sin(t * Math.PI);
-    (ref.current.material as THREE.MeshBasicMaterial).opacity = fade * 0.95;
+    (ref.current.material as MeshBasicMaterial).opacity = fade * 0.95;
     ref.current.scale.setScalar(0.8 + fade * 0.4);
   });
 
@@ -348,7 +359,7 @@ const AmbientParticles: FC<{ count?: number; spread?: number }> = ({
   count = 35,
   spread = 7,
 }) => {
-  const ref = useRef<THREE.InstancedMesh>(null);
+  const ref = useRef<InstancedMesh>(null);
   const positions = useMemo(() => {
     const arr: [number, number, number][] = [];
     for (let i = 0; i < count; i++) {
@@ -364,7 +375,7 @@ const AmbientParticles: FC<{ count?: number; spread?: number }> = ({
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const t = clock.getElapsedTime();
-    const mat = new THREE.Matrix4();
+    const mat = new Matrix4();
     for (let i = 0; i < count; i++) {
       const [x, y, z] = positions[i];
       mat.setPosition(

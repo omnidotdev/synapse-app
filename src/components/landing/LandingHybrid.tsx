@@ -7,7 +7,9 @@ import {
   ZapIcon,
 } from "lucide-react";
 import { Suspense, useMemo, useRef } from "react";
-import * as THREE from "three";
+import { Color, Matrix4 } from "three";
+
+import type { InstancedMesh } from "three";
 
 import { InternalLink } from "@/components/core";
 import NeuralGraph from "@/components/landing/NeuralGraph";
@@ -23,7 +25,7 @@ const contentNodes = [
     title: "Unified Routing",
     description:
       "Route to any model with automatic fallback chains, cost optimization, and latency-aware selection",
-    color: "primary" as const,
+    iconClasses: "bg-primary/10 text-primary",
   },
   {
     type: "feature" as const,
@@ -32,7 +34,7 @@ const contentNodes = [
     title: "Live Analytics",
     description:
       "Track tokens, latency, and spend across every provider in real time with per-key breakdowns",
-    color: "secondary" as const,
+    iconClasses: "bg-secondary/10 text-secondary",
   },
   {
     type: "feature" as const,
@@ -41,7 +43,7 @@ const contentNodes = [
     title: "Scoped Keys",
     description:
       "Fine-grained API keys with auto-rotation, audit trails, rate limits, and per-model permissions",
-    color: "primary" as const,
+    iconClasses: "bg-primary/10 text-primary",
   },
   {
     type: "feature" as const,
@@ -50,7 +52,7 @@ const contentNodes = [
     title: "Multi-Provider",
     description:
       "Connect OpenAI, Anthropic, and more through a single endpoint with unified request formatting",
-    color: "secondary" as const,
+    iconClasses: "bg-secondary/10 text-secondary",
   },
 ];
 
@@ -189,7 +191,7 @@ function RoutingDiagram() {
 
 /** Subtle ambient particle mesh for the fixed background */
 const AmbientBackground: FC = () => {
-  const ref = useRef<THREE.InstancedMesh>(null);
+  const ref = useRef<InstancedMesh>(null);
   const count = 50;
   const spread = 16;
 
@@ -208,7 +210,7 @@ const AmbientBackground: FC = () => {
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const t = clock.getElapsedTime();
-    const mat = new THREE.Matrix4();
+    const mat = new Matrix4();
     for (let i = 0; i < count; i++) {
       const [x, y, z] = positions[i];
       mat.setPosition(
@@ -225,7 +227,7 @@ const AmbientBackground: FC = () => {
     <instancedMesh ref={ref} args={[undefined, undefined, count]}>
       <sphereGeometry args={[0.02, 6, 6]} />
       <meshBasicMaterial
-        color={new THREE.Color("#6366f1")}
+        color={new Color("#6366f1")}
         transparent
         opacity={0.08}
       />
@@ -321,21 +323,21 @@ const LandingHybrid: FC = () => {
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
           {/* Feature cards (nodes 1-4) */}
           {contentNodes.map(
-            ({ icon: Icon, title, description, color, nodeId }) => (
+            ({ icon: Icon, title, description, iconClasses, nodeId }) => (
               <div
                 key={title}
-                className="relative rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6"
+                className="relative rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm dark:bg-white/[0.06] sm:p-6"
               >
                 <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
                   {nodeId}
                 </span>
 
                 <div
-                  className={`mb-3 flex size-9 items-center justify-center rounded-lg bg-${color}/10 text-${color} sm:mb-4 sm:size-10`}
+                  className={`mb-3 flex size-9 items-center justify-center rounded-lg sm:mb-4 sm:size-10 ${iconClasses}`}
                 >
                   <Icon className="size-4 sm:size-5" />
                 </div>
-                <h3 className="font-semibold text-foreground text-sm sm:text-base dark:text-white">
+                <h3 className="font-semibold text-base text-foreground dark:text-white sm:text-lg">
                   {title}
                 </h3>
                 <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed sm:mt-2 sm:text-sm">
@@ -346,11 +348,11 @@ const LandingHybrid: FC = () => {
           )}
 
           {/* Routing diagram (node_05) */}
-          <div className="relative flex flex-col items-center rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6">
+          <div className="relative flex flex-col items-center rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm dark:bg-white/[0.06] sm:p-6">
             <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
               node_05
             </span>
-            <h3 className="mb-2 font-semibold text-foreground text-sm sm:text-base dark:text-white">
+            <h3 className="mb-2 font-semibold text-base text-foreground dark:text-white sm:text-lg">
               Intelligent Routing
             </h3>
             <p className="mb-4 text-center text-muted-foreground text-xs sm:text-sm">
@@ -361,7 +363,7 @@ const LandingHybrid: FC = () => {
           </div>
 
           {/* Code snippet (node_06) */}
-          <div className="relative self-start overflow-hidden rounded-xl border border-border bg-card/80 backdrop-blur-sm">
+          <div className="relative self-start overflow-hidden rounded-xl border border-border bg-card/80 backdrop-blur-sm dark:bg-white/[0.06]">
             <div className="flex items-center gap-2 border-border border-b px-4 py-2 sm:px-5 sm:py-2.5">
               <div className="size-2 rounded-full bg-primary/20 sm:size-2.5" />
               <div className="size-2 rounded-full bg-secondary/20 sm:size-2.5" />
