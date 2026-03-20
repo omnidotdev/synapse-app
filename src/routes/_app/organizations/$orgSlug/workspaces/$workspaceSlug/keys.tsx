@@ -253,7 +253,9 @@ function WorkspaceKeysPage() {
   });
 
   const maxKeys = getMaxApiKeys(entitlements);
-  const atLimit = maxKeys !== null && keys.length >= maxKeys;
+  // Managed keys (auto-provisioned by other Omni apps) don't count against quota
+  const userKeyCount = keys.filter((k) => k.mode !== "managed").length;
+  const atLimit = maxKeys !== null && userKeyCount >= maxKeys;
 
   if (!workspace) return null;
 
@@ -270,7 +272,7 @@ function WorkspaceKeysPage() {
           <div className="flex items-center gap-3">
             {maxKeys !== null && (
               <span className="text-muted-foreground text-sm">
-                {keys.length}/{maxKeys} keys
+                {userKeyCount}/{maxKeys} keys
               </span>
             )}
             {atLimit ? (

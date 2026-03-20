@@ -62,10 +62,10 @@ const providers = [
 ];
 
 const outputPaths = [
-  "M 162 96 Q 200 40 230 40",
-  "M 162 100 Q 210 82 240 82",
-  "M 162 104 Q 210 124 240 124",
-  "M 162 108 Q 200 166 230 166",
+  "M 166 96 Q 200 40 230 40",
+  "M 166 100 Q 210 82 240 82",
+  "M 166 104 Q 210 124 240 124",
+  "M 166 108 Q 200 166 230 166",
 ];
 
 function RoutingDiagram() {
@@ -77,6 +77,16 @@ function RoutingDiagram() {
       role="img"
       aria-label="Diagram showing API requests routed through Synapse to multiple providers"
     >
+      <style>
+        {`
+          @keyframes flowDash {
+            to { stroke-dashoffset: -20; }
+          }
+          .routing-line {
+            animation: flowDash 1.5s linear infinite;
+          }
+        `}
+      </style>
       <circle
         cx="42"
         cy="103"
@@ -159,6 +169,7 @@ function RoutingDiagram() {
         strokeWidth={1.5}
         strokeDasharray="6 4"
         strokeLinecap="round"
+        className="routing-line"
       />
       {outputPaths.map((d) => (
         <path
@@ -169,6 +180,7 @@ function RoutingDiagram() {
           strokeWidth={1.5}
           strokeDasharray="6 4"
           strokeLinecap="round"
+          className="routing-line"
         />
       ))}
     </svg>
