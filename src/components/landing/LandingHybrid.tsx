@@ -274,6 +274,7 @@ const LandingHybrid: FC = () => {
               <OrbitControls
                 enablePan={false}
                 enableZoom={false}
+                enableRotate={false}
                 autoRotate
                 autoRotateSpeed={0.25}
                 maxPolarAngle={Math.PI * 0.62}
