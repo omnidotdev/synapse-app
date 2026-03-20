@@ -21,18 +21,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import getAnalyticsRetentionDays from "@/lib/util/getAnalyticsRetentionDays";
 import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
+import { getEntitlements } from "@/server/functions/entitlements";
 import { getUsageSummary } from "@/server/functions/usage";
 import { getUsageBreakdown } from "@/server/functions/usageBreakdown";
 
+import type { EntitlementsResponse } from "@omnidotdev/providers/billing";
 import type { UsageSummary } from "@/server/functions/usage";
 
-const DATE_RANGES = [
+const ALL_DATE_RANGES = [
   { label: "7 days", days: 7 },
   { label: "30 days", days: 30 },
   { label: "90 days", days: 90 },
-] as const;
+  { label: "1 year", days: 365 },
+];
+
+/**
+ * Filter date ranges to those within the user's retention entitlement
+ */
+const getDateRanges = (entitlements: EntitlementsResponse | null | undefined) => {
+  const maxDays = getAnalyticsRetentionDays(entitlements);
+  return ALL_DATE_RANGES.filter((r) => r.days <= maxDays);
+};
 
 /**
  * Compute ISO date string N days ago
@@ -52,17 +64,22 @@ export const Route = createFileRoute("/_app/dashboard/usage")({
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {
-      return { usage: null };
+      return { usage: null, entitlements: null };
     }
 
-    const usage = await getUsageSummary({
-      data: {
-        entityType: "user",
-        entityId: session.user.identityProviderId,
-      },
-    }).catch(() => null);
+    const entityType = "user";
+    const entityId = session.user.identityProviderId;
 
-    return { usage };
+    const [usage, entitlements] = await Promise.all([
+      getUsageSummary({
+        data: { entityType, entityId },
+      }).catch(() => null),
+      getEntitlements({
+        data: { entityType, entityId },
+      }).catch(() => null),
+    ]);
+
+    return { usage, entitlements };
   },
   component: UsagePage,
 });
@@ -111,7 +128,7 @@ const EMPTY_USAGE: UsageSummary = {
 };
 
 function UsagePage() {
-  const { usage: rawUsage } = Route.useLoaderData();
+  const { usage: rawUsage, entitlements } = Route.useLoaderData();
   const resolved = rawUsage ?? EMPTY_USAGE;
   const usage: UsageSummary = {
     ...resolved,
@@ -119,7 +136,9 @@ function UsagePage() {
     outputTokensLimit: resolved.outputTokensLimit ?? 0,
     requestsLimit: resolved.requestsLimit ?? 0,
   };
-  const [rangeDays, setRangeDays] = useState(30);
+  const dateRanges = getDateRanges(entitlements);
+  const defaultDays = dateRanges.find((r) => r.days === 30)?.days ?? dateRanges[0]?.days ?? 7;
+  const [rangeDays, setRangeDays] = useState(defaultDays);
 
   const { data: breakdown } = useQuery({
     queryKey: ["usageBreakdown", rangeDays],
@@ -146,7 +165,7 @@ function UsagePage() {
           </p>
         </div>
         <div className="flex gap-1 rounded-md border p-0.5">
-          {DATE_RANGES.map((r) => (
+          {dateRanges.map((r) => (
             <button
               key={r.days}
               type="button"
