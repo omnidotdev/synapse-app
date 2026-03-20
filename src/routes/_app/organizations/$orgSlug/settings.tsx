@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { useOrganization, useOrgPermissions } from "@/lib/context";
+import { useOrgPermissions, useOrganization } from "@/lib/context";
 import {
   deleteOrganization,
   updateOrganization,

@@ -13,7 +13,7 @@ import {
   CardRoot,
   CardTitle,
 } from "@/components/ui/card";
-import { useOrganization, useOrgPermissions } from "@/lib/context";
+import { useOrgPermissions, useOrganization } from "@/lib/context";
 import {
   inviteOrganizationMember,
   listOrganizationMembers,

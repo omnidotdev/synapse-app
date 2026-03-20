@@ -184,7 +184,9 @@ describe("Header", () => {
 
     // The mobile sidebar wrapper should have overflow-hidden to prevent
     // the translated-off-screen panel from causing horizontal scroll
-    const sidebar = document.querySelector(".fixed.overflow-hidden.sm\\:hidden");
+    const sidebar = document.querySelector(
+      ".fixed.overflow-hidden.sm\\:hidden",
+    );
     expect(sidebar).toBeDefined();
     expect(sidebar).not.toBeNull();
   });
