@@ -21,7 +21,7 @@ const getAnalyticsRetentionDays = (
   const val = Number.parseInt(entry.value.replace(/"/g, ""), 10);
 
   // -1 means unlimited; treat as 365 for UI purposes
-  return val === -1 ? 365 : (val || FREE_TIER_RETENTION);
+  return val === -1 ? 365 : val || FREE_TIER_RETENTION;
 };
 
 export default getAnalyticsRetentionDays;

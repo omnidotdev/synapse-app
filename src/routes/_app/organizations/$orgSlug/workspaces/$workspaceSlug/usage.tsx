@@ -40,7 +40,9 @@ const ALL_DATE_RANGES = [
 /**
  * Filter date ranges to those within the user's retention entitlement
  */
-const getDateRanges = (entitlements: EntitlementsResponse | null | undefined) => {
+const getDateRanges = (
+  entitlements: EntitlementsResponse | null | undefined,
+) => {
   const maxDays = getAnalyticsRetentionDays(entitlements);
   return ALL_DATE_RANGES.filter((r) => r.days <= maxDays);
 };
@@ -129,7 +131,8 @@ function WorkspaceUsagePage() {
   const { workspaces } = useWorkspace();
   const workspace = workspaces.find((w) => w.slug === workspaceSlug);
   const dateRanges = getDateRanges(entitlements);
-  const defaultDays = dateRanges.find((r) => r.days === 30)?.days ?? dateRanges[0]?.days ?? 7;
+  const defaultDays =
+    dateRanges.find((r) => r.days === 30)?.days ?? dateRanges[0]?.days ?? 7;
   const [rangeDays, setRangeDays] = useState(defaultDays);
 
   const { data: breakdown } = useQuery({
