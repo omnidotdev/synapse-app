@@ -66,7 +66,13 @@ const TabsIndicator = ({
   />
 );
 
-export { TabsContent, TabsList, TabsTrigger };
-
 /** @knipignore */
-export { TabsContext, TabsIndicator, TabsProvider, TabsRoot };
+export {
+  TabsContent,
+  TabsContext,
+  TabsIndicator,
+  TabsList,
+  TabsProvider,
+  TabsRoot,
+  TabsTrigger,
+};
