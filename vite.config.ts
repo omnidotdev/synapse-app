@@ -25,8 +25,9 @@ const config = defineConfig(({ command }) => ({
     command === "serve" && mkcert(),
     nitroV2Plugin({
       preset: "node-server",
-      // Inline srvx to avoid module resolution issues with Bun runtime
-      externals: { inline: ["srvx"] },
+      // Inline srvx (Bun runtime resolution) and router-core (SSR client
+      // module not copied to .output by Nitro's externalization)
+      externals: { inline: ["srvx", "@tanstack/router-core"] },
       routeRules: {
         "/**": {
           headers: SECURITY_HEADERS,
