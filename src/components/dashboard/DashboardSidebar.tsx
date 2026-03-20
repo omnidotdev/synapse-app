@@ -5,18 +5,9 @@ import {
   KeyIcon,
   KeyRoundIcon,
   LayoutDashboardIcon,
-  MenuIcon,
   SettingsIcon,
 } from "lucide-react";
-import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import cn from "@/lib/utils";
 
 import type { ReactNode } from "react";
@@ -71,46 +62,32 @@ const useNavActive = (to: string) => {
     : matchRoute({ to, fuzzy: true });
 };
 
+// Shorter labels for mobile tab bar to prevent overflow
+const mobileLabels: Record<string, string> = {
+  "Provider Keys": "Providers",
+};
+
 /**
- * Dashboard sidebar navigation (desktop) with a slide-out sheet (mobile).
+ * Dashboard sidebar navigation (desktop) with a horizontal tab bar (mobile).
  */
 const DashboardSidebar = () => {
-  const [open, setOpen] = useState(false);
-
   return (
     <>
-      {/* Mobile sheet trigger */}
-      <div className="md:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <MenuIcon className="h-4 w-4" />
-              Menu
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <SheetTitle>Dashboard</SheetTitle>
-            <nav className="mt-4">
-              <ul className="flex flex-col gap-1">
-                {navItems.map((item) => (
-                  <SidebarNavItem
-                    key={item.to}
-                    {...item}
-                    onClick={() => setOpen(false)}
-                  />
-                ))}
-              </ul>
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </div>
+      {/* Mobile horizontal tab bar */}
+      <nav className="glass-panel overflow-x-auto rounded-xl p-1 md:hidden">
+        <ul className="flex gap-1 px-1">
+          {navItems.map((item) => (
+            <MobileNavItem key={item.to} {...item} />
+          ))}
+        </ul>
+      </nav>
 
       {/* Desktop sidebar */}
       <nav className="relative z-10 hidden w-48 shrink-0 md:block">
         <div className="glass-panel rounded-xl p-2">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => (
-              <SidebarNavItem key={item.to} {...item} />
+              <DesktopNavItem key={item.to} {...item} />
             ))}
           </ul>
         </div>
@@ -120,21 +97,40 @@ const DashboardSidebar = () => {
 };
 
 /**
- * Shared nav item for both desktop sidebar and mobile sheet.
+ * Single nav item for the mobile horizontal tab bar.
  */
-const SidebarNavItem = ({
-  to,
-  label,
-  icon,
-  onClick,
-}: NavItem & { onClick?: () => void }) => {
+const MobileNavItem = ({ to, label, icon }: NavItem) => {
   const isActive = useNavActive(to);
 
   return (
     <li>
       <Link
         to={to}
-        onClick={onClick}
+        title={label}
+        className={cn(
+          "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 font-medium text-xs transition-all duration-200",
+          isActive
+            ? "bg-primary/10 text-primary"
+            : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
+        )}
+      >
+        {icon}
+        {mobileLabels[label] ?? label}
+      </Link>
+    </li>
+  );
+};
+
+/**
+ * Single nav item for the desktop sidebar.
+ */
+const DesktopNavItem = ({ to, label, icon }: NavItem) => {
+  const isActive = useNavActive(to);
+
+  return (
+    <li>
+      <Link
+        to={to}
         className={cn(
           "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-200",
           isActive
