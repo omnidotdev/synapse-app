@@ -206,7 +206,8 @@ const Header = () => {
             <span className="font-semibold text-sm">{app.name}</span>
             <button
               type="button"
-              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+              aria-label="Close menu"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               <XIcon className="size-5" />
@@ -218,7 +219,7 @@ const Header = () => {
             <InternalLink
               to="/pricing"
               variant="ghost"
-              className="justify-start"
+              className="min-h-[44px] justify-start"
               onClick={() => setMobileMenuOpen(false)}
             >
               Pricing
@@ -228,7 +229,7 @@ const Header = () => {
               <InternalLink
                 to="/dashboard"
                 variant="ghost"
-                className="justify-start"
+                className="min-h-[44px] justify-start"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Dashboard
@@ -240,7 +241,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <LayoutDashboardIcon className="size-4" />
@@ -249,7 +250,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard/keys"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <KeyIcon className="size-4" />
@@ -258,7 +259,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard/providers"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <KeyRoundIcon className="size-4" />
@@ -267,7 +268,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard/usage"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <BarChart3Icon className="size-4" />
@@ -276,7 +277,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard/billing"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <CreditCardIcon className="size-4" />
@@ -285,7 +286,7 @@ const Header = () => {
                 <InternalLink
                   to="/dashboard/settings"
                   variant="ghost"
-                  className="justify-start gap-2 text-sm"
+                  className="min-h-[44px] justify-start gap-2 text-sm"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <SettingsIcon className="size-4" />
@@ -298,7 +299,7 @@ const Header = () => {
               <InternalLink
                 to="/profile"
                 variant="ghost"
-                className="justify-start"
+                className="min-h-[44px] justify-start"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Profile

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import authClient from "@/lib/auth/authClient";
+import pricing from "@/lib/config/pricing.config";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
@@ -180,7 +181,10 @@ const TeamTierCard = ({
 
           <p className="font-semibold text-lg">
             <span className="text-gradient">
-              ${interval === "year" ? Math.round(39 * 12 * 0.8) : 39}
+              $
+              {interval === "year"
+                ? pricing.team.yearlyPrice / 100
+                : pricing.team.monthlyPrice / 100}
             </span>
             <span className="pl-1 font-normal text-muted-foreground text-sm">
               /{interval === "year" ? "year" : "month"}

@@ -451,5 +451,5 @@ const NeuralGraph: FC<{ showAmbient?: boolean }> = ({ showAmbient = true }) => {
   );
 };
 
-export { AmbientParticles, EDGES, NODES, NeuralGraph };
+export { AmbientParticles, EDGES, NODES };
 export default NeuralGraph;

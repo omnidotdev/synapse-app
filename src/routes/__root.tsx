@@ -22,15 +22,30 @@ import { getThemeServerFn } from "@/server/functions/theme";
 import type { QueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 
+/** Stable query key for session data */
+const SESSION_QUERY_KEY = ["session"] as const;
+
+/** Cache session for 2 minutes to avoid refetching on every navigation */
+const SESSION_STALE_TIME = 2 * 60 * 1000;
+
 /**
  * Root route.
  */
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
-  beforeLoad: async () => {
+  beforeLoad: async ({ context: { queryClient } }) => {
     try {
-      const { session, organizations } = await fetchSession();
+      // Use ensureQueryData so client-side navigations reuse the cached
+      // session instead of re-fetching on every route change. This prevents
+      // a race where a transient fetch failure returns auth:null and the
+      // _app guard redirects the user away from protected routes.
+      const { session, organizations } = await queryClient.ensureQueryData({
+        queryKey: SESSION_QUERY_KEY,
+        queryFn: () => fetchSession(),
+        staleTime: SESSION_STALE_TIME,
+      });
+
       return { auth: session, organizations };
     } catch {
       // Gracefully degrade so public pages (landing, pricing) still render
