@@ -8,8 +8,15 @@ FROM base AS deps
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
-# Build
+# Build (ARGs become env vars for Vite to inline at build time)
 FROM base AS builder
+ARG VITE_BASE_URL
+ARG VITE_API_BASE_URL
+ARG VITE_AUTH_BASE_URL
+ARG VITE_BILLING_BASE_URL
+ARG VITE_AUTHZ_API_URL
+ARG VITE_AUTHZ_ENABLED
+ARG VITE_FLAGS_API_HOST
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
