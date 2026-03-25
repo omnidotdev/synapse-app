@@ -104,6 +104,7 @@ export function useOrganization() {
  * Parse organization claims from IDP ID token.
  * Claims are namespaced under https://manifold.omni.dev/@omni/claims/organizations
  */
+/** @knipignore */
 export function parseOrganizationClaims(
   idToken: Record<string, unknown>,
 ): Organization[] {

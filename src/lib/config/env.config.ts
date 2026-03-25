@@ -15,6 +15,7 @@ export const {
   // auth (server-side secrets)
   AUTH_CLIENT_ID,
   AUTH_CLIENT_SECRET,
+
   // billing
   VITE_BILLING_BASE_URL: BILLING_BASE_URL,
   BILLING_SERVICE_API_KEY,
@@ -27,6 +28,13 @@ export const {
   SYNAPSE_API_URL,
 } = env;
 
+// Internal auth URL for server-to-server communication (Docker service name)
+// Falls back to AUTH_BASE_URL for non-Docker environments
+export const AUTH_INTERNAL_URL =
+  typeof window === "undefined"
+    ? process.env.AUTH_INTERNAL_URL || AUTH_BASE_URL
+    : AUTH_BASE_URL;
+
 export const API_GRAPHQL_URL = `${API_BASE_URL}/graphql`;
 
 // environment helpers
@@ -38,3 +46,11 @@ if (AUTHZ_ENABLED === "true" && !AUTHZ_API_URL) {
     "[AuthZ] VITE_AUTHZ_ENABLED is true but VITE_AUTHZ_API_URL is not set — authorization checks will be skipped",
   );
 }
+
+// Startup warnings for optional integrations
+if (!BILLING_BASE_URL)
+  console.warn("BILLING_BASE_URL not set, billing disabled");
+if (!AUTHZ_API_URL)
+  console.warn("AUTHZ_API_URL not set, authorization disabled");
+if (!SYNAPSE_API_URL)
+  console.warn("SYNAPSE_API_URL not set, notifications disabled");

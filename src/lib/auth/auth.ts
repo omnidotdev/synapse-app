@@ -1,13 +1,19 @@
+import { createOmniOAuthConfig } from "@omnidotdev/providers/auth";
+import { getCookie } from "@tanstack/react-start/server";
 import { betterAuth } from "better-auth/minimal";
-import { genericOAuth } from "better-auth/plugins";
+import { customSession, genericOAuth } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 
+import { authCache } from "@/lib/auth/authCache";
 import {
   AUTH_BASE_URL,
   AUTH_CLIENT_ID,
   AUTH_CLIENT_SECRET,
+  AUTH_INTERNAL_URL,
   BASE_URL,
 } from "@/lib/config/env.config";
+
+import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 
 const { AUTH_SECRET } = process.env;
 
@@ -36,10 +42,46 @@ if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
 const plugins = [];
 
 if (oauthConfigs.length > 0) {
-  plugins.push(genericOAuth({ config: oauthConfigs }));
+  plugins.push(
+    genericOAuth({
+      config: [
+        createOmniOAuthConfig({
+          clientId: AUTH_CLIENT_ID!,
+          clientSecret: AUTH_CLIENT_SECRET!,
+          authBaseUrl: AUTH_BASE_URL!,
+          authInternalUrl: AUTH_INTERNAL_URL!,
+        }),
+      ],
+    }),
+  );
 }
 
 // NB: must be the last plugin in the array
+plugins.push(
+  customSession(async ({ user, session }) => {
+    let identityProviderId: string | null = null;
+    let organizations: OrganizationClaim[] = [];
+
+    const cachedValue = getCookie(authCache.cookieName);
+    if (cachedValue) {
+      const cached = await authCache.decrypt(cachedValue);
+      if (cached) {
+        identityProviderId = cached.identityProviderId;
+        organizations = cached.organizations;
+      }
+    }
+
+    return {
+      user: {
+        ...user,
+        identityProviderId,
+        organizations,
+      },
+      session,
+    };
+  }),
+);
+
 plugins.push(tanstackStartCookies());
 
 /**

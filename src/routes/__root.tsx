@@ -20,6 +20,8 @@ import { fetchSession } from "@/server/functions/auth";
 import { getThemeServerFn } from "@/server/functions/theme";
 
 import type { QueryClient } from "@tanstack/react-query";
+import type { OrganizationClaim } from "@omnidotdev/providers/auth";
+import type { GetAuthSession } from "@/lib/auth/getAuth";
 import type { PropsWithChildren } from "react";
 
 /** Stable query key for session data */
@@ -33,7 +35,10 @@ const SESSION_STALE_TIME = 2 * 60 * 1000;
  */
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
+  auth: GetAuthSession | null;
+  organizations: OrganizationClaim[];
 }>()({
+  // @ts-expect-error BA 1.5 widens user index type to `unknown`, incompatible with TanStack `{}`
   beforeLoad: async ({ context: { queryClient } }) => {
     try {
       // Use ensureQueryData so client-side navigations reuse the cached

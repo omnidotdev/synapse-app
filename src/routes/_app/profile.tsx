@@ -30,7 +30,7 @@ const ProfilePage = () => {
     <div className="mx-auto flex h-full max-w-7xl flex-col text-pretty px-4 py-8 text-center sm:text-start">
       <div className="flex flex-col">
         <h1 className="font-bold text-xl sm:text-3xl">
-          Welcome, {auth?.user.name}!
+          Welcome, {(auth?.user.name as string)}!
         </h1>
         <h2 className="text-muted-foreground text-sm sm:text-lg">
           Review and manage details about your account below.
@@ -51,17 +51,17 @@ const ProfilePage = () => {
           <CardContent className="space-y-2 text-sm">
             <div>
               <span className="text-muted-foreground">Email: </span>
-              <span>{auth?.user.email ?? "—"}</span>
+              <span>{(auth?.user.email as string) ?? "—"}</span>
             </div>
             <div>
               <span className="text-muted-foreground">Name: </span>
-              <span>{auth?.user.name ?? "—"}</span>
+              <span>{(auth?.user.name as string) ?? "—"}</span>
             </div>
-            {auth?.user.createdAt && (
+            {(auth?.user.createdAt as string) && (
               <div>
                 <span className="text-muted-foreground">Member since: </span>
                 <span>
-                  {new Date(auth.user.createdAt).toLocaleDateString("en-US", {
+                  {new Date((auth!.user.createdAt as string)).toLocaleDateString("en-US", {
                     month: "long",
                     year: "numeric",
                   })}

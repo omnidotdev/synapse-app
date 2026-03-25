@@ -120,9 +120,9 @@ const Header = () => {
                       className="avatar-glow cursor-pointer rounded-full"
                     >
                       <AvatarRoot>
-                        <AvatarImage src={auth.user.image ?? undefined} />
+                        <AvatarImage src={(auth.user.image as string) ?? undefined} />
                         <AvatarFallback>
-                          {auth.user.name.charAt(0)}
+                          {(auth.user.name as string).charAt(0)}
                         </AvatarFallback>
                       </AvatarRoot>
                     </MenuTrigger>
