@@ -6,7 +6,7 @@ WORKDIR /app
 # Install dependencies
 FROM base AS deps
 COPY package.json bun.lock ./
-RUN bun install
+RUN bun install --frozen-lockfile
 
 # Build (ARGs become env vars for Vite to inline at build time)
 FROM base AS builder
