@@ -1,3 +1,4 @@
+import { useSessionRefresh } from "@omnidotdev/providers/react";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
@@ -136,6 +137,9 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
+  // Keep the OAuth access token fresh while the user is idle
+  useSessionRefresh(fetchSession);
+
   return (
     <RootDocument>
       <Outlet />
