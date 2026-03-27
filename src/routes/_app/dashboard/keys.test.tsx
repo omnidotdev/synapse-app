@@ -7,6 +7,13 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 // Spy on router hooks
 spyOn(TanStackRouter, "useRouteContext").mockReturnValue({ auth: null });
 
+// Mock auth client to avoid URL resolution in test env
+mock.module("@/lib/auth/authClient", () => ({
+  default: {
+    signIn: { oauth2: mock(() => Promise.resolve()) },
+  },
+}));
+
 // Mock server functions
 const mockKeys = [
   {
@@ -23,6 +30,23 @@ mock.module("@/server/functions/apiKeys", () => ({
   listApiKeys: mock(() => Promise.resolve(mockKeys)),
   createApiKey: mock(() => Promise.resolve({ rawKey: "synapse_test_key_123" })),
   revokeApiKey: mock(() => Promise.resolve()),
+  linkProviderKey: mock(() => Promise.resolve(true)),
+  unlinkProviderKey: mock(() => Promise.resolve(true)),
+}));
+
+mock.module("@/server/functions/auth", () => ({
+  fetchSession: mock(() => Promise.resolve({ session: null })),
+  signOutAndRedirect: mock(() => Promise.resolve()),
+  signOutLocal: mock(() => Promise.resolve({ idpLogoutUrl: null })),
+  getIdpLogoutUrl: mock(() => null),
+}));
+
+mock.module("@/server/functions/entitlements", () => ({
+  getEntitlements: mock(() => Promise.resolve(null)),
+}));
+
+mock.module("@/server/functions/providerKeys", () => ({
+  listProviderKeys: mock(() => Promise.resolve([])),
 }));
 
 // Import after mocking
@@ -57,7 +81,7 @@ describe("KeysPage", () => {
   test("renders page heading", () => {
     renderKeysPage();
 
-    expect(screen.getByRole("heading", { name: "API Keys" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Keys" })).toBeDefined();
   });
 
   test("renders create key button", () => {
@@ -69,7 +93,7 @@ describe("KeysPage", () => {
   test("header uses flex-wrap for mobile responsiveness", () => {
     renderKeysPage();
 
-    const heading = screen.getByRole("heading", { name: "API Keys" });
+    const heading = screen.getByRole("heading", { name: "Keys" });
     const headerContainer = heading.parentElement?.parentElement;
 
     expect(headerContainer?.className).toContain("flex-wrap");

@@ -1,4 +1,3 @@
-import { useSessionRefresh } from "@omnidotdev/providers/react";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
@@ -12,6 +11,7 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
+import useSessionRefresh from "@/lib/hooks/useSessionRefresh";
 import app from "@/lib/config/app.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";

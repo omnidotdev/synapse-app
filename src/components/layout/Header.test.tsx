@@ -60,7 +60,13 @@ const { default: Header } = await import("./Header");
 
 const renderHeader = (
   auth: {
-    user: { id: string; email: string; name: string; image: string | null };
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      image: string | null;
+      identityProviderId?: string;
+    };
   } | null = null,
 ) => {
   cleanup();
@@ -110,6 +116,7 @@ describe("Header", () => {
         email: "test@example.com",
         name: "Test User",
         image: null,
+        identityProviderId: "idp-1",
       },
     };
 
@@ -126,6 +133,7 @@ describe("Header", () => {
         email: "test@example.com",
         name: "Test User",
         image: null,
+        identityProviderId: "idp-1",
       },
     };
 
@@ -142,6 +150,7 @@ describe("Header", () => {
         email: "test@example.com",
         name: "Test User",
         image: null,
+        identityProviderId: "idp-1",
       },
     };
 
@@ -159,6 +168,7 @@ describe("Header", () => {
         email: "test@example.com",
         name: "Test User",
         image: null,
+        identityProviderId: "idp-1",
       },
     };
 
@@ -208,6 +218,7 @@ describe("Header", () => {
         email: "test@example.com",
         name: "Test User",
         image: null,
+        identityProviderId: "idp-1",
       },
     };
 
