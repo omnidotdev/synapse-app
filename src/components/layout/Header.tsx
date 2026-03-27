@@ -120,7 +120,9 @@ const Header = () => {
                       className="avatar-glow cursor-pointer rounded-full"
                     >
                       <AvatarRoot>
-                        <AvatarImage src={(auth.user.image as string) ?? undefined} />
+                        <AvatarImage
+                          src={(auth.user.image as string) ?? undefined}
+                        />
                         <AvatarFallback>
                           {(auth.user.name as string).charAt(0)}
                         </AvatarFallback>

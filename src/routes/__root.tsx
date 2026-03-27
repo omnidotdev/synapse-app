@@ -19,10 +19,10 @@ import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
 import { getThemeServerFn } from "@/server/functions/theme";
 
-import type { QueryClient } from "@tanstack/react-query";
 import type { OrganizationClaim } from "@omnidotdev/providers/auth";
-import type { GetAuthSession } from "@/lib/auth/getAuth";
+import type { QueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
+import type { GetAuthSession } from "@/lib/auth/getAuth";
 
 /** Stable query key for session data */
 const SESSION_QUERY_KEY = ["session"] as const;
