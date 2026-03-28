@@ -97,5 +97,9 @@
   },
   "overrides": {
     "@tanstack/query-core": "^5.91.0"
-  }
+  },
+  "trustedDependencies": [
+    "@omnidotdev/providers",
+    "@parcel/watcher"
+  ]
 }
