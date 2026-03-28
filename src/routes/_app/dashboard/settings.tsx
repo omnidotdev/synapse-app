@@ -281,7 +281,7 @@ function SettingsPage() {
     return (
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="font-bold text-2xl text-gradient">Settings</h1>
+          <h1 className="font-bold text-2xl tracking-tight">Settings</h1>
           <p className="text-muted-foreground text-sm">
             Configure your Synapse preferences
           </p>
@@ -301,7 +301,7 @@ function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-bold text-2xl text-gradient">Settings</h1>
+        <h1 className="font-bold text-2xl tracking-tight">Settings</h1>
         <p className="text-muted-foreground text-sm">
           Fine-tune how Synapse routes for you
         </p>

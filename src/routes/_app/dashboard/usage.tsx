@@ -162,7 +162,7 @@ function UsagePage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-bold text-2xl text-gradient">Usage</h1>
+          <h1 className="font-bold text-2xl tracking-tight">Usage</h1>
           <p className="text-muted-foreground text-sm">
             Every token, every request — in full detail
           </p>

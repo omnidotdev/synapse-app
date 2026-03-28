@@ -63,7 +63,7 @@ const DashboardSidebar = () => {
   return (
     <>
       {/* Mobile horizontal tab bar */}
-      <nav className="glass-panel scrollbar-hide overflow-x-auto rounded-xl p-1 md:hidden">
+      <nav className="scrollbar-hide overflow-x-auto rounded-xl border border-border bg-card p-1 md:hidden">
         <ul className="flex w-max gap-1 px-1">
           {navItems.map((item) => (
             <MobileNavItem key={item.to} {...item} />
@@ -73,7 +73,7 @@ const DashboardSidebar = () => {
 
       {/* Desktop sidebar */}
       <nav className="relative z-10 hidden w-48 shrink-0 md:block">
-        <div className="glass-panel rounded-xl p-2">
+        <div className="rounded-xl border border-border bg-card p-2">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => (
               <DesktopNavItem key={item.to} {...item} />

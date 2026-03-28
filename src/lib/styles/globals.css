@@ -6,7 +6,7 @@
 @theme inline {
   --font-display: var(--display-family);
   --font-text: var(--text-family);
-  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-mono: "DM Mono", ui-monospace, monospace;
 
   --color-base-50: var(--base-50);
   --color-base-100: var(--base-100);
@@ -131,7 +131,7 @@
   --secondary-950: oklch(0.23 0.04 175);
   --secondary-1000: oklch(0.17 0.03 175);
 
-  --background: var(--color-white);
+  --background: oklch(0.985 0.001 270);
   --foreground: var(--base-800);
   --card: var(--color-white);
   --card-foreground: var(--base-800);
@@ -154,7 +154,7 @@
   --chart-3: var(--primary-300);
   --chart-4: var(--secondary-300);
   --chart-5: var(--primary-100);
-  --radius: 0.4rem;
+  --radius: 0.625rem;
   --sidebar: var(--base-100);
   --sidebar-foreground: var(--base-800);
   --sidebar-primary: var(--primary-400);
@@ -163,9 +163,9 @@
   --sidebar-accent-foreground: var(--base-800);
   --sidebar-border: var(--base-200);
   --sidebar-ring: var(--primary-400);
-  --display-family: "Space Grotesk", system-ui, sans-serif;
+  --display-family: "DM Sans", system-ui, sans-serif;
   --display-weight: 400;
-  --text-family: "Space Grotesk", system-ui, sans-serif;
+  --text-family: "DM Sans", system-ui, sans-serif;
   --text-weight: 400;
 
   /* Surfaces */
@@ -195,7 +195,7 @@
 .dark {
   --background: oklch(0.13 0.02 270);
   --foreground: oklch(0.93 0.01 270);
-  --card: rgba(255, 255, 255, 0.03);
+  --card: oklch(0.18 0.015 270);
   --card-foreground: oklch(0.93 0.01 270);
   --popover: oklch(0.16 0.02 270);
   --popover-foreground: oklch(0.93 0.01 270);
@@ -260,8 +260,6 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    background: var(--background-gradient);
-    background-attachment: fixed;
     font-family: var(--text-family);
   }
   .font-display {

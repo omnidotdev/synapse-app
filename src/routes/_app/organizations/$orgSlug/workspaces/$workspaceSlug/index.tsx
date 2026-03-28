@@ -58,7 +58,7 @@ function WorkspaceDashboard() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-bold text-2xl text-gradient">{workspace.name}</h1>
+        <h1 className="font-bold text-2xl tracking-tight">{workspace.name}</h1>
         <p className="text-muted-foreground text-sm">Workspace overview</p>
       </div>
 
@@ -89,7 +89,7 @@ function WorkspaceDashboard() {
         <Link
           to="/organizations/$orgSlug/workspaces/$workspaceSlug/keys"
           params={{ orgSlug, workspaceSlug }}
-          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <KeyIcon className="h-5 w-5" />
@@ -104,7 +104,7 @@ function WorkspaceDashboard() {
         <Link
           to="/organizations/$orgSlug/workspaces/$workspaceSlug/usage"
           params={{ orgSlug, workspaceSlug }}
-          className="glass-panel card-glow-hover flex items-center gap-3 rounded-xl p-4 transition-all"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
             <BarChart3Icon className="h-5 w-5" />

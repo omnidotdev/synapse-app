@@ -6,7 +6,10 @@ import type { ComponentProps } from "react";
 
 const CardRoot = ({ className, ...rest }: ComponentProps<typeof ark.div>) => (
   <ark.div
-    className={cn("glass-panel rounded-xl text-card-foreground", className)}
+    className={cn(
+      "rounded-xl border border-border bg-card text-card-foreground",
+      className,
+    )}
     {...rest}
   />
 );

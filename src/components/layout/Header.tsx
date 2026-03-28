@@ -82,7 +82,7 @@ const Header = () => {
             {/* Left: logo + nav links */}
             <div className="flex gap-2">
               <InternalLink to="/" variant="unstyled" className="-ml-4">
-                <h1 className="font-bold text-gradient text-xl">{app.name}</h1>
+                <h1 className="font-bold text-xl tracking-tight">{app.name}</h1>
               </InternalLink>
 
               <span className="hidden select-none self-center rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs sm:inline-flex">

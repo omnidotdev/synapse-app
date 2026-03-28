@@ -86,10 +86,8 @@ function DashboardOverview() {
       <UpgradeBanner show={!tier || tier === "Free"} />
 
       <div>
-        <h1 className="font-bold text-2xl text-gradient">Overview</h1>
-        <p className="text-muted-foreground text-sm">
-          Your AI network at a glance
-        </p>
+        <h1 className="font-bold text-2xl tracking-tight">Overview</h1>
+        <p className="text-muted-foreground">Your AI network at a glance</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -121,7 +119,7 @@ function DashboardOverview() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           to="/dashboard/usage"
-          className="glass-panel card-glow-hover flex items-start gap-3 rounded-xl p-4 transition-all"
+          className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <BarChart3Icon className="h-5 w-5" />
@@ -135,7 +133,7 @@ function DashboardOverview() {
         </Link>
         <Link
           to="/dashboard/billing"
-          className="glass-panel card-glow-hover flex items-start gap-3 rounded-xl p-4 transition-all"
+          className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
             <CreditCardIcon className="h-5 w-5" />

@@ -63,7 +63,7 @@ function BillingPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-bold text-2xl text-gradient">Billing</h1>
+        <h1 className="font-bold text-2xl tracking-tight">Billing</h1>
         <p className="text-muted-foreground text-sm">
           Your plan, payments, and access entitlements
         </p>

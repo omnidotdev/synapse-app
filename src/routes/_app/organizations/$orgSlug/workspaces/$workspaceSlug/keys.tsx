@@ -263,7 +263,7 @@ function WorkspaceKeysPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-bold text-2xl text-gradient">API Keys</h1>
+          <h1 className="font-bold text-2xl tracking-tight">API Keys</h1>
           <p className="text-muted-foreground text-sm">
             Manage keys scoped to {workspace.name}
           </p>

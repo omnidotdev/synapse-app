@@ -70,7 +70,7 @@ const WorkspaceSidebar = ({
 
   return (
     <nav className="hidden w-48 shrink-0 md:block">
-      <div className="glass-panel rounded-xl p-2">
+      <div className="rounded-xl border border-border bg-card p-2">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ to, params, label, icon }) => {
             const isActive =

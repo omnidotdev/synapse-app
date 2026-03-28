@@ -404,7 +404,7 @@ function KeysPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-bold text-2xl text-gradient">Keys</h1>
+          <h1 className="font-bold text-2xl tracking-tight">Keys</h1>
           <p className="text-muted-foreground text-sm">
             Manage your Synapse API keys
           </p>
