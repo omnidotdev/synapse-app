@@ -11,8 +11,8 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
-import useSessionRefresh from "@/lib/hooks/useSessionRefresh";
 import app from "@/lib/config/app.config";
+import useSessionRefresh from "@/lib/hooks/useSessionRefresh";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
 import registerServiceWorker from "@/lib/util/registerServiceWorker";
