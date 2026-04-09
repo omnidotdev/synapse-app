@@ -63,7 +63,7 @@
     "typescript": "^5.9.3",
     "vite": "^8.0.1",
     "vite-imagetools": "^10.0.0",
-    "vite-plugin-mkcert": "^1.17.10"
+    "vite-plugin-mkcert": "^2.0.0"
   },
   "dependencies": {
     "@ark-ui/react": "^5.34.1",
