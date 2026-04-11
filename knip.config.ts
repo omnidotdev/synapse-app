@@ -29,6 +29,7 @@ const knipConfig: KnipConfig = {
   ],
   ignoreDependencies: [
     "dotenv",
+    "@changesets/cli",
     "@faker-js/faker",
     "@testing-library/jest-dom",
     "happy-dom",
