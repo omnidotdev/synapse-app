@@ -72,7 +72,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.36.0",
     "@icons-pack/react-simple-icons": "^13.13.0",
-    "@omnidotdev/providers": "github:omnidotdev/providers#72baa55",
+    "@omnidotdev/providers": "github:omnidotdev/providers#605a1c1",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@tailwindcss/vite": "^4.2.2",
