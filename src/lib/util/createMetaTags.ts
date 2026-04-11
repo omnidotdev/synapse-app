@@ -1,19 +1,26 @@
 import app from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
 
-// TODO JSDoc
+/**
+ * Optional overrides for meta tag generation. Any field left unset falls back to
+ * the app defaults (`app.name`, `app.description`, `app.url`) or the default
+ * Open Graph image at `${baseUrl}/og.png`.
+ */
 interface Params {
+  /** Page title, rendered as `${title} | ${app.name}` */
   title?: string;
+  /** Page description for meta, Twitter, and Open Graph */
   description?: string;
+  /** Absolute URL to a 1200x630 social image */
   image?: string;
+  /** Comma-separated keywords */
   keywords?: string;
+  /** Canonical page URL */
   url?: string;
 }
 
-// TODO improve type safety
-
 /**
- * Create meta tags.
+ * Build the meta tag array for a route head.
  */
 const createMetaTags = ({
   title: _title,
@@ -62,7 +69,7 @@ const createMetaTags = ({
           { property: "og:image:height", content: "630" },
         ]
       : [
-          // TODO dynamic OG/static improve
+          // default social image, served statically from public/og.png
           { name: "twitter:image", content: `${baseUrl}/og.png` },
           { name: "twitter:card", content: "summary_large_image" },
           { property: "og:image", content: `${baseUrl}/og.png` },
