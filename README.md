@@ -14,43 +14,153 @@ Synapse App is the management dashboard for Synapse. Built with [TanStack Start]
 
 ## Features
 
-- **Provider Management** - Add, rotate, and encrypt-at-rest your LLM, embedding, STT, and TTS provider keys
-- **Usage Analytics** - Per-model, per-provider usage and spend tracking
-- **Routing Configuration** - Configure smart routing strategies (threshold, cost, cascade, score, ONNX)
-- **Authentication** - JWT auth via an OIDC provider, protected routes with automatic redirects
-- **PWA** - Installable with offline support via Serwist
+- **Provider Management**: Add, rotate, and encrypt-at-rest your LLM, embedding, STT, and TTS provider keys
+- **Usage Analytics**: Per-model, per-provider usage and spend tracking with [TanStack Table](https://tanstack.com/table) data visualization
+- **Routing Configuration**: Configure smart routing strategies (threshold, cost, cascade, score, ONNX)
+- **Authentication & Authorization**:
+  - JWT auth via an OIDC provider with remote JWKS validation via [jose](https://github.com/panva/jose)
+  - Protected routes with automatic redirects
+  - Server-side authentication middleware
+- **UI/UX**:
+  - Modern component library with [Ark UI](https://ark-ui.com)
+  - [Tailwind CSS](https://tailwindcss.com) v4 with optimized class sorting
+  - Dark/light theme support with persistent preferences
+  - Responsive design with mobile-first approach
+  - Toast notifications with [Sonner](https://sonner.emilkowal.ski)
+  - [Lucide React](https://lucide.dev) and [Simple Icons](https://simpleicons.org) for iconography
+- **Progressive Web App (PWA)**:
+  - [Serwist](https://serwist.pages.dev) service worker for offline functionality
+  - App installation with native-like experience
+  - Automatic updates with user notifications
+  - Offline status indicators and caching strategies
+  - Web app manifest for app store distribution
+- **Data Management**:
+  - [TanStack Query](https://tanstack.com/query) for server state management
+  - GraphQL integration with code generation
+  - Type-safe API calls with [GraphQL Request](https://github.com/jasonkuhrt/graphql-request)
+  - [Zod](https://zod.dev) for runtime schema validation
+- **GraphQL Integration**:
+  - [GraphQL Code Generator](https://the-guild.dev/graphql/codegen) for type-safe queries
+  - React Query hooks generation
+  - TypeScript SDK generation
+  - MSW mocks for testing
+- **Testing**:
+  - Unit tests with [Bun test runner](https://bun.sh/docs/cli/test)
+  - [Testing Library](https://testing-library.com) for component testing
+  - [Happy DOM](https://github.com/nicholascrm/happy-dom) for fast DOM simulation
+  - E2E tests with [Playwright](https://playwright.dev)
+  - [MSW (Mock Service Worker)](https://mswjs.io) for API mocking
+  - Coverage reporting
+- **Developer Experience**:
+  - Hot module replacement during development
+  - Code quality with [Biome](https://biomejs.dev) for linting and formatting
+  - Git hooks with [Husky](https://typicode.github.io/husky)
+  - TypeScript strict mode with comprehensive type safety
+  - [Knip](https://knip.dev) for unused dependency detection
+  - Easy spin up with [Tilt](https://tilt.dev)
+- **Production Ready**:
+  - Server-side rendering (SSR) support
+  - Environment-specific configurations
+  - TLS/HTTPS support with [mkcert](https://github.com/nicholascrm/vite-plugin-mkcert)
+  - Optimized build process with Vite
+  - Route-based code splitting
 
-## Prerequisites
+## Local Development
 
-- [Bun](https://bun.sh) 1.3+
+First, `cp .env.local.template .env.local` and fill in the values.
 
-## Development
+### Building and Running
 
-```bash
-# Copy environment template
-cp .env.local.template .env.local
+Run `tilt up`, or:
 
+```sh
 bun i
+```
+
+```sh
 bun dev
 ```
 
-## Building
+### PWA (Optional Tasks)
 
-```bash
-bun build
-bun start
+#### Generate Icons
+
+Generate PWA icons:
+
+```sh
+bun icons:generate
 ```
+
+#### Audit
+
+Run a comprehensive PWA audit with [Unlighthouse](https://unlighthouse.dev):
+
+```sh
+# first, start the dev server
+bun dev
+
+# in another terminal, run the audit
+bun pwa:audit
+```
+
+This crawls the entire site and runs Google Lighthouse audits on each page, providing a dashboard with:
+
+- Performance scores
+- Accessibility checks
+- Best practices
+- SEO analysis
+- PWA compliance
+
+## Docker
+
+Build and run with Docker:
+
+```sh
+docker build -t synapse-app .
+docker run -p 3000:3000 synapse-app
+```
+
+The Dockerfile uses a multi-stage build:
+
+1. **deps** - Install dependencies with `bun install --frozen-lockfile`
+2. **builder** - Build the application with `bun run build`
+3. **runner** - Production image with only `.output` and `node_modules`
+
+Key configuration:
+
+- `NODE_PATH` is set to resolve modules from both `/app/node_modules` and `/app/.output/server/node_modules`
+- Runs Bun directly (`bun .output/server/index.mjs`) to avoid node shim compatibility issues
 
 ## Testing
 
-```bash
-# Unit and component tests
+The project includes a comprehensive test suite with unit tests and E2E tests.
+
+### Unit Tests
+
+```sh
 bun test
 
-# E2E tests
-bunx playwright install
-bun test:e2e
+# or in watch mode
+bun test:watch
+
+# or test with coverage reporting
+bun test:coverage
 ```
+
+### E2E Tests
+
+```sh
+# first, ensure Playwright browsers are installed
+bunx playwright install
+
+# run E2E tests
+bun test:e2e
+
+# or run with UI
+bun test:e2e:ui
+```
+
+Tests use [MSW (Mock Service Worker)](https://mswjs.io) to mock API calls. GraphQL mocks are auto-generated in `src/generated/graphql.mock.ts` via GraphQL Code Generator.
 
 ## License
 
