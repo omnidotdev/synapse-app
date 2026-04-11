@@ -6,7 +6,7 @@ import {
   ShieldCheckIcon,
   ZapIcon,
 } from "lucide-react";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import { Color, Matrix4 } from "three";
 
 import { InternalLink } from "@/components/core";
@@ -15,6 +15,17 @@ import { Button } from "@/components/ui/button";
 
 import type { FC } from "react";
 import type { InstancedMesh } from "three";
+
+/** Ref-based elapsed time tracker that avoids the deprecated THREE.Clock */
+function useElapsedRef() {
+  const ref = useRef(0);
+
+  useEffect(() => {
+    ref.current = 0;
+  }, []);
+
+  return ref;
+}
 
 const contentNodes = [
   {
@@ -191,6 +202,7 @@ function RoutingDiagram() {
 /** Subtle ambient particle mesh for the fixed background */
 const AmbientBackground: FC = () => {
   const ref = useRef<InstancedMesh>(null);
+  const elapsed = useElapsedRef();
   const count = 50;
   const spread = 16;
 
@@ -206,9 +218,10 @@ const AmbientBackground: FC = () => {
     return arr;
   }, []);
 
-  useFrame(({ clock }) => {
+  useFrame((_state, delta) => {
     if (!ref.current) return;
-    const t = clock.getElapsedTime();
+    elapsed.current += delta;
+    const t = elapsed.current;
     const mat = new Matrix4();
     for (let i = 0; i < count; i++) {
       const [x, y, z] = positions[i];

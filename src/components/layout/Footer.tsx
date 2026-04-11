@@ -28,7 +28,7 @@ const Footer = () => (
     <ExternalLink
       variant="ghost"
       href={app.docsUrl}
-      className="dark:text-base-200"
+      className="min-h-11 dark:text-base-200"
     >
       Docs
     </ExternalLink>
@@ -36,11 +36,19 @@ const Footer = () => (
     <div className="h-4 w-px bg-muted-foreground/30" />
 
     <div className="flex items-center gap-1">
-      <ExternalLink variant="ghost" href={app.socials.discord}>
+      <ExternalLink
+        variant="ghost"
+        href={app.socials.discord}
+        className="min-h-11 min-w-11"
+      >
         <DiscordIcon className="size-5 transition-colors hover:text-primary" />
       </ExternalLink>
 
-      <ExternalLink variant="ghost" href={app.socials.x}>
+      <ExternalLink
+        variant="ghost"
+        href={app.socials.x}
+        className="min-h-11 min-w-11"
+      >
         <XIcon className="size-5 transition-colors hover:text-primary" />
       </ExternalLink>
     </div>

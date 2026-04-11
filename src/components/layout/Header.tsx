@@ -81,7 +81,11 @@ const Header = () => {
           <div className="flex h-16 items-center justify-between">
             {/* Left: logo + nav links */}
             <div className="flex gap-2">
-              <InternalLink to="/" variant="unstyled" className="-ml-4">
+              <InternalLink
+                to="/"
+                variant="unstyled"
+                className="-ml-4 min-h-11"
+              >
                 <h1 className="font-bold text-xl tracking-tight">{app.name}</h1>
               </InternalLink>
 
@@ -178,7 +182,7 @@ const Header = () => {
               <button
                 type="button"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                className="inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent sm:hidden"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md p-2 text-foreground hover:bg-accent sm:hidden"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
               >
                 {mobileMenuOpen ? (
@@ -194,7 +198,7 @@ const Header = () => {
 
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-40 overflow-hidden sm:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-[60] overflow-hidden sm:hidden ${mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         {/* Backdrop */}
         <div

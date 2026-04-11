@@ -6,6 +6,7 @@ import {
   LayoutDashboardIcon,
   SettingsIcon,
 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import cn from "@/lib/utils";
 
@@ -60,16 +61,62 @@ const useNavActive = (to: string) => {
  * Dashboard sidebar navigation (desktop) with a horizontal tab bar (mobile).
  */
 const DashboardSidebar = () => {
+  const scrollRef = useRef<HTMLElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  // Check scroll state on mount and resize
+  useEffect(() => {
+    updateScrollState();
+
+    const observer = new ResizeObserver(updateScrollState);
+    if (scrollRef.current) observer.observe(scrollRef.current);
+
+    return () => observer.disconnect();
+  }, [updateScrollState]);
+
   return (
     <>
       {/* Mobile horizontal tab bar */}
-      <nav className="scrollbar-hide overflow-x-auto rounded-xl border border-border bg-card p-1 md:hidden">
-        <ul className="flex w-max gap-1 px-1">
-          {navItems.map((item) => (
-            <MobileNavItem key={item.to} {...item} />
-          ))}
-        </ul>
-      </nav>
+      <div className="relative md:hidden">
+        <nav
+          ref={scrollRef}
+          onScroll={updateScrollState}
+          className="scrollbar-hide overflow-x-auto rounded-xl border border-border bg-card p-1"
+        >
+          <ul className="flex w-max gap-1 px-1">
+            {navItems.map((item) => (
+              <MobileNavItem key={item.to} {...item} />
+            ))}
+          </ul>
+        </nav>
+
+        {/* Left scroll fade */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-0 left-0 w-6 rounded-l-xl bg-gradient-to-r from-card to-transparent transition-opacity",
+            canScrollLeft ? "opacity-100" : "opacity-0",
+          )}
+          aria-hidden="true"
+        />
+
+        {/* Right scroll fade */}
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-0 right-0 w-6 rounded-r-xl bg-gradient-to-l from-card to-transparent transition-opacity",
+            canScrollRight ? "opacity-100" : "opacity-0",
+          )}
+          aria-hidden="true"
+        />
+      </div>
 
       {/* Desktop sidebar */}
       <nav className="relative z-10 hidden w-48 shrink-0 md:block">

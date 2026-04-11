@@ -14,6 +14,7 @@ const ThemeToggle = () => {
   return (
     <Button
       variant="ghost"
+      className="min-h-11 min-w-11"
       onClick={toggleTheme}
       aria-label={
         theme === "light" ? "Switch to dark mode" : "Switch to light mode"

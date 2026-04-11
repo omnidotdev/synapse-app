@@ -1,10 +1,22 @@
 import { Float, Html, QuadraticBezierLine } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Color, Matrix4, QuadraticBezierCurve3, Vector3 } from "three";
 
 import type { FC } from "react";
 import type { InstancedMesh, Mesh, MeshBasicMaterial } from "three";
+
+/** Ref-based elapsed time tracker that avoids the deprecated THREE.Clock */
+function useElapsedRef() {
+  const ref = useRef(0);
+
+  // Reset on mount so remounts start fresh
+  useEffect(() => {
+    ref.current = 0;
+  }, []);
+
+  return ref;
+}
 
 type NodeDef = {
   id: string;
@@ -119,13 +131,15 @@ const SynapseNode: FC<{ node: NodeDef; isSoma?: boolean }> = ({
 }) => {
   const meshRef = useRef<Mesh>(null);
   const auraRef = useRef<Mesh>(null);
+  const elapsed = useElapsedRef();
   const [hovered, setHovered] = useState(false);
   const color = getColor(node.color);
   const glow = getGlow(node.color);
 
-  useFrame(({ clock }) => {
+  useFrame((_state, delta) => {
     if (!meshRef.current || !auraRef.current) return;
-    const t = clock.getElapsedTime();
+    elapsed.current += delta;
+    const t = elapsed.current;
 
     if (isSoma) {
       const pulse = 1 + Math.sin(t * 1.2) * 0.04;
@@ -248,6 +262,7 @@ const SignalDot: FC<{
   delay?: number;
 }> = ({ from, to, mid, speed = 0.35, delay = 0 }) => {
   const ref = useRef<Mesh>(null);
+  const elapsed = useElapsedRef();
   const curve = useMemo(
     () =>
       new QuadraticBezierCurve3(
@@ -258,9 +273,10 @@ const SignalDot: FC<{
     [from, mid, to],
   );
 
-  useFrame(({ clock }) => {
+  useFrame((_state, delta) => {
     if (!ref.current) return;
-    const t = ((clock.getElapsedTime() * speed + delay) % 1.6) / 1.6;
+    elapsed.current += delta;
+    const t = ((elapsed.current * speed + delay) % 1.6) / 1.6;
     if (t > 1) {
       ref.current.visible = false;
       return;
@@ -350,6 +366,7 @@ const AmbientParticles: FC<{ count?: number; spread?: number }> = ({
   spread = 7,
 }) => {
   const ref = useRef<InstancedMesh>(null);
+  const elapsed = useElapsedRef();
   const positions = useMemo(() => {
     const arr: [number, number, number][] = [];
     for (let i = 0; i < count; i++) {
@@ -362,9 +379,10 @@ const AmbientParticles: FC<{ count?: number; spread?: number }> = ({
     return arr;
   }, [count, spread]);
 
-  useFrame(({ clock }) => {
+  useFrame((_state, delta) => {
     if (!ref.current) return;
-    const t = clock.getElapsedTime();
+    elapsed.current += delta;
+    const t = elapsed.current;
     const mat = new Matrix4();
     for (let i = 0; i < count; i++) {
       const [x, y, z] = positions[i];
