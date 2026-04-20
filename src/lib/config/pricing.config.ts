@@ -13,7 +13,7 @@ const pricing = {
   pro: {
     monthlyPrice: 2900,
     yearlyPrice: 27800,
-    overageRatePer1k: 50,
+    overageRatePer1k: 20,
   },
   team: {
     monthlyPrice: 7900,

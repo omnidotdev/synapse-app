@@ -15,7 +15,7 @@ describe("pricing config", () => {
   test("pro tier prices match SSOT", () => {
     expect(pricing.pro.monthlyPrice).toBe(2900);
     expect(pricing.pro.yearlyPrice).toBe(27800);
-    expect(pricing.pro.overageRatePer1k).toBe(50);
+    expect(pricing.pro.overageRatePer1k).toBe(20);
   });
 
   test("team tier prices match SSOT", () => {
@@ -25,7 +25,7 @@ describe("pricing config", () => {
 
   test("overage rates match SSOT", () => {
     expect(pricing.free.overageRatePer1k).toBe(0);
-    expect(pricing.pro.overageRatePer1k).toBe(50);
+    expect(pricing.pro.overageRatePer1k).toBe(20);
     expect(pricing.team.overageRatePer1k).toBe(0);
   });
 
