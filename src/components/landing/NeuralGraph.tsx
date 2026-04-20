@@ -410,8 +410,11 @@ const ResponsiveCamera: FC = () => {
 
   useMemo(() => {
     const aspect = size.width / size.height;
-    // Keep scene large on mobile (closer camera instead of pulling back)
-    if (aspect < 0.8) {
+
+    if (size.width < 400) {
+      // Very narrow mobile (375px and similar): pull back to keep edge nodes visible
+      camera.position.z = 10;
+    } else if (aspect < 0.8) {
       camera.position.z = 8;
     } else if (aspect < 1.2) {
       camera.position.z = 7.5;

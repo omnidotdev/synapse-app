@@ -1,3 +1,5 @@
+import "@/lib/util/patchThreeClock";
+
 import { OrbitControls, Preload } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
