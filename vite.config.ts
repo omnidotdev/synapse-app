@@ -16,7 +16,8 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
  */
 const config = defineConfig(({ command }) => ({
   server: {
-    port: 3000,
+    port: Number(process.env.PORT) || 3000,
+    strictPort: true,
     host: "0.0.0.0",
   },
   plugins: [
