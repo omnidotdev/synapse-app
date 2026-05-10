@@ -31,7 +31,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.12",
+    "@biomejs/biome": "2.4.15",
     "@faker-js/faker": "^10.4.0",
     "@graphql-codegen/add": "^6.0.1",
     "@graphql-codegen/cli": "^6.3.1",
