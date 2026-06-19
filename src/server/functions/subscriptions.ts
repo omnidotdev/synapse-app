@@ -31,7 +31,7 @@ const checkoutWithWorkspaceSchema = z
   });
 
 const subscriptionSchema = z.object({
-  entityType: z.string().min(1),
+  entityType: z.enum(["user", "organization"]),
   entityId: z.string().min(1),
 });
 
@@ -61,7 +61,7 @@ export const getSubscription = createServerFn()
         context.session.user.id,
         data.entityType,
         data.entityId,
-        "viewer",
+        "member",
       );
     }
 
@@ -124,7 +124,7 @@ export const getBillingPortalUrl = createServerFn({ method: "POST" })
         context.session.user.id,
         data.entityType,
         data.entityId,
-        "viewer",
+        "member",
       );
     }
 
@@ -194,7 +194,7 @@ export const getOrgSubscription = createServerFn()
       context.session.user.id,
       "organization",
       data.organizationId,
-      "viewer",
+      "member",
     );
 
     return getBilling().getSubscription(

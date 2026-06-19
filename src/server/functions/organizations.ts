@@ -81,7 +81,7 @@ export const listOrganizationInvitations = createServerFn({ method: "GET" })
       context.session.user.id,
       "organization",
       data.organizationId,
-      "viewer",
+      "member",
     );
 
     const accessToken = context.session.accessToken;
@@ -169,7 +169,7 @@ export const listOrganizationMembers = createServerFn({ method: "GET" })
       context.session.user.id,
       "organization",
       data.organizationId,
-      "viewer",
+      "member",
     );
 
     const accessToken = context.session.accessToken;

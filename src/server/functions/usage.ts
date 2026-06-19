@@ -9,7 +9,7 @@ import { authMiddleware } from "@/server/middleware";
 import { requirePermission } from "./authorization";
 
 const entitySchema = z.object({
-  entityType: z.string().min(1),
+  entityType: z.enum(["user", "organization"]),
   entityId: z.string().min(1),
 });
 
@@ -49,7 +49,7 @@ export const getUsageSummary = createServerFn()
         context.session.user.id,
         data.entityType,
         data.entityId,
-        "viewer",
+        "member",
       );
     }
 
