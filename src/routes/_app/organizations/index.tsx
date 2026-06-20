@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import { Avatar } from "@/components/ui/avatar";
 import { useOrganization } from "@/lib/context";
 
 export const Route = createFileRoute("/_app/organizations/")({
@@ -26,7 +27,15 @@ function OrganizationsPage() {
             className="block rounded-lg border p-4 transition-colors hover:bg-muted"
           >
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold">{org.slug}</h2>
+              <div className="flex min-w-0 items-center gap-2">
+                <Avatar
+                  size="sm"
+                  src={org.logo ?? undefined}
+                  alt={org.slug}
+                  fallback={org.slug.charAt(0).toUpperCase()}
+                />
+                <h2 className="truncate font-semibold">{org.slug}</h2>
+              </div>
               {org.type === "personal" && (
                 <span className="rounded bg-muted px-2 py-1 text-xs">
                   Personal

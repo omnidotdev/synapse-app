@@ -9,6 +9,7 @@ export interface Organization {
   id: string;
   name: string | null;
   slug: string;
+  logo?: string | null;
   /** Discriminator: 'personal' (auto-created, immutable) or 'team' (collaborative) */
   type: "personal" | "team";
   roles: string[];
@@ -119,6 +120,7 @@ export function parseOrganizationClaims(
     id: org.id,
     name: org.name ?? null,
     slug: org.slug,
+    logo: org.logo ?? null,
     type: org.type ?? "team",
     roles: org.roles ?? [],
     teams: org.teams ?? [],
