@@ -8,7 +8,7 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Toaster } from "sonner";
 
 import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
@@ -139,6 +139,19 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   // Keep the OAuth access token fresh while the user is idle
   useSessionRefresh(fetchSession);
+
+  // Drop all cached queries when the authenticated identity changes within the
+  // same client, so one user never sees another's cached keys/usage data (query
+  // keys like ["apiKeys"] are not user-scoped).
+  const { queryClient, auth } = Route.useRouteContext();
+  const currentUserId = auth?.user?.id ?? null;
+  const prevUserId = useRef(currentUserId);
+  useEffect(() => {
+    if (prevUserId.current !== null && prevUserId.current !== currentUserId) {
+      queryClient.clear();
+    }
+    prevUserId.current = currentUserId;
+  }, [currentUserId, queryClient]);
 
   return (
     <RootDocument>
