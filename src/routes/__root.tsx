@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 
 import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
 import app from "@/lib/config/app.config";
+import { isDevEnv } from "@/lib/config/env.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
 import registerServiceWorker from "@/lib/util/registerServiceWorker";
@@ -175,19 +176,21 @@ function RootDocument({ children }: PropsWithChildren) {
           <Toaster position="top-center" richColors />
         </ThemeProvider>
 
-        <TanStackDevtools
-          plugins={[
-            {
-              name: "TanStack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-              defaultOpen: true,
-            },
-            {
-              name: "TanStack Query",
-              render: <ReactQueryDevtoolsPanel />,
-            },
-          ]}
-        />
+        {isDevEnv && (
+          <TanStackDevtools
+            plugins={[
+              {
+                name: "TanStack Router",
+                render: <TanStackRouterDevtoolsPanel />,
+                defaultOpen: true,
+              },
+              {
+                name: "TanStack Query",
+                render: <ReactQueryDevtoolsPanel />,
+              },
+            ]}
+          />
+        )}
 
         <Scripts />
       </body>
