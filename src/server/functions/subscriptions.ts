@@ -211,6 +211,18 @@ export const createCheckoutWithWorkspace = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => checkoutWithWorkspaceSchema.parse(data))
   .handler(async ({ data, context }) => {
+    // `workspaceId` is an existing org id (billing treats workspace == org).
+    // Gate it so a user cannot start checkout against an org they don't admin.
+    // The `createWorkspace` path makes a new org for the caller, so no check.
+    if (data.workspaceId) {
+      await requirePermission(
+        context.session.user.id,
+        "organization",
+        data.workspaceId,
+        "admin",
+      );
+    }
+
     return getBilling().createCheckoutWithWorkspace({
       appId: app.name.toLowerCase(),
       priceId: data.priceId,

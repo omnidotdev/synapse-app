@@ -4,9 +4,12 @@ import { batchCheckPermissions } from "@/server/functions/authorization";
 
 /**
  * Hook to check the current user's Warden permissions on an organization.
- * Returns permission booleans for viewer, editor, and admin roles.
+ * Derives view/edit/admin gates from the org `member` and `admin` relations
+ * (the only user-assignable org relations are owner/admin/member).
  *
- * Falls back to all-true when Warden is not configured (graceful degradation).
+ * When Warden is not configured the server returns all-true (graceful
+ * degradation for local dev). On an actual check failure the booleans fall
+ * back to false so the UI fails closed rather than exposing admin controls.
  */
 export function useOrgPermissions(organizationId: string | undefined) {
   const { data, isLoading } = useQuery({
@@ -21,12 +24,7 @@ export function useOrgPermissions(organizationId: string | undefined) {
             {
               resourceType: "organization",
               resourceId: orgId,
-              permission: "viewer",
-            },
-            {
-              resourceType: "organization",
-              resourceId: orgId,
-              permission: "editor",
+              permission: "member",
             },
             {
               resourceType: "organization",
@@ -43,8 +41,8 @@ export function useOrgPermissions(organizationId: string | undefined) {
 
   return {
     isLoading,
-    canView: data?.[0] ?? true,
-    canEdit: data?.[1] ?? true,
-    canAdmin: data?.[2] ?? true,
+    canView: data?.[0] ?? false,
+    canEdit: data?.[1] ?? false,
+    canAdmin: data?.[1] ?? false,
   };
 }
