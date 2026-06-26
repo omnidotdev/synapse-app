@@ -203,7 +203,15 @@ function WorkspacesPage() {
 
           {workspaces.length === 0 && !showCreate && (
             <p className="col-span-full text-muted-foreground">
-              No workspaces yet. Create one to get started.
+              No workspaces yet.{" "}
+              <button
+                type="button"
+                onClick={() => setShowCreate(true)}
+                className="text-primary hover:underline"
+              >
+                Create one
+              </button>{" "}
+              to get started.
             </p>
           )}
         </div>
