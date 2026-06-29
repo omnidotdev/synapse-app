@@ -1,4 +1,4 @@
-import { CardRoot } from "@/components/ui/card";
+import { CardRoot } from "@omnidotdev/thornberry/card";
 
 import type { ReactNode } from "react";
 

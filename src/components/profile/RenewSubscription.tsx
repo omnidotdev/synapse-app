@@ -1,8 +1,8 @@
+import { Button } from "@omnidotdev/thornberry/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RotateCcwIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { renewSubscription as renewSubscriptionFn } from "@/server/functions/subscriptions";
 
 interface Props {

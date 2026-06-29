@@ -1,14 +1,15 @@
 import {
-  CancelSubscription,
-  ManageSubscription,
-  RenewSubscription,
-} from "@/components/profile";
-import {
   CardContent,
   CardHeader,
   CardRoot,
   CardTitle,
-} from "@/components/ui/card";
+} from "@omnidotdev/thornberry/card";
+
+import {
+  CancelSubscription,
+  ManageSubscription,
+  RenewSubscription,
+} from "@/components/profile";
 
 import type { Subscription } from "@omnidotdev/providers/billing";
 

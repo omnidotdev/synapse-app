@@ -1,4 +1,17 @@
 import { TabsRootProvider, useTabs } from "@ark-ui/react";
+import { Button } from "@omnidotdev/thornberry/button";
+import {
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@omnidotdev/thornberry/card";
+import {
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@omnidotdev/thornberry/tabs";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CheckIcon } from "lucide-react";
@@ -7,15 +20,6 @@ import { z } from "zod";
 
 import { RouteErrorFallback } from "@/components/layout";
 import { FrequentlyAskedQuestions, PriceCard } from "@/components/pricing";
-import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardRoot,
-  CardTitle,
-} from "@/components/ui/card";
-import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import authClient from "@/lib/auth/authClient";
 import pricing from "@/lib/config/pricing.config";
 import { getTierFromEntitlements } from "@/lib/util";

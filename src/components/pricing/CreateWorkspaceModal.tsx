@@ -1,14 +1,15 @@
-import { useRef, useState } from "react";
-
-import { Button } from "@/components/ui/button";
+import { Button } from "@omnidotdev/thornberry/button";
 import {
-  Dialog,
+  DialogBackdrop,
   DialogContent,
   DialogDescription,
-  DialogHeader,
+  DialogPositioner,
+  DialogRoot,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+} from "@omnidotdev/thornberry/dialog";
+import { Input } from "@omnidotdev/thornberry/input";
+import { useRef, useState } from "react";
+
 import generateSlug from "@/lib/util/generateSlug";
 
 type Props = {
@@ -62,62 +63,63 @@ const CreateWorkspaceModal = ({
   };
 
   return (
-    <Dialog
+    <DialogRoot
       open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) handleClose();
+      onOpenChange={(details) => {
+        if (!details.open) handleClose();
       }}
     >
-      <DialogContent>
-        <DialogHeader>
+      <DialogBackdrop />
+      <DialogPositioner>
+        <DialogContent>
           <DialogTitle>Create Workspace</DialogTitle>
           <DialogDescription>
             Create a new workspace with the{" "}
             <strong className="text-primary">{tierName}</strong> plan.
           </DialogDescription>
-        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Input
-              ref={nameRef}
-              name="name"
-              type="text"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setError("");
-              }}
-              placeholder="Workspace Name"
-              autoComplete="off"
-            />
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Input
+                ref={nameRef}
+                name="name"
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setError("");
+                }}
+                placeholder="Workspace Name"
+                autoComplete="off"
+              />
 
-            {previewSlug && (
-              <p className="text-muted-foreground text-xs">
-                URL: <span className="font-mono">{previewSlug}</span>
-              </p>
-            )}
+              {previewSlug && (
+                <p className="text-muted-foreground text-xs">
+                  URL: <span className="font-mono">{previewSlug}</span>
+                </p>
+              )}
 
-            {error && <p className="text-destructive text-xs">{error}</p>}
-          </div>
+              {error && <p className="text-destructive text-xs">{error}</p>}
+            </div>
 
-          <div className="mt-2 flex justify-end gap-2">
-            <Button
-              type="button"
-              onClick={handleClose}
-              variant="outline"
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
+            <div className="mt-2 flex justify-end gap-2">
+              <Button
+                type="button"
+                onClick={handleClose}
+                variant="outline"
+                disabled={isLoading}
+              >
+                Cancel
+              </Button>
 
-            <Button type="submit" disabled={!name.trim() || isLoading}>
-              {isLoading ? "Creating..." : "Continue to Checkout"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+              <Button type="submit" disabled={!name.trim() || isLoading}>
+                {isLoading ? "Creating..." : "Continue to Checkout"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </DialogPositioner>
+    </DialogRoot>
   );
 };
 

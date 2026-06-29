@@ -1,3 +1,10 @@
+import { Button } from "@omnidotdev/thornberry/button";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@omnidotdev/thornberry/card";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, UserPlusIcon } from "lucide-react";
@@ -6,13 +13,6 @@ import { toast } from "sonner";
 
 import MembersListSkeleton from "@/components/dashboard/MembersListSkeleton";
 import { RouteErrorFallback } from "@/components/layout";
-import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardHeader,
-  CardRoot,
-  CardTitle,
-} from "@/components/ui/card";
 import { useOrgPermissions, useOrganization } from "@/lib/context";
 import {
   inviteOrganizationMember,

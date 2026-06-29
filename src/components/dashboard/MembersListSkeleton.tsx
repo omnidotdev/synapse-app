@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@omnidotdev/thornberry/skeleton";
 
 /**
  * Table skeleton for the members page.

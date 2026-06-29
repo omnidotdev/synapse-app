@@ -1,3 +1,17 @@
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@omnidotdev/thornberry/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@omnidotdev/thornberry/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { HashIcon, LogInIcon, LogOutIcon } from "lucide-react";
@@ -7,20 +21,6 @@ import StatCard from "@/components/dashboard/StatCard";
 import UsageChart from "@/components/dashboard/UsageChart";
 import UsageProgress from "@/components/dashboard/UsageProgress";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
-import {
-  CardContent,
-  CardHeader,
-  CardRoot,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import createMetaTags from "@/lib/util/createMetaTags";
 import getAnalyticsRetentionDays from "@/lib/util/getAnalyticsRetentionDays";
 import { fetchSession } from "@/server/functions/auth";

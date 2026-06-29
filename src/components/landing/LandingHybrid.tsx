@@ -1,5 +1,6 @@
 import "@/lib/util/patchThreeClock";
 
+import { Button } from "@omnidotdev/thornberry/button";
 import { OrbitControls, Preload } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
@@ -13,7 +14,6 @@ import { Color, Matrix4 } from "three";
 
 import { InternalLink } from "@/components/core";
 import NeuralGraph from "@/components/landing/NeuralGraph";
-import { Button } from "@/components/ui/button";
 
 import type { FC } from "react";
 import type { InstancedMesh } from "three";
@@ -311,7 +311,7 @@ const LandingHybrid: FC = () => {
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
               <InternalLink to="/dashboard" variant="unstyled">
                 <Button
-                  variant="gradient"
+                  variant="solid"
                   size="lg"
                   className="text-sm sm:text-base"
                 >
@@ -446,11 +446,7 @@ const LandingHybrid: FC = () => {
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-6 sm:gap-3">
           <InternalLink to="/dashboard" variant="unstyled">
-            <Button
-              variant="gradient"
-              size="lg"
-              className="text-sm sm:text-base"
-            >
+            <Button variant="solid" size="lg" className="text-sm sm:text-base">
               Get Started
             </Button>
           </InternalLink>

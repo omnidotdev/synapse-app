@@ -1,9 +1,9 @@
+import { Button } from "@omnidotdev/thornberry/button";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { EditIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { getBillingPortalUrl } from "@/server/functions/subscriptions";
 
 interface Props {

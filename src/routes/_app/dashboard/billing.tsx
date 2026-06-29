@@ -1,14 +1,14 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-
-import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
-import { DashboardPending, RouteErrorFallback } from "@/components/layout";
-import { Button } from "@/components/ui/button";
+import { Button } from "@omnidotdev/thornberry/button";
 import {
   CardContent,
   CardHeader,
   CardRoot,
   CardTitle,
-} from "@/components/ui/card";
+} from "@omnidotdev/thornberry/card";
+import { Link, createFileRoute } from "@tanstack/react-router";
+
+import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import {
   formatFeatureKey,
   formatFeatureValue,

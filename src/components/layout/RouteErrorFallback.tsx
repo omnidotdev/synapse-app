@@ -1,7 +1,6 @@
+import { Button } from "@omnidotdev/thornberry/button";
 import { Link, useRouter } from "@tanstack/react-router";
 import { AlertTriangleIcon } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 
 import type { ErrorComponentProps } from "@tanstack/react-router";
 

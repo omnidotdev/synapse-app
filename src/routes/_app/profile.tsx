@@ -1,15 +1,15 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
-import { Loader2Icon } from "lucide-react";
-
-import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
-import { RouteErrorFallback } from "@/components/layout";
 import {
   CardContent,
   CardDescription,
   CardHeader,
   CardRoot,
   CardTitle,
-} from "@/components/ui/card";
+} from "@omnidotdev/thornberry/card";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Loader2Icon } from "lucide-react";
+
+import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
+import { RouteErrorFallback } from "@/components/layout";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";

@@ -1,16 +1,16 @@
-import { flexRender } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@omnidotdev/thornberry/table";
+import { flexRender } from "@tanstack/react-table";
+
 import cn from "@/lib/utils";
 
+import type { TableProps } from "@omnidotdev/thornberry/table";
 import type { RowData, Table as TableInterface } from "@tanstack/react-table";
-import type { TableProps } from "@/components/ui/table";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {

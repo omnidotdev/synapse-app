@@ -1,6 +1,10 @@
+import {
+  AvatarFallback,
+  AvatarImage,
+  AvatarRoot,
+} from "@omnidotdev/thornberry/avatar";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
-import { Avatar } from "@/components/ui/avatar";
 import { useOrganization } from "@/lib/context";
 
 export const Route = createFileRoute("/_app/organizations/")({
@@ -28,12 +32,12 @@ function OrganizationsPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex min-w-0 items-center gap-2">
-                <Avatar
-                  size="sm"
-                  src={org.logo ?? undefined}
-                  alt={org.slug}
-                  fallback={org.slug.charAt(0).toUpperCase()}
-                />
+                <AvatarRoot size="sm">
+                  <AvatarImage src={org.logo ?? undefined} alt={org.slug} />
+                  <AvatarFallback>
+                    {org.slug.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </AvatarRoot>
                 <h2 className="truncate font-semibold">{org.slug}</h2>
               </div>
               {org.type === "personal" && (

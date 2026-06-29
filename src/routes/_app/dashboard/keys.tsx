@@ -1,3 +1,18 @@
+import { Button } from "@omnidotdev/thornberry/button";
+import {
+  CardContent,
+  CardHeader,
+  CardRoot,
+  CardTitle,
+} from "@omnidotdev/thornberry/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@omnidotdev/thornberry/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
@@ -13,21 +28,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { RouteErrorFallback } from "@/components/layout";
-import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardHeader,
-  CardRoot,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import createMetaTags from "@/lib/util/createMetaTags";
 import getMaxApiKeys from "@/lib/util/getMaxApiKeys";
 import {

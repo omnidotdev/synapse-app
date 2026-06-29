@@ -1,22 +1,12 @@
 import { Format } from "@ark-ui/react";
-import { useMutation } from "@tanstack/react-query";
-import {
-  useNavigate,
-  useRouteContext,
-  useSearch,
-} from "@tanstack/react-router";
-import { BuildingIcon, CheckIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
-
-import CreateWorkspaceModal from "@/components/pricing/CreateWorkspaceModal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@omnidotdev/thornberry/button";
 import {
   CardContent,
   CardDescription,
   CardHeader,
   CardRoot,
   CardTitle,
-} from "@/components/ui/card";
+} from "@omnidotdev/thornberry/card";
 import {
   MenuContent,
   MenuItem,
@@ -27,7 +17,17 @@ import {
   MenuRoot,
   MenuSeparator,
   MenuTrigger,
-} from "@/components/ui/menu";
+} from "@omnidotdev/thornberry/menu";
+import { useMutation } from "@tanstack/react-query";
+import {
+  useNavigate,
+  useRouteContext,
+  useSearch,
+} from "@tanstack/react-router";
+import { BuildingIcon, CheckIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
+
+import CreateWorkspaceModal from "@/components/pricing/CreateWorkspaceModal";
 import authClient from "@/lib/auth/authClient";
 import { BASE_URL } from "@/lib/config/env.config";
 import { capitalizeFirstLetter } from "@/lib/util";
@@ -167,7 +167,7 @@ const PriceCard = ({
 
   const showDropdown = !!auth && !isFreeTier && !!allOrgs.length;
 
-  const buttonVariant = isProTier ? "gradient" : "solid";
+  const buttonVariant = isProTier ? "solid" : "solid";
 
   const getButtonContent = () => {
     if (isFreeTier) return "Get Started";
