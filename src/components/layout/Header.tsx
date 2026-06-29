@@ -1,4 +1,5 @@
 import { MenuRootProvider, useMenu } from "@ark-ui/react";
+import { LogoLockup } from "@omnidotdev/thornberry/logo-lockup";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation, useRouteContext } from "@tanstack/react-router";
 import {
@@ -86,7 +87,10 @@ const Header = () => {
                 variant="unstyled"
                 className="-ml-4 min-h-11 items-center"
               >
-                <h1 className="font-bold text-xl tracking-tight">{app.name}</h1>
+                <LogoLockup
+                  name={app.name}
+                  nameClassName="font-bold text-xl tracking-tight"
+                />
               </InternalLink>
 
               <span className="hidden select-none rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs sm:inline-flex">
