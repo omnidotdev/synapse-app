@@ -36,6 +36,24 @@ const Footer = () => (
 
     <div className="h-4 w-px bg-muted-foreground/30" />
 
+    <ExternalLink
+      variant="ghost"
+      href={app.legal.privacy}
+      className="min-h-11 dark:text-base-200"
+    >
+      Privacy
+    </ExternalLink>
+
+    <ExternalLink
+      variant="ghost"
+      href={app.legal.terms}
+      className="min-h-11 dark:text-base-200"
+    >
+      Terms
+    </ExternalLink>
+
+    <div className="h-4 w-px bg-muted-foreground/30" />
+
     <div className="flex items-center gap-1">
       <ExternalLink
         variant="ghost"
