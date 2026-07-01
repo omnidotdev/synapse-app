@@ -288,7 +288,7 @@ const PricingPage = () => {
           <TabsTrigger value="month">Monthly</TabsTrigger>
           <TabsTrigger value="year">
             Yearly{" "}
-            <span className="ml-1.5 rounded-full bg-primary/10 px-1.5 py-0.5 font-medium text-primary text-xs">
+            <span className="ml-1.5 rounded-full bg-primary/10 px-1.5 py-0.5 font-medium text-primary text-xs dark:text-primary-300">
               Save 20%
             </span>
           </TabsTrigger>

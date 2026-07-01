@@ -146,7 +146,7 @@ const MobileNavItem = ({ to, label, icon }: NavItem) => {
         className={cn(
           "flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 font-medium text-xs transition-all duration-200",
           isActive
-            ? "bg-primary/10 text-primary"
+            ? "bg-primary/10 text-primary dark:text-primary-300"
             : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
         )}
       >
@@ -170,7 +170,7 @@ const DesktopNavItem = ({ to, label, icon }: NavItem) => {
         className={cn(
           "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-all duration-200",
           isActive
-            ? "bg-primary/10 font-medium text-primary"
+            ? "bg-primary/10 font-medium text-primary dark:text-primary-300"
             : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
         )}
       >

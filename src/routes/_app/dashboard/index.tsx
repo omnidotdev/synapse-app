@@ -121,7 +121,7 @@ function DashboardOverview() {
           to="/dashboard/usage"
           className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent"
         >
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary dark:text-primary-300">
             <BarChart3Icon className="h-5 w-5" />
           </div>
           <div>

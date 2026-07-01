@@ -221,7 +221,7 @@ function OrgMembersPage() {
                   <span className="font-medium">You</span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="rounded bg-primary/10 px-2 py-1 text-primary text-xs">
+                  <span className="rounded bg-primary/10 px-2 py-1 text-primary text-xs dark:text-primary-300">
                     {org.roles[0] || "owner"}
                   </span>
                 </td>
@@ -269,7 +269,7 @@ function OrgMembersPage() {
                   </td>
                   <td className="px-4 py-3">
                     {member.role === "owner" || !canAdmin ? (
-                      <span className="rounded bg-primary/10 px-2 py-1 text-primary text-xs">
+                      <span className="rounded bg-primary/10 px-2 py-1 text-primary text-xs dark:text-primary-300">
                         {member.role}
                       </span>
                     ) : (

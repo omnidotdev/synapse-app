@@ -93,7 +93,7 @@ const Header = () => {
                 />
               </InternalLink>
 
-              <span className="hidden select-none rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs sm:inline-flex">
+              <span className="hidden select-none rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs sm:inline-flex dark:text-primary-300">
                 Early Access
               </span>
 

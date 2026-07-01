@@ -37,7 +37,7 @@ const contentNodes = [
     title: "Unified Routing",
     description:
       "Route to any model with automatic fallback chains, cost optimization, and latency-aware selection",
-    iconClasses: "bg-primary/10 text-primary",
+    iconClasses: "bg-primary/10 text-primary dark:text-primary-300",
   },
   {
     type: "feature" as const,
@@ -55,7 +55,7 @@ const contentNodes = [
     title: "Scoped Keys",
     description:
       "Fine-grained API keys with auto-rotation, audit trails, rate limits, and per-model permissions",
-    iconClasses: "bg-primary/10 text-primary",
+    iconClasses: "bg-primary/10 text-primary dark:text-primary-300",
   },
   {
     type: "feature" as const,

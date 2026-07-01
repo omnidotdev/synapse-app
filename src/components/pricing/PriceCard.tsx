@@ -253,7 +253,7 @@ const PriceCard = ({
                               <span className="flex-1 truncate font-medium text-sm">
                                 {org.slug}
                               </span>
-                              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-xs">
+                              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-xs dark:text-primary-300">
                                 Upgrade
                               </span>
                             </MenuItemText>
