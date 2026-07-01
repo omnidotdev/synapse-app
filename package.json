@@ -78,7 +78,7 @@
     "@ark-ui/react": "^5.36.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@omnidotdev/providers": "github:omnidotdev/providers#d6ce542",
-    "@omnidotdev/thornberry": "github:omnidotdev/thornberry#0507ec5",
+    "@omnidotdev/thornberry": "github:omnidotdev/thornberry#eb634c7",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@tailwindcss/vite": "^4.3.0",
