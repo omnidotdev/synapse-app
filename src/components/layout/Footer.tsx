@@ -52,6 +52,14 @@ const Footer = () => (
       Terms
     </ExternalLink>
 
+    <ExternalLink
+      variant="ghost"
+      href={app.legal.cookies}
+      className="min-h-11 dark:text-base-200"
+    >
+      Cookies
+    </ExternalLink>
+
     <div className="h-4 w-px bg-muted-foreground/30" />
 
     <div className="flex items-center gap-1">

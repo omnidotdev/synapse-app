@@ -31,7 +31,11 @@ const config = defineConfig(({ command }) => ({
       externals: { inline: ["srvx", "@tanstack/router-core"] },
       routeRules: {
         "/**": {
-          headers: SECURITY_HEADERS,
+          headers: {
+            ...SECURITY_HEADERS,
+            "Permissions-Policy": "geolocation=(), camera=(), microphone=()",
+            "Cache-Control": "public, max-age=0, must-revalidate",
+          },
         },
       },
     }),
