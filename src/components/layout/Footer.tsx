@@ -1,5 +1,6 @@
 import {
   SiDiscord as DiscordIcon,
+  SiThreads as ThreadsIcon,
   SiX as XIcon,
 } from "@icons-pack/react-simple-icons";
 
@@ -50,6 +51,14 @@ const Footer = () => (
         className="min-h-11 min-w-11"
       >
         <XIcon className="size-5 transition-colors hover:text-primary" />
+      </ExternalLink>
+
+      <ExternalLink
+        variant="ghost"
+        href={app.socials.threads}
+        className="min-h-11 min-w-11"
+      >
+        <ThreadsIcon className="size-5 transition-colors hover:text-primary" />
       </ExternalLink>
     </div>
   </footer>
