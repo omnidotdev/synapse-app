@@ -258,6 +258,10 @@
 
 @layer base {
   html {
+    /* Persistent scrollbar; avoids blank gutter whitespace + layout shift. */
+    overflow-y: scroll;
+  }
+  html {
     scroll-padding-top: 4.5rem;
   }
   * {
