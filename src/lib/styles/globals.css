@@ -257,7 +257,7 @@
 
 @layer base {
   html {
-    scrollbar-gutter: stable;
+    overflow-y: scroll;
   }
   html {
     scroll-padding-top: 4.5rem;
