@@ -11,7 +11,7 @@ import app from "@/lib/config/app.config";
  * Layout footer.
  */
 const Footer = () => (
-  <footer className="glass-surface flex w-full items-center justify-center gap-1 border-border/50 border-t p-4 text-muted-foreground">
+  <footer className="glass-surface flex w-full flex-wrap items-center justify-center gap-x-1 gap-y-2 border-border/50 border-t p-4 text-muted-foreground">
     <span className="px-3 text-sm">
       Made with 🧠 by{" "}
       <a
