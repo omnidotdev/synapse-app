@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 import { useQuery, useInfiniteQuery, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 import { graphqlFetch } from '@/lib/graphql/graphqlFetch';
 export type Maybe<T> = T | null;
@@ -15,13 +16,24 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
+  /**
+   * A point in time as described by the [ISO
+   * 8601](https://en.wikipedia.org/wiki/ISO_8601) and, if it has a timezone, [RFC
+   * 3339](https://datatracker.ietf.org/doc/html/rfc3339) standards. Input values
+   * that do not conform to both ISO 8601 and RFC 3339 may be coerced, which may lead
+   * to unexpected results.
+   */
   Datetime: { input: Date; output: string; }
+  /** A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: { input: string; output: string; }
 };
 
 export type ApiKey = Node & {
   __typename?: 'ApiKey';
+  /** Reads and enables pagination through a set of `ApiKeyProvider`. */
+  apiKeyProviders: ApiKeyProviderConnection;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   expiresAt?: Maybe<Scalars['Datetime']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
@@ -40,6 +52,18 @@ export type ApiKey = Node & {
   user?: Maybe<User>;
   userId: Scalars['UUID']['output'];
   workspaceId?: Maybe<Scalars['UUID']['output']>;
+};
+
+
+export type ApiKeyApiKeyProvidersArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ApiKeyProviderCondition>;
+  filter?: InputMaybe<ApiKeyProviderFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ApiKeyProviderOrderBy>>;
 };
 
 
@@ -90,6 +114,10 @@ export type ApiKeyEdge = {
 export type ApiKeyFilter = {
   /** Checks for all expressions in this list. */
   and?: InputMaybe<Array<ApiKeyFilter>>;
+  /** Filter by the object’s `apiKeyProviders` relation. */
+  apiKeyProviders?: InputMaybe<ApiKeyToManyApiKeyProviderFilter>;
+  /** Some related `apiKeyProviders` exist. */
+  apiKeyProvidersExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Filter by the object’s `keyHash` field. */
   keyHash?: InputMaybe<StringFilter>;
   /** Negates the expression. */
@@ -108,20 +136,17 @@ export type ApiKeyFilter = {
   userId?: InputMaybe<UuidFilter>;
 };
 
-/** An input for mutations affecting `ApiKey` */
-export type ApiKeyInput = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  expiresAt?: InputMaybe<Scalars['Datetime']['input']>;
-  keyHash: Scalars['String']['input'];
-  keyHint: Scalars['String']['input'];
-  lastUsedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  mode?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  revokedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  userId: Scalars['UUID']['input'];
-  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
+export type ApiKeyInfo = {
+  __typename?: 'ApiKeyInfo';
+  createdAt: Scalars['Datetime']['output'];
+  expiresAt?: Maybe<Scalars['Datetime']['output']>;
+  id: Scalars['UUID']['output'];
+  keyHint: Scalars['String']['output'];
+  lastUsedAt?: Maybe<Scalars['Datetime']['output']>;
+  linkedProviders: Array<LinkedProviderInfo>;
+  mode: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  revokedAt?: Maybe<Scalars['Datetime']['output']>;
 };
 
 /** Methods to use when ordering `ApiKey`. */
@@ -137,20 +162,89 @@ export enum ApiKeyOrderBy {
   UserIdDesc = 'USER_ID_DESC'
 }
 
-/** Represents an update to a `ApiKey`. Fields that are set will be updated. */
-export type ApiKeyPatch = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  expiresAt?: InputMaybe<Scalars['Datetime']['input']>;
-  keyHash?: InputMaybe<Scalars['String']['input']>;
-  keyHint?: InputMaybe<Scalars['String']['input']>;
-  lastUsedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  mode?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  revokedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  userId?: InputMaybe<Scalars['UUID']['input']>;
-  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
+export type ApiKeyProvider = Node & {
+  __typename?: 'ApiKeyProvider';
+  /** Reads a single `ApiKey` that is related to this `ApiKeyProvider`. */
+  apiKey?: Maybe<ApiKey>;
+  apiKeyId: Scalars['UUID']['output'];
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  /** Reads a single `ProviderKey` that is related to this `ApiKeyProvider`. */
+  providerKey?: Maybe<ProviderKey>;
+  providerKeyId: Scalars['UUID']['output'];
+};
+
+/**
+ * A condition to be used against `ApiKeyProvider` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type ApiKeyProviderCondition = {
+  /** Checks for equality with the object’s `apiKeyId` field. */
+  apiKeyId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `providerKeyId` field. */
+  providerKeyId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `ApiKeyProvider` values. */
+export type ApiKeyProviderConnection = {
+  __typename?: 'ApiKeyProviderConnection';
+  /** A list of edges which contains the `ApiKeyProvider` and cursor to aid in pagination. */
+  edges: Array<Maybe<ApiKeyProviderEdge>>;
+  /** A list of `ApiKeyProvider` objects. */
+  nodes: Array<Maybe<ApiKeyProvider>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `ApiKeyProvider` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `ApiKeyProvider` edge in the connection. */
+export type ApiKeyProviderEdge = {
+  __typename?: 'ApiKeyProviderEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `ApiKeyProvider` at the end of the edge. */
+  node?: Maybe<ApiKeyProvider>;
+};
+
+/** A filter to be used against `ApiKeyProvider` object types. All fields are combined with a logical ‘and.’ */
+export type ApiKeyProviderFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ApiKeyProviderFilter>>;
+  /** Filter by the object’s `apiKey` relation. */
+  apiKey?: InputMaybe<ApiKeyFilter>;
+  /** Filter by the object’s `apiKeyId` field. */
+  apiKeyId?: InputMaybe<UuidFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ApiKeyProviderFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ApiKeyProviderFilter>>;
+  /** Filter by the object’s `providerKey` relation. */
+  providerKey?: InputMaybe<ProviderKeyFilter>;
+  /** Filter by the object’s `providerKeyId` field. */
+  providerKeyId?: InputMaybe<UuidFilter>;
+};
+
+/** Methods to use when ordering `ApiKeyProvider`. */
+export enum ApiKeyProviderOrderBy {
+  ApiKeyIdAsc = 'API_KEY_ID_ASC',
+  ApiKeyIdDesc = 'API_KEY_ID_DESC',
+  Natural = 'NATURAL',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  ProviderKeyIdAsc = 'PROVIDER_KEY_ID_ASC',
+  ProviderKeyIdDesc = 'PROVIDER_KEY_ID_DESC'
+}
+
+/** A filter to be used against many `ApiKeyProvider` object types. All fields are combined with a logical ‘and.’ */
+export type ApiKeyToManyApiKeyProviderFilter = {
+  /** Every related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<ApiKeyProviderFilter>;
+  /** No related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<ApiKeyProviderFilter>;
+  /** Some related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<ApiKeyProviderFilter>;
 };
 
 /** A filter to be used against many `UsageEvent` object types. All fields are combined with a logical ‘and.’ */
@@ -163,136 +257,12 @@ export type ApiKeyToManyUsageEventFilter = {
   some?: InputMaybe<UsageEventFilter>;
 };
 
-/** All input for the create `ApiKey` mutation. */
-export type CreateApiKeyInput = {
-  /** The `ApiKey` to be created by this mutation. */
-  apiKey: ApiKeyInput;
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** The output of our create `ApiKey` mutation. */
-export type CreateApiKeyPayload = {
-  __typename?: 'CreateApiKeyPayload';
-  /** The `ApiKey` that was created by this mutation. */
-  apiKey?: Maybe<ApiKey>;
-  /** An edge for our `ApiKey`. May be used by Relay 1. */
-  apiKeyEdge?: Maybe<ApiKeyEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our create `ApiKey` mutation. */
-export type CreateApiKeyPayloadApiKeyEdgeArgs = {
-  orderBy?: Array<ApiKeyOrderBy>;
-};
-
-/** All input for the create `ProviderKey` mutation. */
-export type CreateProviderKeyInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The `ProviderKey` to be created by this mutation. */
-  providerKey: ProviderKeyInput;
-};
-
-/** The output of our create `ProviderKey` mutation. */
-export type CreateProviderKeyPayload = {
-  __typename?: 'CreateProviderKeyPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** The `ProviderKey` that was created by this mutation. */
-  providerKey?: Maybe<ProviderKey>;
-  /** An edge for our `ProviderKey`. May be used by Relay 1. */
-  providerKeyEdge?: Maybe<ProviderKeyEdge>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our create `ProviderKey` mutation. */
-export type CreateProviderKeyPayloadProviderKeyEdgeArgs = {
-  orderBy?: Array<ProviderKeyOrderBy>;
-};
-
-/** All input for the create `UsageEvent` mutation. */
-export type CreateUsageEventInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The `UsageEvent` to be created by this mutation. */
-  usageEvent: UsageEventInput;
-};
-
-/** The output of our create `UsageEvent` mutation. */
-export type CreateUsageEventPayload = {
-  __typename?: 'CreateUsageEventPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `UsageEvent` that was created by this mutation. */
-  usageEvent?: Maybe<UsageEvent>;
-  /** An edge for our `UsageEvent`. May be used by Relay 1. */
-  usageEventEdge?: Maybe<UsageEventEdge>;
-};
-
-
-/** The output of our create `UsageEvent` mutation. */
-export type CreateUsageEventPayloadUsageEventEdgeArgs = {
-  orderBy?: Array<UsageEventOrderBy>;
-};
-
-/** All input for the create `User` mutation. */
-export type CreateUserInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The `User` to be created by this mutation. */
-  user: UserInput;
-};
-
-/** The output of our create `User` mutation. */
-export type CreateUserPayload = {
-  __typename?: 'CreateUserPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `User` that was created by this mutation. */
-  user?: Maybe<User>;
-  /** An edge for our `User`. May be used by Relay 1. */
-  userEdge?: Maybe<UserEdge>;
-};
-
-
-/** The output of our create `User` mutation. */
-export type CreateUserPayloadUserEdgeArgs = {
-  orderBy?: Array<UserOrderBy>;
+export type DailyUsage = {
+  __typename?: 'DailyUsage';
+  date: Scalars['String']['output'];
+  inputTokens: Scalars['Int']['output'];
+  outputTokens: Scalars['Int']['output'];
+  requests: Scalars['Int']['output'];
 };
 
 /** A filter to be used against Datetime fields. All fields are combined with a logical ‘and.’ */
@@ -321,403 +291,152 @@ export type DatetimeFilter = {
   notIn?: InputMaybe<Array<Scalars['Datetime']['input']>>;
 };
 
-/** All input for the `deleteApiKeyById` mutation. */
-export type DeleteApiKeyByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ApiKey` to be deleted. */
-  id: Scalars['ID']['input'];
+export type GenerateApiKeyInput = {
+  mode: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
 };
 
-/** All input for the `deleteApiKeyByKeyHash` mutation. */
-export type DeleteApiKeyByKeyHashInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  keyHash: Scalars['String']['input'];
+export type GenerateApiKeyPayload = {
+  __typename?: 'GenerateApiKeyPayload';
+  apiKeyId: Scalars['UUID']['output'];
+  keyHint: Scalars['String']['output'];
+  rawKey: Scalars['String']['output'];
 };
 
-/** All input for the `deleteApiKey` mutation. */
-export type DeleteApiKeyInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  rowId: Scalars['UUID']['input'];
+export type LinkedProviderInfo = {
+  __typename?: 'LinkedProviderInfo';
+  id: Scalars['UUID']['output'];
+  keyHint: Scalars['String']['output'];
+  provider: Scalars['String']['output'];
 };
 
-/** The output of our delete `ApiKey` mutation. */
-export type DeleteApiKeyPayload = {
-  __typename?: 'DeleteApiKeyPayload';
-  /** The `ApiKey` that was deleted by this mutation. */
-  apiKey?: Maybe<ApiKey>;
-  /** An edge for our `ApiKey`. May be used by Relay 1. */
-  apiKeyEdge?: Maybe<ApiKeyEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  deletedApiKeyId?: Maybe<Scalars['ID']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our delete `ApiKey` mutation. */
-export type DeleteApiKeyPayloadApiKeyEdgeArgs = {
-  orderBy?: Array<ApiKeyOrderBy>;
-};
-
-/** All input for the `deleteProviderKeyById` mutation. */
-export type DeleteProviderKeyByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ProviderKey` to be deleted. */
-  id: Scalars['ID']['input'];
-};
-
-/** All input for the `deleteProviderKey` mutation. */
-export type DeleteProviderKeyInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our delete `ProviderKey` mutation. */
-export type DeleteProviderKeyPayload = {
-  __typename?: 'DeleteProviderKeyPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  deletedProviderKeyId?: Maybe<Scalars['ID']['output']>;
-  /** The `ProviderKey` that was deleted by this mutation. */
-  providerKey?: Maybe<ProviderKey>;
-  /** An edge for our `ProviderKey`. May be used by Relay 1. */
-  providerKeyEdge?: Maybe<ProviderKeyEdge>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our delete `ProviderKey` mutation. */
-export type DeleteProviderKeyPayloadProviderKeyEdgeArgs = {
-  orderBy?: Array<ProviderKeyOrderBy>;
-};
-
-/** All input for the `deleteUsageEventById` mutation. */
-export type DeleteUsageEventByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `UsageEvent` to be deleted. */
-  id: Scalars['ID']['input'];
-};
-
-/** All input for the `deleteUsageEvent` mutation. */
-export type DeleteUsageEventInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our delete `UsageEvent` mutation. */
-export type DeleteUsageEventPayload = {
-  __typename?: 'DeleteUsageEventPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  deletedUsageEventId?: Maybe<Scalars['ID']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `UsageEvent` that was deleted by this mutation. */
-  usageEvent?: Maybe<UsageEvent>;
-  /** An edge for our `UsageEvent`. May be used by Relay 1. */
-  usageEventEdge?: Maybe<UsageEventEdge>;
-};
-
-
-/** The output of our delete `UsageEvent` mutation. */
-export type DeleteUsageEventPayloadUsageEventEdgeArgs = {
-  orderBy?: Array<UsageEventOrderBy>;
-};
-
-/** All input for the `deleteUserById` mutation. */
-export type DeleteUserByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `User` to be deleted. */
-  id: Scalars['ID']['input'];
-};
-
-/** All input for the `deleteUserByIdentityProviderId` mutation. */
-export type DeleteUserByIdentityProviderIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  identityProviderId: Scalars['UUID']['input'];
-};
-
-/** All input for the `deleteUser` mutation. */
-export type DeleteUserInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our delete `User` mutation. */
-export type DeleteUserPayload = {
-  __typename?: 'DeleteUserPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  deletedUserId?: Maybe<Scalars['ID']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `User` that was deleted by this mutation. */
-  user?: Maybe<User>;
-  /** An edge for our `User`. May be used by Relay 1. */
-  userEdge?: Maybe<UserEdge>;
-};
-
-
-/** The output of our delete `User` mutation. */
-export type DeleteUserPayloadUserEdgeArgs = {
-  orderBy?: Array<UserOrderBy>;
+export type ModelBreakdown = {
+  __typename?: 'ModelBreakdown';
+  inputTokens: Scalars['Int']['output'];
+  model: Scalars['String']['output'];
+  outputTokens: Scalars['Int']['output'];
+  provider: Scalars['String']['output'];
+  requests: Scalars['Int']['output'];
 };
 
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Creates a single `ApiKey`. */
-  createApiKey?: Maybe<CreateApiKeyPayload>;
-  /** Creates a single `ProviderKey`. */
-  createProviderKey?: Maybe<CreateProviderKeyPayload>;
-  /** Creates a single `UsageEvent`. */
-  createUsageEvent?: Maybe<CreateUsageEventPayload>;
-  /** Creates a single `User`. */
-  createUser?: Maybe<CreateUserPayload>;
-  /** Deletes a single `ApiKey` using a unique key. */
-  deleteApiKey?: Maybe<DeleteApiKeyPayload>;
-  /** Deletes a single `ApiKey` using its globally unique id. */
-  deleteApiKeyById?: Maybe<DeleteApiKeyPayload>;
-  /** Deletes a single `ApiKey` using a unique key. */
-  deleteApiKeyByKeyHash?: Maybe<DeleteApiKeyPayload>;
-  /** Deletes a single `ProviderKey` using a unique key. */
-  deleteProviderKey?: Maybe<DeleteProviderKeyPayload>;
-  /** Deletes a single `ProviderKey` using its globally unique id. */
-  deleteProviderKeyById?: Maybe<DeleteProviderKeyPayload>;
-  /** Deletes a single `UsageEvent` using a unique key. */
-  deleteUsageEvent?: Maybe<DeleteUsageEventPayload>;
-  /** Deletes a single `UsageEvent` using its globally unique id. */
-  deleteUsageEventById?: Maybe<DeleteUsageEventPayload>;
-  /** Deletes a single `User` using a unique key. */
-  deleteUser?: Maybe<DeleteUserPayload>;
-  /** Deletes a single `User` using its globally unique id. */
-  deleteUserById?: Maybe<DeleteUserPayload>;
-  /** Deletes a single `User` using a unique key. */
-  deleteUserByIdentityProviderId?: Maybe<DeleteUserPayload>;
-  /** Updates a single `ApiKey` using a unique key and a patch. */
-  updateApiKey?: Maybe<UpdateApiKeyPayload>;
-  /** Updates a single `ApiKey` using its globally unique id and a patch. */
-  updateApiKeyById?: Maybe<UpdateApiKeyPayload>;
-  /** Updates a single `ApiKey` using a unique key and a patch. */
-  updateApiKeyByKeyHash?: Maybe<UpdateApiKeyPayload>;
-  /** Updates a single `ProviderKey` using a unique key and a patch. */
-  updateProviderKey?: Maybe<UpdateProviderKeyPayload>;
-  /** Updates a single `ProviderKey` using its globally unique id and a patch. */
-  updateProviderKeyById?: Maybe<UpdateProviderKeyPayload>;
-  /** Updates a single `UsageEvent` using a unique key and a patch. */
-  updateUsageEvent?: Maybe<UpdateUsageEventPayload>;
-  /** Updates a single `UsageEvent` using its globally unique id and a patch. */
-  updateUsageEventById?: Maybe<UpdateUsageEventPayload>;
-  /** Updates a single `User` using a unique key and a patch. */
-  updateUser?: Maybe<UpdateUserPayload>;
-  /** Updates a single `User` using its globally unique id and a patch. */
-  updateUserById?: Maybe<UpdateUserPayload>;
-  /** Updates a single `User` using a unique key and a patch. */
-  updateUserByIdentityProviderId?: Maybe<UpdateUserPayload>;
+  /** Create a new workspace within an organization */
+  addWorkspace?: Maybe<WorkspaceResult>;
+  /** Generate a new API key. The raw key is returned once and never stored. */
+  generateApiKey?: Maybe<GenerateApiKeyPayload>;
+  /** Link a provider key to an API key so requests use that provider. */
+  linkProviderKey?: Maybe<Scalars['Boolean']['output']>;
+  /** Update a workspace's details */
+  patchWorkspace?: Maybe<WorkspaceResult>;
+  /** Delete a provider key. Verifies ownership before deletion. */
+  removeProviderKey?: Maybe<Scalars['Boolean']['output']>;
+  /** Delete a workspace */
+  removeWorkspace?: Maybe<Scalars['Boolean']['output']>;
+  /** Revoke an API key by setting its revokedAt timestamp. */
+  revokeApiKey?: Maybe<Scalars['Boolean']['output']>;
+  /** Encrypt and upsert a BYOK provider key. */
+  setProviderKey?: Maybe<ProviderKeyInfo>;
+  /** Unlink a provider key from an API key. */
+  unlinkProviderKey?: Maybe<Scalars['Boolean']['output']>;
+  /** Update user preferences. Creates preferences row if it doesn't exist. */
+  updateUserPreferences?: Maybe<UserPreferences>;
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateApiKeyArgs = {
-  input: CreateApiKeyInput;
+export type MutationAddWorkspaceArgs = {
+  input: NewWorkspaceInput;
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateProviderKeyArgs = {
-  input: CreateProviderKeyInput;
+export type MutationGenerateApiKeyArgs = {
+  input: GenerateApiKeyInput;
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateUsageEventArgs = {
-  input: CreateUsageEventInput;
+export type MutationLinkProviderKeyArgs = {
+  apiKeyId: Scalars['UUID']['input'];
+  providerKeyId: Scalars['UUID']['input'];
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
+export type MutationPatchWorkspaceArgs = {
+  id: Scalars['UUID']['input'];
+  input: PatchWorkspaceInput;
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteApiKeyArgs = {
-  input: DeleteApiKeyInput;
+export type MutationRemoveProviderKeyArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteApiKeyByIdArgs = {
-  input: DeleteApiKeyByIdInput;
+export type MutationRemoveWorkspaceArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteApiKeyByKeyHashArgs = {
-  input: DeleteApiKeyByKeyHashInput;
+export type MutationRevokeApiKeyArgs = {
+  id: Scalars['UUID']['input'];
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteProviderKeyArgs = {
-  input: DeleteProviderKeyInput;
+export type MutationSetProviderKeyArgs = {
+  input: SetProviderKeyInput;
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteProviderKeyByIdArgs = {
-  input: DeleteProviderKeyByIdInput;
+export type MutationUnlinkProviderKeyArgs = {
+  apiKeyId: Scalars['UUID']['input'];
+  providerKeyId: Scalars['UUID']['input'];
 };
 
 
 /** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteUsageEventArgs = {
-  input: DeleteUsageEventInput;
+export type MutationUpdateUserPreferencesArgs = {
+  input: UpdateUserPreferencesInput;
 };
 
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteUsageEventByIdArgs = {
-  input: DeleteUsageEventByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteUserArgs = {
-  input: DeleteUserInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteUserByIdArgs = {
-  input: DeleteUserByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationDeleteUserByIdentityProviderIdArgs = {
-  input: DeleteUserByIdentityProviderIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateApiKeyArgs = {
-  input: UpdateApiKeyInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateApiKeyByIdArgs = {
-  input: UpdateApiKeyByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateApiKeyByKeyHashArgs = {
-  input: UpdateApiKeyByKeyHashInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateProviderKeyArgs = {
-  input: UpdateProviderKeyInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateProviderKeyByIdArgs = {
-  input: UpdateProviderKeyByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateUsageEventArgs = {
-  input: UpdateUsageEventInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateUsageEventByIdArgs = {
-  input: UpdateUsageEventByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateUserArgs = {
-  input: UpdateUserInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateUserByIdArgs = {
-  input: UpdateUserByIdInput;
-};
-
-
-/** The root mutation type which contains root level fields which mutate data. */
-export type MutationUpdateUserByIdentityProviderIdArgs = {
-  input: UpdateUserByIdentityProviderIdInput;
+export type NewWorkspaceInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  organizationId: Scalars['UUID']['input'];
+  slug: Scalars['String']['input'];
 };
 
 /** An object with a globally unique `ID`. */
 export type Node = {
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
+};
+
+export type Observer = {
+  __typename?: 'Observer';
+  /** List active API keys for the current user, optionally filtered by workspace. */
+  apiKeys: Array<ApiKeyInfo>;
+  email: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  name: Scalars['String']['output'];
+  /** Fetch current user's preferences. */
+  preferences?: Maybe<UserPreferences>;
+  /** List provider keys for the current user. */
+  providerKeys: Array<ProviderKeyInfo>;
+};
+
+
+export type ObserverApiKeysArgs = {
+  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 /** Information about pagination in a connection. */
@@ -733,19 +452,40 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['Cursor']['output']>;
 };
 
+export type PatchWorkspaceInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ProviderKey = Node & {
   __typename?: 'ProviderKey';
+  /** Reads and enables pagination through a set of `ApiKeyProvider`. */
+  apiKeyProviders: ApiKeyProviderConnection;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   encryptedKey: Scalars['String']['output'];
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   keyHint: Scalars['String']['output'];
+  modelPreference?: Maybe<Scalars['String']['output']>;
   provider: Scalars['String']['output'];
   rowId: Scalars['UUID']['output'];
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
   /** Reads a single `User` that is related to this `ProviderKey`. */
   user?: Maybe<User>;
   userId: Scalars['UUID']['output'];
+};
+
+
+export type ProviderKeyApiKeyProvidersArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ApiKeyProviderCondition>;
+  filter?: InputMaybe<ApiKeyProviderFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ApiKeyProviderOrderBy>>;
 };
 
 /**
@@ -787,6 +527,10 @@ export type ProviderKeyEdge = {
 export type ProviderKeyFilter = {
   /** Checks for all expressions in this list. */
   and?: InputMaybe<Array<ProviderKeyFilter>>;
+  /** Filter by the object’s `apiKeyProviders` relation. */
+  apiKeyProviders?: InputMaybe<ProviderKeyToManyApiKeyProviderFilter>;
+  /** Some related `apiKeyProviders` exist. */
+  apiKeyProvidersExist?: InputMaybe<Scalars['Boolean']['input']>;
   /** Negates the expression. */
   not?: InputMaybe<ProviderKeyFilter>;
   /** Checks for any expressions in this list. */
@@ -801,15 +545,15 @@ export type ProviderKeyFilter = {
   userId?: InputMaybe<UuidFilter>;
 };
 
-/** An input for mutations affecting `ProviderKey` */
-export type ProviderKeyInput = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  encryptedKey: Scalars['String']['input'];
-  keyHint: Scalars['String']['input'];
-  provider: Scalars['String']['input'];
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  userId: Scalars['UUID']['input'];
+export type ProviderKeyInfo = {
+  __typename?: 'ProviderKeyInfo';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  id: Scalars['UUID']['output'];
+  keyHint: Scalars['String']['output'];
+  modelPreference?: Maybe<Scalars['String']['output']>;
+  provider: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+  userId: Scalars['UUID']['output'];
 };
 
 /** Methods to use when ordering `ProviderKey`. */
@@ -825,15 +569,14 @@ export enum ProviderKeyOrderBy {
   UserIdDesc = 'USER_ID_DESC'
 }
 
-/** Represents an update to a `ProviderKey`. Fields that are set will be updated. */
-export type ProviderKeyPatch = {
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  encryptedKey?: InputMaybe<Scalars['String']['input']>;
-  keyHint?: InputMaybe<Scalars['String']['input']>;
-  provider?: InputMaybe<Scalars['String']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
-  userId?: InputMaybe<Scalars['UUID']['input']>;
+/** A filter to be used against many `ApiKeyProvider` object types. All fields are combined with a logical ‘and.’ */
+export type ProviderKeyToManyApiKeyProviderFilter = {
+  /** Every related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  every?: InputMaybe<ApiKeyProviderFilter>;
+  /** No related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  none?: InputMaybe<ApiKeyProviderFilter>;
+  /** Some related `ApiKeyProvider` matches the filter criteria. All fields are combined with a logical ‘and.’ */
+  some?: InputMaybe<ApiKeyProviderFilter>;
 };
 
 /** The root query type which gives access points into the data universe. */
@@ -845,12 +588,22 @@ export type Query = Node & {
   apiKeyById?: Maybe<ApiKey>;
   /** Get a single `ApiKey`. */
   apiKeyByKeyHash?: Maybe<ApiKey>;
+  /** Get a single `ApiKeyProvider`. */
+  apiKeyProvider?: Maybe<ApiKeyProvider>;
+  /** Reads a single `ApiKeyProvider` using its globally unique `ID`. */
+  apiKeyProviderById?: Maybe<ApiKeyProvider>;
+  /** Reads and enables pagination through a set of `ApiKeyProvider`. */
+  apiKeyProviders?: Maybe<ApiKeyProviderConnection>;
   /** Reads and enables pagination through a set of `ApiKey`. */
   apiKeys?: Maybe<ApiKeyConnection>;
   /** The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`. */
   id: Scalars['ID']['output'];
   /** Fetches an object given its globally unique `ID`. */
   node?: Maybe<Node>;
+  /** The currently authenticated user. Returns null if not authenticated. */
+  observer?: Maybe<Observer>;
+  /** List workspaces for an organization */
+  orgWorkspaces: Array<WorkspaceResult>;
   /** Get a single `ProviderKey`. */
   providerKey?: Maybe<ProviderKey>;
   /** Reads a single `ProviderKey` using its globally unique `ID`. */
@@ -862,6 +615,11 @@ export type Query = Node & {
    * which can only query top level fields if they are in a particular form.
    */
   query: Query;
+  /**
+   * Aggregated usage breakdown by model and day for charts.
+   * Optionally filter by workspaceId for workspace-scoped usage.
+   */
+  usageBreakdown?: Maybe<UsageBreakdown>;
   /** Get a single `UsageEvent`. */
   usageEvent?: Maybe<UsageEvent>;
   /** Reads a single `UsageEvent` using its globally unique `ID`. */
@@ -874,8 +632,22 @@ export type Query = Node & {
   userById?: Maybe<User>;
   /** Get a single `User`. */
   userByIdentityProviderId?: Maybe<User>;
+  /** Get a single `UserPreference`. */
+  userPreference?: Maybe<UserPreference>;
+  /** Reads a single `UserPreference` using its globally unique `ID`. */
+  userPreferenceById?: Maybe<UserPreference>;
+  /** Get a single `UserPreference`. */
+  userPreferenceByUserId?: Maybe<UserPreference>;
+  /** Reads and enables pagination through a set of `UserPreference`. */
+  userPreferences?: Maybe<UserPreferenceConnection>;
   /** Reads and enables pagination through a set of `User`. */
   users?: Maybe<UserConnection>;
+  /** Get a single `Workspace`. */
+  workspace?: Maybe<Workspace>;
+  /** Reads a single `Workspace` using its globally unique `ID`. */
+  workspaceById?: Maybe<Workspace>;
+  /** Reads and enables pagination through a set of `Workspace`. */
+  workspaces?: Maybe<WorkspaceConnection>;
 };
 
 
@@ -898,6 +670,32 @@ export type QueryApiKeyByKeyHashArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
+export type QueryApiKeyProviderArgs = {
+  apiKeyId: Scalars['UUID']['input'];
+  providerKeyId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryApiKeyProviderByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryApiKeyProvidersArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<ApiKeyProviderCondition>;
+  filter?: InputMaybe<ApiKeyProviderFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ApiKeyProviderOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
 export type QueryApiKeysArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -913,6 +711,12 @@ export type QueryApiKeysArgs = {
 /** The root query type which gives access points into the data universe. */
 export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryOrgWorkspacesArgs = {
+  organizationId: Scalars['UUID']['input'];
 };
 
 
@@ -938,6 +742,14 @@ export type QueryProviderKeysArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<ProviderKeyOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryUsageBreakdownArgs = {
+  endDate: Scalars['String']['input'];
+  startDate: Scalars['String']['input'];
+  workspaceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -985,6 +797,37 @@ export type QueryUserByIdentityProviderIdArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
+export type QueryUserPreferenceArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryUserPreferenceByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryUserPreferenceByUserIdArgs = {
+  userId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryUserPreferencesArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<UserPreferenceCondition>;
+  filter?: InputMaybe<UserPreferenceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserPreferenceOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['Cursor']['input']>;
   before?: InputMaybe<Scalars['Cursor']['input']>;
@@ -994,6 +837,36 @@ export type QueryUsersArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<UserOrderBy>>;
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryWorkspaceArgs = {
+  rowId: Scalars['UUID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryWorkspaceByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** The root query type which gives access points into the data universe. */
+export type QueryWorkspacesArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  condition?: InputMaybe<WorkspaceCondition>;
+  filter?: InputMaybe<WorkspaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<WorkspaceOrderBy>>;
+};
+
+export type SetProviderKeyInput = {
+  key: Scalars['String']['input'];
+  provider: Scalars['String']['input'];
 };
 
 /** A filter to be used against String fields. All fields are combined with a logical ‘and.’ */
@@ -1100,216 +973,16 @@ export type UuidFilter = {
   notIn?: InputMaybe<Array<Scalars['UUID']['input']>>;
 };
 
-/** All input for the `updateApiKeyById` mutation. */
-export type UpdateApiKeyByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ApiKey` to be updated. */
-  id: Scalars['ID']['input'];
-  /** An object where the defined keys will be set on the `ApiKey` being updated. */
-  patch: ApiKeyPatch;
+export type UpdateUserPreferencesInput = {
+  defaultProvider?: InputMaybe<Scalars['String']['input']>;
+  notifyKeyExpiry?: InputMaybe<Scalars['Boolean']['input']>;
+  notifyUsageThreshold?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** All input for the `updateApiKeyByKeyHash` mutation. */
-export type UpdateApiKeyByKeyHashInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  keyHash: Scalars['String']['input'];
-  /** An object where the defined keys will be set on the `ApiKey` being updated. */
-  patch: ApiKeyPatch;
-};
-
-/** All input for the `updateApiKey` mutation. */
-export type UpdateApiKeyInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** An object where the defined keys will be set on the `ApiKey` being updated. */
-  patch: ApiKeyPatch;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our update `ApiKey` mutation. */
-export type UpdateApiKeyPayload = {
-  __typename?: 'UpdateApiKeyPayload';
-  /** The `ApiKey` that was updated by this mutation. */
-  apiKey?: Maybe<ApiKey>;
-  /** An edge for our `ApiKey`. May be used by Relay 1. */
-  apiKeyEdge?: Maybe<ApiKeyEdge>;
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our update `ApiKey` mutation. */
-export type UpdateApiKeyPayloadApiKeyEdgeArgs = {
-  orderBy?: Array<ApiKeyOrderBy>;
-};
-
-/** All input for the `updateProviderKeyById` mutation. */
-export type UpdateProviderKeyByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `ProviderKey` to be updated. */
-  id: Scalars['ID']['input'];
-  /** An object where the defined keys will be set on the `ProviderKey` being updated. */
-  patch: ProviderKeyPatch;
-};
-
-/** All input for the `updateProviderKey` mutation. */
-export type UpdateProviderKeyInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** An object where the defined keys will be set on the `ProviderKey` being updated. */
-  patch: ProviderKeyPatch;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our update `ProviderKey` mutation. */
-export type UpdateProviderKeyPayload = {
-  __typename?: 'UpdateProviderKeyPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** The `ProviderKey` that was updated by this mutation. */
-  providerKey?: Maybe<ProviderKey>;
-  /** An edge for our `ProviderKey`. May be used by Relay 1. */
-  providerKeyEdge?: Maybe<ProviderKeyEdge>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-};
-
-
-/** The output of our update `ProviderKey` mutation. */
-export type UpdateProviderKeyPayloadProviderKeyEdgeArgs = {
-  orderBy?: Array<ProviderKeyOrderBy>;
-};
-
-/** All input for the `updateUsageEventById` mutation. */
-export type UpdateUsageEventByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `UsageEvent` to be updated. */
-  id: Scalars['ID']['input'];
-  /** An object where the defined keys will be set on the `UsageEvent` being updated. */
-  patch: UsageEventPatch;
-};
-
-/** All input for the `updateUsageEvent` mutation. */
-export type UpdateUsageEventInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** An object where the defined keys will be set on the `UsageEvent` being updated. */
-  patch: UsageEventPatch;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our update `UsageEvent` mutation. */
-export type UpdateUsageEventPayload = {
-  __typename?: 'UpdateUsageEventPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `UsageEvent` that was updated by this mutation. */
-  usageEvent?: Maybe<UsageEvent>;
-  /** An edge for our `UsageEvent`. May be used by Relay 1. */
-  usageEventEdge?: Maybe<UsageEventEdge>;
-};
-
-
-/** The output of our update `UsageEvent` mutation. */
-export type UpdateUsageEventPayloadUsageEventEdgeArgs = {
-  orderBy?: Array<UsageEventOrderBy>;
-};
-
-/** All input for the `updateUserById` mutation. */
-export type UpdateUserByIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** The globally unique `ID` which will identify a single `User` to be updated. */
-  id: Scalars['ID']['input'];
-  /** An object where the defined keys will be set on the `User` being updated. */
-  patch: UserPatch;
-};
-
-/** All input for the `updateUserByIdentityProviderId` mutation. */
-export type UpdateUserByIdentityProviderIdInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  identityProviderId: Scalars['UUID']['input'];
-  /** An object where the defined keys will be set on the `User` being updated. */
-  patch: UserPatch;
-};
-
-/** All input for the `updateUser` mutation. */
-export type UpdateUserInput = {
-  /**
-   * An arbitrary string value with no semantic meaning. Will be included in the
-   * payload verbatim. May be used to track mutations by the client.
-   */
-  clientMutationId?: InputMaybe<Scalars['String']['input']>;
-  /** An object where the defined keys will be set on the `User` being updated. */
-  patch: UserPatch;
-  rowId: Scalars['UUID']['input'];
-};
-
-/** The output of our update `User` mutation. */
-export type UpdateUserPayload = {
-  __typename?: 'UpdateUserPayload';
-  /**
-   * The exact same `clientMutationId` that was provided in the mutation input,
-   * unchanged and unused. May be used by a client to track mutations.
-   */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
-  /** Our root query field type. Allows us to run any query from our mutation payload. */
-  query?: Maybe<Query>;
-  /** The `User` that was updated by this mutation. */
-  user?: Maybe<User>;
-  /** An edge for our `User`. May be used by Relay 1. */
-  userEdge?: Maybe<UserEdge>;
-};
-
-
-/** The output of our update `User` mutation. */
-export type UpdateUserPayloadUserEdgeArgs = {
-  orderBy?: Array<UserOrderBy>;
+export type UsageBreakdown = {
+  __typename?: 'UsageBreakdown';
+  byDay: Array<DailyUsage>;
+  byModel: Array<ModelBreakdown>;
 };
 
 export type UsageEvent = Node & {
@@ -1392,21 +1065,6 @@ export type UsageEventFilter = {
   userId?: InputMaybe<UuidFilter>;
 };
 
-/** An input for mutations affecting `UsageEvent` */
-export type UsageEventInput = {
-  apiKeyId: Scalars['UUID']['input'];
-  costCents?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  inputTokens?: InputMaybe<Scalars['Int']['input']>;
-  mode: Scalars['String']['input'];
-  model: Scalars['String']['input'];
-  outputTokens?: InputMaybe<Scalars['Int']['input']>;
-  provider: Scalars['String']['input'];
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  userId: Scalars['UUID']['input'];
-  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
 /** Methods to use when ordering `UsageEvent`. */
 export enum UsageEventOrderBy {
   ApiKeyIdAsc = 'API_KEY_ID_ASC',
@@ -1422,21 +1080,6 @@ export enum UsageEventOrderBy {
   UserIdDesc = 'USER_ID_DESC'
 }
 
-/** Represents an update to a `UsageEvent`. Fields that are set will be updated. */
-export type UsageEventPatch = {
-  apiKeyId?: InputMaybe<Scalars['UUID']['input']>;
-  costCents?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  inputTokens?: InputMaybe<Scalars['Int']['input']>;
-  mode?: InputMaybe<Scalars['String']['input']>;
-  model?: InputMaybe<Scalars['String']['input']>;
-  outputTokens?: InputMaybe<Scalars['Int']['input']>;
-  provider?: InputMaybe<Scalars['String']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  userId?: InputMaybe<Scalars['UUID']['input']>;
-  workspaceId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
 export type User = Node & {
   __typename?: 'User';
   /** Reads and enables pagination through a set of `ApiKey`. */
@@ -1448,12 +1091,15 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   identityProviderId: Scalars['UUID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  plan: Scalars['String']['output'];
   /** Reads and enables pagination through a set of `ProviderKey`. */
   providerKeys: ProviderKeyConnection;
   rowId: Scalars['UUID']['output'];
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
   /** Reads and enables pagination through a set of `UsageEvent`. */
   usageEvents: UsageEventConnection;
+  /** Reads a single `UserPreference` that is related to this `User`. */
+  userPreference?: Maybe<UserPreference>;
 };
 
 
@@ -1546,17 +1192,10 @@ export type UserFilter = {
   usageEvents?: InputMaybe<UserToManyUsageEventFilter>;
   /** Some related `usageEvents` exist. */
   usageEventsExist?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** An input for mutations affecting `User` */
-export type UserInput = {
-  avatarUrl?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  identityProviderId: Scalars['UUID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  /** Filter by the object’s `userPreference` relation. */
+  userPreference?: InputMaybe<UserPreferenceFilter>;
+  /** A related `userPreference` exists. */
+  userPreferenceExists?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Methods to use when ordering `User`. */
@@ -1570,15 +1209,85 @@ export enum UserOrderBy {
   RowIdDesc = 'ROW_ID_DESC'
 }
 
-/** Represents an update to a `User`. Fields that are set will be updated. */
-export type UserPatch = {
-  avatarUrl?: InputMaybe<Scalars['String']['input']>;
-  createdAt?: InputMaybe<Scalars['Datetime']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  identityProviderId?: InputMaybe<Scalars['UUID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
+export type UserPreference = Node & {
+  __typename?: 'UserPreference';
+  defaultProvider?: Maybe<Scalars['String']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  notifyKeyExpiry: Scalars['Boolean']['output'];
+  notifyUsageThreshold: Scalars['Boolean']['output'];
+  rowId: Scalars['UUID']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+  /** Reads a single `User` that is related to this `UserPreference`. */
+  user?: Maybe<User>;
+  userId: Scalars['UUID']['output'];
+};
+
+/**
+ * A condition to be used against `UserPreference` object types. All fields are
+ * tested for equality and combined with a logical ‘and.’
+ */
+export type UserPreferenceCondition = {
+  /** Checks for equality with the object’s `rowId` field. */
   rowId?: InputMaybe<Scalars['UUID']['input']>;
-  updatedAt?: InputMaybe<Scalars['Datetime']['input']>;
+  /** Checks for equality with the object’s `userId` field. */
+  userId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+/** A connection to a list of `UserPreference` values. */
+export type UserPreferenceConnection = {
+  __typename?: 'UserPreferenceConnection';
+  /** A list of edges which contains the `UserPreference` and cursor to aid in pagination. */
+  edges: Array<Maybe<UserPreferenceEdge>>;
+  /** A list of `UserPreference` objects. */
+  nodes: Array<Maybe<UserPreference>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `UserPreference` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `UserPreference` edge in the connection. */
+export type UserPreferenceEdge = {
+  __typename?: 'UserPreferenceEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `UserPreference` at the end of the edge. */
+  node?: Maybe<UserPreference>;
+};
+
+/** A filter to be used against `UserPreference` object types. All fields are combined with a logical ‘and.’ */
+export type UserPreferenceFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<UserPreferenceFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<UserPreferenceFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<UserPreferenceFilter>>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `user` relation. */
+  user?: InputMaybe<UserFilter>;
+  /** Filter by the object’s `userId` field. */
+  userId?: InputMaybe<UuidFilter>;
+};
+
+/** Methods to use when ordering `UserPreference`. */
+export enum UserPreferenceOrderBy {
+  Natural = 'NATURAL',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC',
+  UserIdAsc = 'USER_ID_ASC',
+  UserIdDesc = 'USER_ID_DESC'
+}
+
+export type UserPreferences = {
+  __typename?: 'UserPreferences';
+  defaultProvider?: Maybe<Scalars['String']['output']>;
+  notifyKeyExpiry: Scalars['Boolean']['output'];
+  notifyUsageThreshold: Scalars['Boolean']['output'];
 };
 
 /** A filter to be used against many `ApiKey` object types. All fields are combined with a logical ‘and.’ */
@@ -1611,20 +1320,125 @@ export type UserToManyUsageEventFilter = {
   some?: InputMaybe<UsageEventFilter>;
 };
 
+export type Workspace = Node & {
+  __typename?: 'Workspace';
+  createdAt?: Maybe<Scalars['Datetime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  organizationId: Scalars['UUID']['output'];
+  rowId: Scalars['UUID']['output'];
+  slug: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
+/**
+ * A condition to be used against `Workspace` object types. All fields are tested
+ * for equality and combined with a logical ‘and.’
+ */
+export type WorkspaceCondition = {
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `rowId` field. */
+  rowId?: InputMaybe<Scalars['UUID']['input']>;
+  /** Checks for equality with the object’s `slug` field. */
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** A connection to a list of `Workspace` values. */
+export type WorkspaceConnection = {
+  __typename?: 'WorkspaceConnection';
+  /** A list of edges which contains the `Workspace` and cursor to aid in pagination. */
+  edges: Array<Maybe<WorkspaceEdge>>;
+  /** A list of `Workspace` objects. */
+  nodes: Array<Maybe<Workspace>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** The count of *all* `Workspace` you could get from the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A `Workspace` edge in the connection. */
+export type WorkspaceEdge = {
+  __typename?: 'WorkspaceEdge';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['Cursor']['output']>;
+  /** The `Workspace` at the end of the edge. */
+  node?: Maybe<Workspace>;
+};
+
+/** A filter to be used against `Workspace` object types. All fields are combined with a logical ‘and.’ */
+export type WorkspaceFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<WorkspaceFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<WorkspaceFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<WorkspaceFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `rowId` field. */
+  rowId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `slug` field. */
+  slug?: InputMaybe<StringFilter>;
+};
+
+/** Methods to use when ordering `Workspace`. */
+export enum WorkspaceOrderBy {
+  Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
+  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
+  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
+  RowIdAsc = 'ROW_ID_ASC',
+  RowIdDesc = 'ROW_ID_DESC',
+  SlugAsc = 'SLUG_ASC',
+  SlugDesc = 'SLUG_DESC'
+}
+
+export type WorkspaceResult = {
+  __typename?: 'WorkspaceResult';
+  createdAt: Scalars['Datetime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['UUID']['output'];
+  name: Scalars['String']['output'];
+  organizationId: Scalars['UUID']['output'];
+  slug: Scalars['String']['output'];
+};
+
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = { __typename?: 'Query', users?: { __typename?: 'UserConnection', totalCount: number } | null };
 
 
+export class TypedDocumentString<TResult, TVariables>
+  extends String
+  implements DocumentTypeDecoration<TResult, TVariables>
+{
+  __apiType?: NonNullable<DocumentTypeDecoration<TResult, TVariables>['__apiType']>;
+  private value: string;
+  public __meta__?: Record<string, any> | undefined;
 
-export const UsersDocument = `
+  constructor(value: string, __meta__?: Record<string, any> | undefined) {
+    super(value);
+    this.value = value;
+    this.__meta__ = __meta__;
+  }
+
+  override toString(): string & DocumentTypeDecoration<TResult, TVariables> {
+    return this.value;
+  }
+}
+
+export const UsersDocument = new TypedDocumentString(`
     query Users {
   users {
     totalCount
   }
 }
-    `;
+    `);
 
 export const useUsersQuery = <
       TData = UsersQuery,
