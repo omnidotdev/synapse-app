@@ -1,6 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { useOrganization } from "@/lib/context";
+import { getOrganizationBySlug } from "@/server/functions/organizations";
+
+import type { Organization } from "@/lib/context";
 
 export const Route = createFileRoute("/_app/organizations/$orgSlug")({
   beforeLoad: async ({ params }) => {
@@ -20,9 +25,41 @@ export const Route = createFileRoute("/_app/organizations/$orgSlug")({
  */
 function OrgLayout() {
   const { orgSlug } = Route.useParams();
-  const { organizations } = useOrganization();
+  const { organizations, activeOrganization, setActiveOrganization } =
+    useOrganization();
 
-  const org = organizations.find((o) => o.slug === orgSlug);
+  const claimOrg = organizations.find((o) => o.slug === orgSlug);
+
+  // A just-created organization is not yet in the JWT claims (the org list is
+  // hydrated from a short-lived cache), so fall back to a live Gatekeeper lookup
+  // until claims catch up. Skipped once the org is present in claims.
+  const { data: fallbackOrg, isLoading: isResolvingFallback } = useQuery({
+    queryKey: ["organization-fallback", orgSlug],
+    queryFn: () => getOrganizationBySlug({ data: { slug: orgSlug } }),
+    enabled: !claimOrg,
+  });
+
+  const org: Organization | undefined =
+    claimOrg ??
+    (fallbackOrg
+      ? {
+          id: fallbackOrg.id,
+          name: fallbackOrg.name,
+          slug: fallbackOrg.slug,
+          logo: fallbackOrg.logo,
+          type: fallbackOrg.type,
+          roles: [],
+          teams: [],
+        }
+      : undefined);
+
+  useEffect(() => {
+    if (claimOrg && activeOrganization?.id !== claimOrg.id) {
+      setActiveOrganization(claimOrg.id);
+    }
+  }, [claimOrg, activeOrganization?.id, setActiveOrganization]);
+
+  if (!org && isResolvingFallback) return null;
 
   if (!org) {
     return (
