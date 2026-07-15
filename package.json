@@ -77,7 +77,7 @@
   "dependencies": {
     "@ark-ui/react": "^5.36.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
-    "@omnidotdev/providers": "github:omnidotdev/providers#94513ca",
+    "@omnidotdev/providers": "github:omnidotdev/providers#67cb527",
     "@omnidotdev/thornberry": "github:omnidotdev/thornberry#6d1cce8",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
