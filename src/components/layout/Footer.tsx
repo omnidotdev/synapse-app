@@ -11,7 +11,7 @@ import app from "@/lib/config/app.config";
  * Layout footer.
  */
 const Footer = () => (
-  <footer className="glass-surface flex w-full items-center justify-center gap-1 border-border/50 border-t p-4 text-muted-foreground">
+  <footer className="glass-surface flex w-full flex-col items-center justify-center gap-2 border-border/50 border-t p-4 text-muted-foreground sm:flex-row sm:gap-1">
     <span className="px-3 text-sm">
       Made with 🧠 by{" "}
       <a
@@ -24,7 +24,7 @@ const Footer = () => (
       </a>
     </span>
 
-    <div className="h-4 w-px bg-muted-foreground/30" />
+    <div className="hidden h-4 w-px bg-muted-foreground/30 sm:block" />
 
     <ExternalLink
       variant="ghost"
@@ -34,7 +34,7 @@ const Footer = () => (
       Docs
     </ExternalLink>
 
-    <div className="h-4 w-px bg-muted-foreground/30" />
+    <div className="hidden h-4 w-px bg-muted-foreground/30 sm:block" />
 
     <ExternalLink
       variant="ghost"
@@ -60,7 +60,7 @@ const Footer = () => (
       Cookies
     </ExternalLink>
 
-    <div className="h-4 w-px bg-muted-foreground/30" />
+    <div className="hidden h-4 w-px bg-muted-foreground/30 sm:block" />
 
     <div className="flex items-center gap-1">
       <ExternalLink
