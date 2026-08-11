@@ -11,7 +11,12 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useEffect, useRef } from "react";
 import { Toaster } from "sonner";
 
-import { DefaultCatchBoundary, Footer, Header } from "@/components/layout";
+import {
+  CommandPalette,
+  DefaultCatchBoundary,
+  Footer,
+  Header,
+} from "@/components/layout";
 import app from "@/lib/config/app.config";
 import { isDevEnv } from "@/lib/config/env.config";
 import appCss from "@/lib/styles/globals.css?url";
@@ -191,6 +196,7 @@ function RootDocument({ children }: PropsWithChildren) {
 
       <body>
         <ThemeProvider theme={theme}>
+          <CommandPalette />
           <Header />
 
           <div className="relative flex min-h-dvh w-full flex-col gap-0 pl-[calc(100vw-100%)]">

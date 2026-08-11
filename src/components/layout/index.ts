@@ -1,3 +1,5 @@
+export * from "./CommandPalette";
+export { default as CommandPalette } from "./CommandPalette";
 export * from "./DashboardPending";
 export { default as DashboardPending } from "./DashboardPending";
 export * from "./DefaultCatchBoundary";
