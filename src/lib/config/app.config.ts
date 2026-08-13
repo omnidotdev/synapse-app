@@ -3,6 +3,9 @@
  */
 const app = {
   name: "Synapse",
+  // Catalog symbol, mirrors the omni-api catalog SSOT `products.ts` `icon`.
+  // Used in the "Made with <symbol> by Omni" footer credit.
+  icon: "🧠",
   description:
     "An AI router that aggregates MCP servers and LLM providers behind a single endpoint, providing intelligent request routing, tool discovery, and enterprise-grade governance for AI infrastructure.",
   url: "https://synapse.omni.dev",
@@ -20,6 +23,7 @@ const app = {
   },
   organization: {
     name: "Omni",
+    url: "https://omni.dev",
     supportEmailAddress: "support@omni.dev",
   },
   /** PWA configuration. Values should match public/manifest.json. */
