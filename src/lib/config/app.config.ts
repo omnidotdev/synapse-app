@@ -9,7 +9,7 @@ const app = {
   description:
     "An AI router that aggregates MCP servers and LLM providers behind a single endpoint, providing intelligent request routing, tool discovery, and enterprise-grade governance for AI infrastructure.",
   url: "https://synapse.omni.dev",
-  docsUrl: "https://docs.omni.dev/grid/synapse",
+  docsUrl: "https://docs.omni.dev/products/synapse",
   socials: {
     discord: "https://discord.gg/omnidotdev",
     x: "https://x.com/omnidotdev",
