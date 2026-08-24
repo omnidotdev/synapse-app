@@ -40,8 +40,7 @@ const sharedConfig: GraphQLCodegenConfig["config"] = {
  */
 // offline schema source: the API's committed SDL (no running server / introspection needed).
 // Override with GRAPHQL_SCHEMA_URL to point at a live endpoint if ever required.
-const LOCAL_SCHEMA_PATH =
-  "../synapse-api/src/generated/graphql/schema.graphql";
+const LOCAL_SCHEMA_PATH = "../synapse-api/src/generated/graphql/schema.graphql";
 
 const graphqlCodegenConfig: CodegenConfig = {
   schema: process.env.GRAPHQL_SCHEMA_URL || LOCAL_SCHEMA_PATH,
