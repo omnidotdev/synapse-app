@@ -4,4 +4,4 @@ export { formatFeatureKey, formatFeatureValue } from "./formatEntitlement";
 export { default as getAnalyticsRetentionDays } from "./getAnalyticsRetentionDays";
 export { default as getMaxApiKeys } from "./getMaxApiKeys";
 export { default as getTierFromEntitlements } from "./getTierFromEntitlements";
-export { default as registerServiceWorker } from "./registerServiceWorker";
+export { default as unregisterServiceWorkers } from "./unregisterServiceWorkers";

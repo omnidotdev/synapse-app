@@ -22,7 +22,7 @@ import app from "@/lib/config/app.config";
 import { isDevEnv } from "@/lib/config/env.config";
 import appCss from "@/lib/styles/globals.css?url";
 import createMetaTags from "@/lib/util/createMetaTags";
-import registerServiceWorker from "@/lib/util/registerServiceWorker";
+import unregisterServiceWorkers from "@/lib/util/unregisterServiceWorkers";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { fetchSession } from "@/server/functions/auth";
 import { getThemeServerFn } from "@/server/functions/theme";
@@ -189,8 +189,9 @@ function RootComponent() {
 function RootDocument({ children }: PropsWithChildren) {
   const theme = Route.useLoaderData();
 
+  // Evict any service worker left over from when this app shipped one
   useEffect(() => {
-    registerServiceWorker();
+    unregisterServiceWorkers();
   }, []);
 
   return (
