@@ -1,4 +1,4 @@
-const ACRONYMS = new Set(["api", "stt", "tts", "mcp", "sso", "rbac"]);
+const ACRONYMS = new Set(["api", "stt", "tts", "mcp", "sso", "rbac", "byok"]);
 
 const BOOLEAN_KEYS = new Set([
   "stt_enabled",
