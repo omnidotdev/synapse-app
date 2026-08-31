@@ -10,6 +10,7 @@ import {
   ManageSubscription,
   RenewSubscription,
 } from "@/components/profile";
+import { formatSubscriptionStatus } from "@/lib/util";
 
 import type { Subscription } from "@omnidotdev/providers/billing";
 
@@ -53,10 +54,10 @@ const SubscriptionCard = ({
       <CardContent>
         <dl className="grid grid-cols-2 gap-2 text-sm">
           <dt className="text-muted-foreground">Status</dt>
-          <dd className="capitalize">
+          <dd>
             {isPendingCancellation
               ? `Cancels ${formatDate(subscription.cancelAt as number)}`
-              : subscription.status}
+              : formatSubscriptionStatus(subscription.status)}
           </dd>
           <dt className="text-muted-foreground">Current Period Ends</dt>
           <dd>{formatDate(subscription.currentPeriodEnd)}</dd>
