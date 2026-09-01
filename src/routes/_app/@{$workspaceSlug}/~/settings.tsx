@@ -11,19 +11,21 @@ import {
   updateOrganization,
 } from "@/server/functions/organizations";
 
-export const Route = createFileRoute("/_app/organizations/$orgSlug/settings")({
-  component: OrgSettingsPage,
+export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/settings")({
+  component: WorkspaceSettingsPage,
 });
 
 /**
- * Organization settings page
+ * Workspace settings page.
+ * An org is 1:1 with a workspace, so these settings manage the workspace/org
+ * identity (name, slug) and its lifecycle.
  */
-function OrgSettingsPage() {
-  const { orgSlug } = Route.useParams();
+function WorkspaceSettingsPage() {
+  const { workspaceSlug } = Route.useParams();
   const { organizations } = useOrganization();
   const navigate = useNavigate();
 
-  const org = organizations.find((o) => o.slug === orgSlug);
+  const org = organizations.find((o) => o.slug === workspaceSlug);
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
   const {
@@ -35,9 +37,9 @@ function OrgSettingsPage() {
   // Redirect if user lacks edit permission
   useEffect(() => {
     if (!permissionsLoading && !canEdit) {
-      navigate({ to: "/organizations/$orgSlug", params: { orgSlug } });
+      navigate({ to: "/@{$workspaceSlug}", params: { workspaceSlug } });
     }
-  }, [canEdit, permissionsLoading, navigate, orgSlug]);
+  }, [canEdit, permissionsLoading, navigate, workspaceSlug]);
 
   const [name, setName] = useState(org?.name ?? org?.slug ?? "");
   const [slug, setSlug] = useState(org?.slug ?? "");
@@ -50,11 +52,11 @@ function OrgSettingsPage() {
         data: { organizationId: org?.id ?? "", name, slug },
       }),
     onSuccess: () => {
-      toast("Organization updated");
-      if (slug !== orgSlug) {
+      toast("Workspace updated");
+      if (slug !== workspaceSlug) {
         navigate({
-          to: "/organizations/$orgSlug/settings",
-          params: { orgSlug: slug },
+          to: "/@{$workspaceSlug}/~/settings",
+          params: { workspaceSlug: slug },
         });
       }
     },
@@ -65,7 +67,7 @@ function OrgSettingsPage() {
     mutationFn: async () =>
       await deleteOrganization({ data: { organizationId: org?.id ?? "" } }),
     onSuccess: () => {
-      toast("Organization deleted");
+      toast("Workspace deleted");
       navigate({ to: "/dashboard" });
     },
     onError: (error) => toast.error(error.message),
@@ -75,12 +77,12 @@ function OrgSettingsPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="mb-6 font-bold text-2xl">Organization Settings</h1>
+      <h1 className="mb-6 font-bold text-2xl">Workspace Settings</h1>
 
       {isPersonal && (
         <div className="mb-6 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4">
           <p className="text-sm text-yellow-600 dark:text-yellow-400">
-            This is your personal organization. Some settings cannot be changed.
+            This is your personal workspace. Some settings cannot be changed.
           </p>
         </div>
       )}
@@ -91,7 +93,7 @@ function OrgSettingsPage() {
           <div className="space-y-4">
             <div>
               <label htmlFor="org-name" className="block font-medium text-sm">
-                Organization Name
+                Workspace Name
               </label>
               <input
                 id="org-name"
@@ -116,7 +118,7 @@ function OrgSettingsPage() {
               />
               {!isPersonal && (
                 <p className="mt-1 text-muted-foreground text-xs">
-                  Changing the slug will update all URLs for this organization
+                  Changing the slug will update all URLs for this workspace
                 </p>
               )}
             </div>
@@ -141,7 +143,7 @@ function OrgSettingsPage() {
               Danger Zone
             </h2>
             <p className="mb-4 text-muted-foreground text-sm">
-              Permanently delete this organization and all its data. This action
+              Permanently delete this workspace and all its data. This action
               cannot be undone.
             </p>
 
@@ -170,7 +172,7 @@ function OrgSettingsPage() {
                     {isDeleting && (
                       <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Delete organization
+                    Delete workspace
                   </Button>
                   <Button variant="ghost" onClick={() => setShowDelete(false)}>
                     Cancel
@@ -179,7 +181,7 @@ function OrgSettingsPage() {
               </div>
             ) : (
               <Button variant="destructive" onClick={() => setShowDelete(true)}>
-                Delete Organization
+                Delete Workspace
               </Button>
             )}
           </section>

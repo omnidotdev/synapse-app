@@ -21,9 +21,9 @@ import {
   updateOrganizationMemberRole,
 } from "@/server/functions/organizations";
 
-export const Route = createFileRoute("/_app/organizations/$orgSlug/members")({
+export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/members")({
   errorComponent: RouteErrorFallback,
-  component: OrgMembersPage,
+  component: WorkspaceMembersPage,
 });
 
 /**
@@ -105,16 +105,16 @@ function InviteForm({
 }
 
 /**
- * Organization members page
+ * Workspace members page
  */
-function OrgMembersPage() {
-  const { orgSlug } = Route.useParams();
+function WorkspaceMembersPage() {
+  const { workspaceSlug } = Route.useParams();
   const navigate = Route.useNavigate();
   const { organizations } = useOrganization();
   const queryClient = useQueryClient();
   const [showInvite, setShowInvite] = useState(false);
 
-  const org = organizations.find((o) => o.slug === orgSlug);
+  const org = organizations.find((o) => o.slug === workspaceSlug);
   const isPersonal = org?.type === "personal";
   const {
     canView,
@@ -125,9 +125,9 @@ function OrgMembersPage() {
   // Redirect if user lacks view permission
   useEffect(() => {
     if (!permissionsLoading && !canView) {
-      navigate({ to: "/organizations/$orgSlug", params: { orgSlug } });
+      navigate({ to: "/@{$workspaceSlug}", params: { workspaceSlug } });
     }
-  }, [canView, permissionsLoading, navigate, orgSlug]);
+  }, [canView, permissionsLoading, navigate, workspaceSlug]);
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["orgMembers", org?.id],

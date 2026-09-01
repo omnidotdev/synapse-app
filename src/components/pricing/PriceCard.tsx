@@ -118,7 +118,7 @@ const PriceCard = ({
       return createCheckoutWithWorkspace({
         data: {
           priceId: price.id,
-          successUrl: `${origin}/organizations/__SLUG__/billing`,
+          successUrl: `${origin}/@__SLUG__/~/billing`,
           cancelUrl: `${origin}/pricing`,
           ...params,
         },

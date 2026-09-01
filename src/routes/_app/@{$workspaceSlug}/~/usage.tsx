@@ -56,9 +56,7 @@ const daysAgo = (n: number) => {
   return d.toISOString();
 };
 
-export const Route = createFileRoute(
-  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/usage",
-)({
+export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/usage")({
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {

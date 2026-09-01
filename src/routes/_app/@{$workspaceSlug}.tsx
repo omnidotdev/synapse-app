@@ -2,40 +2,42 @@ import { useQuery } from "@tanstack/react-query";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import WorkspaceSidebar from "@/components/workspace/WorkspaceSidebar";
 import { useOrganization } from "@/lib/context";
 import { getOrganizationBySlug } from "@/server/functions/organizations";
 
 import type { Organization } from "@/lib/context";
 
-export const Route = createFileRoute("/_app/organizations/$orgSlug")({
+export const Route = createFileRoute("/_app/@{$workspaceSlug}")({
   beforeLoad: async ({ params }) => {
-    return { orgSlug: params.orgSlug };
+    return { workspaceSlug: params.workspaceSlug };
   },
-  component: OrgLayout,
+  component: WorkspaceLayout,
 });
 
 /**
- * Organization layout.
- * Wraps all routes under /organizations/$orgSlug/
+ * Workspace layout.
+ * An org is 1:1 with a workspace, so the `@handle` IS the workspace (one level,
+ * no nested workspaces). Wraps the workspace home and its admin (behind `~`).
  *
  * Access control is enforced at two levels:
- * 1. JWT claims: user must be a member of the org (checked below)
+ * 1. JWT claims: user must be a member of the workspace (checked below)
  * 2. Warden PDP: synapse-api organization middleware checks permissions
  *    for all API mutations via authz.checkPermission
  */
-function OrgLayout() {
-  const { orgSlug } = Route.useParams();
+function WorkspaceLayout() {
+  const { workspaceSlug } = Route.useParams();
   const { organizations, activeOrganization, setActiveOrganization } =
     useOrganization();
 
-  const claimOrg = organizations.find((o) => o.slug === orgSlug);
+  const claimOrg = organizations.find((o) => o.slug === workspaceSlug);
 
-  // A just-created organization is not yet in the JWT claims (the org list is
+  // A just-created workspace is not yet in the JWT claims (the org list is
   // hydrated from a short-lived cache), so fall back to a live Gatekeeper lookup
-  // until claims catch up. Skipped once the org is present in claims.
+  // until claims catch up. Skipped once the workspace is present in claims.
   const { data: fallbackOrg, isLoading: isResolvingFallback } = useQuery({
-    queryKey: ["organization-fallback", orgSlug],
-    queryFn: () => getOrganizationBySlug({ data: { slug: orgSlug } }),
+    queryKey: ["organization-fallback", workspaceSlug],
+    queryFn: () => getOrganizationBySlug({ data: { slug: workspaceSlug } }),
     enabled: !claimOrg,
   });
 
@@ -65,14 +67,24 @@ function OrgLayout() {
     return (
       <div className="container mx-auto py-8">
         <h1 className="font-bold text-2xl text-destructive">
-          Organization not found
+          Workspace not found
         </h1>
         <p className="mt-2 text-muted-foreground">
-          You don't have access to organization "{orgSlug}"
+          You don't have access to workspace "{workspaceSlug}"
         </p>
       </div>
     );
   }
 
-  return <Outlet />;
+  return (
+    <div className="relative mx-auto flex h-full max-w-7xl gap-6 px-4 py-8">
+      {/* Ambient glow */}
+      <div className="pointer-events-none fixed top-1/3 right-1/4 size-[400px] rounded-full bg-secondary/3 blur-[100px]" />
+
+      <WorkspaceSidebar workspaceSlug={workspaceSlug} />
+      <main className="min-w-0 flex-1">
+        <Outlet />
+      </main>
+    </div>
+  );
 }

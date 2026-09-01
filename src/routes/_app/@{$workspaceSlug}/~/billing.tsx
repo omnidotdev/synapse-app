@@ -20,7 +20,7 @@ import { getSubscription } from "@/server/functions/subscriptions";
 
 import type { Entitlement } from "@omnidotdev/providers/billing";
 
-export const Route = createFileRoute("/_app/organizations/$orgSlug/billing")({
+export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/billing")({
   loader: async ({ params }) => {
     const { session, organizations } = await fetchSession();
     if (!session?.user.identityProviderId) {
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_app/organizations/$orgSlug/billing")({
       };
     }
 
-    const org = organizations.find((o) => o.slug === params.orgSlug);
+    const org = organizations.find((o) => o.slug === params.workspaceSlug);
     if (!org) {
       return {
         subscription: null,
@@ -52,20 +52,20 @@ export const Route = createFileRoute("/_app/organizations/$orgSlug/billing")({
 
     return { subscription, entitlements, entityType, entityId };
   },
-  component: OrgBillingPage,
+  component: WorkspaceBillingPage,
 });
 
 /**
- * Organization billing page.
+ * Workspace billing page.
  */
-function OrgBillingPage() {
-  const { orgSlug } = Route.useParams();
+function WorkspaceBillingPage() {
+  const { workspaceSlug } = Route.useParams();
   const { organizations } = useOrganization();
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
 
   const tier = getTierFromEntitlements(entitlements);
-  const org = organizations.find((o) => o.slug === orgSlug);
+  const org = organizations.find((o) => o.slug === workspaceSlug);
 
   if (!org) return null;
 

@@ -101,29 +101,3 @@ export const revokeWorkspaceApiKey = createServerFn()
 
     return result.revokeApiKey;
   });
-
-/**
- * Count active API keys for a workspace
- */
-export const countWorkspaceApiKeys = createServerFn()
-  .middleware([authMiddleware])
-  .inputValidator((data) => workspaceIdSchema.parse(data))
-  .handler(async ({ data, context }): Promise<number> => {
-    const { accessToken } = context.session;
-
-    const result = await graphql<{
-      observer: { apiKeys: ApiKey[] };
-    }>(
-      accessToken,
-      `query WorkspaceApiKeyCount($workspaceId: UUID!) {
-        observer {
-          apiKeys(workspaceId: $workspaceId) {
-            id
-          }
-        }
-      }`,
-      { workspaceId: data.workspaceId },
-    );
-
-    return result.observer?.apiKeys?.length ?? 0;
-  });

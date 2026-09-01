@@ -39,9 +39,7 @@ import {
 
 import type { ApiKey } from "@/server/functions/apiKeys";
 
-export const Route = createFileRoute(
-  "/_app/organizations/$orgSlug/workspaces/$workspaceSlug/keys",
-)({
+export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/keys")({
   loader: async () => {
     const { session } = await fetchSession();
     if (!session?.user.identityProviderId) {

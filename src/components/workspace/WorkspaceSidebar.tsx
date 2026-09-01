@@ -1,9 +1,11 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   BarChart3Icon,
+  CreditCardIcon,
   KeyIcon,
   LayoutDashboardIcon,
   SettingsIcon,
+  UsersIcon,
 } from "lucide-react";
 
 import cn from "@/lib/utils";
@@ -12,22 +14,23 @@ import type { ReactNode } from "react";
 
 type NavItem = {
   to: string;
-  params: { orgSlug: string; workspaceSlug: string };
+  params: { workspaceSlug: string };
   label: string;
   icon: ReactNode;
 };
 
 type WorkspaceSidebarProps = {
-  orgSlug: string;
   workspaceSlug: string;
 };
 
 /**
- * Build workspace nav items scoped to an org and workspace.
+ * Build workspace nav items scoped to a workspace handle.
+ * The workspace home is flat under the handle; admin lives behind the `~`
+ * sentinel.
  */
-const buildNavItems = (orgSlug: string, workspaceSlug: string): NavItem[] => {
-  const params = { orgSlug, workspaceSlug };
-  const base = "/organizations/$orgSlug/workspaces/$workspaceSlug";
+const buildNavItems = (workspaceSlug: string): NavItem[] => {
+  const params = { workspaceSlug };
+  const base = "/@{$workspaceSlug}";
 
   return [
     {
@@ -37,19 +40,31 @@ const buildNavItems = (orgSlug: string, workspaceSlug: string): NavItem[] => {
       icon: <LayoutDashboardIcon className="h-4 w-4" />,
     },
     {
-      to: `${base}/keys`,
+      to: `${base}/~/keys`,
       params,
       label: "API Keys",
       icon: <KeyIcon className="h-4 w-4" />,
     },
     {
-      to: `${base}/usage`,
+      to: `${base}/~/usage`,
       params,
       label: "Usage",
       icon: <BarChart3Icon className="h-4 w-4" />,
     },
     {
-      to: `${base}/settings`,
+      to: `${base}/~/members`,
+      params,
+      label: "Members",
+      icon: <UsersIcon className="h-4 w-4" />,
+    },
+    {
+      to: `${base}/~/billing`,
+      params,
+      label: "Billing",
+      icon: <CreditCardIcon className="h-4 w-4" />,
+    },
+    {
+      to: `${base}/~/settings`,
       params,
       label: "Settings",
       icon: <SettingsIcon className="h-4 w-4" />,
@@ -60,13 +75,10 @@ const buildNavItems = (orgSlug: string, workspaceSlug: string): NavItem[] => {
 /**
  * Workspace sidebar navigation.
  */
-const WorkspaceSidebar = ({
-  orgSlug,
-  workspaceSlug,
-}: WorkspaceSidebarProps) => {
+const WorkspaceSidebar = ({ workspaceSlug }: WorkspaceSidebarProps) => {
   const matchRoute = useMatchRoute();
-  const navItems = buildNavItems(orgSlug, workspaceSlug);
-  const baseTo = "/organizations/$orgSlug/workspaces/$workspaceSlug";
+  const navItems = buildNavItems(workspaceSlug);
+  const baseTo = "/@{$workspaceSlug}";
 
   return (
     <nav className="hidden w-48 shrink-0 md:block">

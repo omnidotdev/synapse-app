@@ -31,8 +31,8 @@ function OrganizationsPage() {
         {organizations.map((org) => (
           <Link
             key={org.id}
-            to="/organizations/$orgSlug"
-            params={{ orgSlug: org.slug }}
+            to="/@{$workspaceSlug}"
+            params={{ workspaceSlug: org.slug }}
             className="block rounded-lg border p-4 transition-colors hover:bg-muted"
           >
             <div className="flex items-center justify-between">
