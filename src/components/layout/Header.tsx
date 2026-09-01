@@ -63,8 +63,8 @@ const Header = () => {
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
-      await authClient.signIn.oauth2({
-        providerId: "omni",
+      await authClient.signIn.social({
+        provider: "omni",
         callbackURL: location.pathname,
         disableRedirect: false,
       }),

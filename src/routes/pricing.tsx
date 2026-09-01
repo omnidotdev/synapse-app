@@ -83,8 +83,8 @@ const FreeTierCard = ({ tier }: { tier: string | null }) => {
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
-      await authClient.signIn.oauth2({
-        providerId: "omni",
+      await authClient.signIn.social({
+        provider: "omni",
         callbackURL: "/dashboard",
         disableRedirect: false,
       }),
@@ -239,8 +239,8 @@ const PricingPage = () => {
   useEffect(() => {
     if (!signin) return;
 
-    authClient.signIn.oauth2({
-      providerId: "omni",
+    authClient.signIn.social({
+      provider: "omni",
       callbackURL: "/dashboard",
       disableRedirect: false,
     });

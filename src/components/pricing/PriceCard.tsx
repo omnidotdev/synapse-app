@@ -74,8 +74,8 @@ const PriceCard = ({
 
   const { mutateAsync: signIn, isPending: isSignInPending } = useMutation({
     mutationFn: async () =>
-      await authClient.signIn.oauth2({
-        providerId: "omni",
+      await authClient.signIn.social({
+        provider: "omni",
         callbackURL: `/pricing?tier=${tier}`,
         disableRedirect: false,
       }),

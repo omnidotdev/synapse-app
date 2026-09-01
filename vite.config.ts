@@ -25,9 +25,18 @@ const config = defineConfig(({ command }) => ({
     command === "serve" && mkcert(),
     nitroV2Plugin({
       preset: "node-server",
-      // Inline srvx (Bun runtime resolution) and router-core (SSR client
-      // module not copied to .output by Nitro's externalization)
-      externals: { inline: ["srvx", "@tanstack/router-core"] },
+      // Inline srvx (Bun runtime resolution), router-core (SSR client
+      // module not copied to .output by Nitro's externalization), and
+      // better-auth (1.7 subpath imports like @better-auth/utils/random are
+      // missed by Nitro's file trace, so bundle them in)
+      externals: {
+        inline: [
+          "srvx",
+          "@tanstack/router-core",
+          "better-auth",
+          "@better-auth",
+        ],
+      },
       routeRules: {
         "/**": {
           headers: {

@@ -1,4 +1,3 @@
-import { createOmniOAuthConfig } from "@omnidotdev/providers/auth";
 import { getCookie } from "@tanstack/react-start/server";
 import { betterAuth } from "better-auth";
 import { customSession, genericOAuth } from "better-auth/plugins";
@@ -23,15 +22,25 @@ if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
     providerId: "omni",
     clientId: AUTH_CLIENT_ID,
     clientSecret: AUTH_CLIENT_SECRET,
-    discoveryUrl: `${AUTH_BASE_URL}/.well-known/openid-configuration`,
+    // Set URLs explicitly instead of using discoveryUrl — BA overrides
+    // tokenUrl with the discovery doc's token_endpoint, which uses the
+    // external URL unreachable from inside Docker
+    authorizationUrl: `${AUTH_BASE_URL}/oauth2/authorize`,
+    tokenUrl: `${AUTH_INTERNAL_URL}/oauth2/token`,
+    userInfoUrl: `${AUTH_INTERNAL_URL}/userinfo`,
     scopes: ["openid", "profile", "email", "offline_access", "organization"],
     accessType: "offline",
     pkce: true,
+    // better-auth 1.7 tightened the mapped-user return type; the IDP's custom
+    // `email_verified`/`picture` claims arrive untyped, so coerce them
     mapProfileToUser: (profile) => ({
       name: profile.name,
       email: profile.email,
-      emailVerified: profile.email_verified,
-      image: profile.picture,
+      emailVerified:
+        typeof profile.email_verified === "boolean"
+          ? profile.email_verified
+          : undefined,
+      image: typeof profile.picture === "string" ? profile.picture : undefined,
     }),
   });
 }
@@ -40,18 +49,7 @@ if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
 const plugins = [];
 
 if (oauthConfigs.length > 0) {
-  plugins.push(
-    genericOAuth({
-      config: [
-        createOmniOAuthConfig({
-          clientId: AUTH_CLIENT_ID as string,
-          clientSecret: AUTH_CLIENT_SECRET as string,
-          authBaseUrl: AUTH_BASE_URL as string,
-          authInternalUrl: AUTH_INTERNAL_URL as string,
-        }),
-      ],
-    }),
-  );
+  plugins.push(genericOAuth({ config: oauthConfigs }));
 }
 
 // NB: must be the last plugin in the array
