@@ -3,7 +3,7 @@ import { Button } from "@omnidotdev/thornberry/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLinkIcon } from "lucide-react";
 
-import { AUTH_BASE_URL } from "@/lib/config/env.config";
+import { ACCOUNT_URL } from "@/lib/config/env.config";
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/members")({
   component: WorkspaceMembersPage,
@@ -17,8 +17,8 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/members")({
 function WorkspaceMembersPage() {
   const { workspaceSlug } = Route.useParams();
 
-  const manageUrl = AUTH_BASE_URL
-    ? gatekeeperOrgManageUrl(AUTH_BASE_URL, workspaceSlug)
+  const manageUrl = ACCOUNT_URL
+    ? gatekeeperOrgManageUrl(ACCOUNT_URL, workspaceSlug)
     : undefined;
 
   return (

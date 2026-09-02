@@ -33,6 +33,7 @@ export const AUTH_INTERNAL_URL =
     ? process.env.AUTH_INTERNAL_URL || AUTH_BASE_URL
     : AUTH_BASE_URL;
 
+export const ACCOUNT_URL = import.meta.env.VITE_ACCOUNT_URL;
 export const API_GRAPHQL_URL = `${API_BASE_URL}/graphql`;
 
 // environment helpers
