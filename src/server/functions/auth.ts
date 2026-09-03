@@ -5,6 +5,7 @@ import { getRequest, setCookie } from "@tanstack/react-start/server";
 import auth from "@/lib/auth/auth";
 import { authCache } from "@/lib/auth/authCache";
 import { getAuth } from "@/lib/auth/getAuth";
+import { isSessionDegraded } from "@/lib/auth/sessionState";
 import {
   AUTH_BASE_URL,
   AUTH_CLIENT_ID,
@@ -20,12 +21,19 @@ export const fetchSession = createServerFn().handler(async () => {
   const session = await getAuth(request);
 
   if (!session) {
-    return { session: null, organizations: [] };
+    return { session: null, organizations: [], authDegraded: false };
   }
 
+  // A degraded session is authenticated (getAuth returned it) but carries no
+  // access token: the refresh-token grant failed, so getAuth served the session
+  // without a fresh token and userinfo org hydration was skipped, leaving
+  // organizations empty. This is distinct from a genuinely organization-less
+  // user (who has a valid access token), and the organizations page uses it to
+  // prompt a re-login instead of the silent "No organizations yet" empty state
   return {
     session,
     organizations: session.organizations,
+    authDegraded: isSessionDegraded(session),
   };
 });
 

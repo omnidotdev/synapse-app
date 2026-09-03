@@ -3,10 +3,14 @@ import {
   AvatarImage,
   AvatarRoot,
 } from "@omnidotdev/thornberry/avatar";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Button } from "@omnidotdev/thornberry/button";
+import { Link, createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 
 import CreateOrganizationButton from "@/components/organizations/CreateOrganizationButton";
+import authClient from "@/lib/auth/authClient";
 import { useOrganization } from "@/lib/context";
+import { signOutLocal } from "@/server/functions/auth";
 
 export const Route = createFileRoute("/_app/organizations/")({
   component: OrganizationsPage,
@@ -18,6 +22,13 @@ export const Route = createFileRoute("/_app/organizations/")({
  */
 function OrganizationsPage() {
   const { organizations } = useOrganization();
+  // A degraded session (refresh-token grant failed) is authenticated but has no
+  // access token, so organizations came back empty. Without a signal it renders
+  // identically to a genuinely organization-less user; distinguish it so the
+  // user gets a re-login prompt instead of a dead-end empty state.
+  const { authDegraded } = useRouteContext({ strict: false }) as {
+    authDegraded?: boolean;
+  };
 
   return (
     <div className="container mx-auto py-8">
@@ -63,14 +74,48 @@ function OrganizationsPage() {
         ))}
       </div>
 
-      {organizations.length === 0 && (
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
-          <p className="text-muted-foreground text-sm">
-            No organizations yet. Create one to get started.
-          </p>
-          <CreateOrganizationButton />
-        </div>
-      )}
+      {organizations.length === 0 &&
+        (authDegraded ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <Users className="size-6" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg">Your session expired</h2>
+              <p className="mx-auto mt-1 max-w-sm text-muted-foreground text-sm">
+                We could not refresh your session, so your organizations could
+                not be loaded. Sign in again to restore access.
+              </p>
+            </div>
+            <Button
+              onClick={async () => {
+                // The better-auth session is still valid (only the OAuth
+                // refresh token is dead), so signing in with an active session
+                // just bounces back to the callback without re-authorizing.
+                // Clear the local session (and auth cache) first so the OAuth
+                // redirect actually fires and mints a fresh token family.
+                try {
+                  await signOutLocal();
+                } catch {
+                  // Proceed with re-auth even if local sign-out fails.
+                }
+                await authClient.signIn.social({
+                  provider: "omni",
+                  callbackURL: "/organizations",
+                });
+              }}
+            >
+              Sign in again
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
+            <p className="text-muted-foreground text-sm">
+              No organizations yet. Create one to get started.
+            </p>
+            <CreateOrganizationButton />
+          </div>
+        ))}
     </div>
   );
 }
