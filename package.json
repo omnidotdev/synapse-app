@@ -45,7 +45,7 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@happy-dom/global-registrator": "^20.9.0",
     "@playwright/test": "^1.60.0",
-    "@tanstack/devtools-vite": "^0.6.1",
+    "@tanstack/devtools-vite": "^0.8.0",
     "@tanstack/react-devtools": "0.10.2",
     "@tanstack/react-query-devtools": "^5.101.2",
     "@tanstack/react-router-devtools": "^1.167.0",
