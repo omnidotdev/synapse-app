@@ -58,7 +58,7 @@
     "@types/react-dom": "^19.2.3",
     "@unlighthouse/cli": "^0.17.9",
     "@vitejs/plugin-react": "^6.0.2",
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.0",
     "dotenv": "^17.4.2",
     "dotenv-cli": "^11.0.0",
     "happy-dom": "^20.9.0",
