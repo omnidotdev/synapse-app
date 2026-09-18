@@ -1,0 +1,30 @@
+{
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["e2e/**/*"],
+  "compilerOptions": {
+    "target": "es2022",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "types": [
+      "vite/client",
+      // enable Bun types
+      "bun"
+    ],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
