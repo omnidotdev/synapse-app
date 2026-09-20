@@ -270,9 +270,10 @@ const LandingHybrid: FC = () => {
       </div>
 
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[480px] w-full overflow-visible sm:h-[80vh] sm:min-h-[560px] lg:h-[85vh] lg:min-h-[640px]">
+      <section className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-visible px-4 py-24 sm:py-28">
+        {/* 3D neural graph backdrop (ambient, framed behind the headline) */}
         <div
-          className="absolute inset-0 overflow-visible"
+          className="pointer-events-none absolute inset-0 overflow-visible opacity-35 sm:opacity-45"
           style={{ touchAction: "pan-y" }}
         >
           <Canvas
@@ -301,68 +302,104 @@ const LandingHybrid: FC = () => {
           </Canvas>
         </div>
 
-        {/* CTA overlay */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center px-4 pb-8 sm:pb-12 lg:pb-16">
-          <div className="pointer-events-auto flex flex-col items-center gap-3 text-center sm:gap-4">
-            <p className="max-w-sm text-muted-foreground text-xs leading-relaxed sm:max-w-md sm:text-sm lg:max-w-lg lg:text-base">
-              Route to any model, track every token, and manage your keys
-              through one unified control plane
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-              <InternalLink to="/dashboard" variant="unstyled">
-                <Button
-                  variant="solid"
-                  size="lg"
-                  className="text-sm sm:text-base"
-                >
-                  Get Started
-                </Button>
-              </InternalLink>
-              <InternalLink to="/pricing" variant="unstyled">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="text-sm sm:text-base"
-                >
-                  View Pricing
-                </Button>
-              </InternalLink>
-            </div>
+        {/* Legibility scrim: fades the graph to near-solid background behind the
+            headline so the type stays crisp while the graph frames the edges */}
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background:
+              "radial-gradient(ellipse 56% 50% at 50% 46%, transparent 0%, color-mix(in oklch, var(--background) 82%, transparent) 48%, var(--background) 74%)",
+          }}
+        />
+
+        {/* Brand glow */}
+        <div
+          className="pointer-events-none absolute top-[42%] left-1/2 z-[2] size-[680px] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+          style={{
+            background:
+              "radial-gradient(circle, color-mix(in oklch, var(--primary) 30%, transparent) 0%, transparent 62%)",
+          }}
+        />
+
+        {/* Headline */}
+        <div className="pointer-events-auto relative z-10 flex max-w-4xl select-text flex-col items-center text-center [text-shadow:0_1px_30px_var(--background)]">
+          <h1 className="font-bold font-display text-5xl text-foreground leading-[1.02] tracking-tight sm:text-7xl lg:text-8xl dark:text-white">
+            One endpoint for{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent [-webkit-text-fill-color:transparent]">
+              every model
+            </span>
+          </h1>
+          <p className="mt-6 max-w-xl text-balance text-base text-muted-foreground leading-relaxed sm:text-lg">
+            Route, fail over, and meter every LLM, embedding, image, MCP, STT,
+            and TTS provider through a single API. Bring your own keys, no token
+            tax, fully self-hostable.
+          </p>
+          <div className="pointer-events-auto mt-8 flex flex-wrap justify-center gap-3">
+            <InternalLink to="/dashboard" variant="unstyled">
+              <Button
+                variant="solid"
+                size="lg"
+                className="text-sm sm:text-base"
+              >
+                Get Started Free
+              </Button>
+            </InternalLink>
+            <InternalLink to="/pricing" variant="unstyled">
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-sm sm:text-base"
+              >
+                View Pricing
+              </Button>
+            </InternalLink>
           </div>
+          <p className="mt-6 font-mono text-[11px] text-muted-foreground/60 tracking-wide">
+            OpenAI- &amp; Anthropic-compatible · BYOK · Apache-2.0
+          </p>
         </div>
       </section>
 
-      {/* Content cards */}
-      <section className="relative mx-auto w-full max-w-5xl px-4 py-8 sm:py-12 lg:py-16">
-        <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-          {/* Feature cards (nodes 1-4) */}
+      {/* Control plane */}
+      <section className="relative mx-auto w-full max-w-5xl px-4 py-14 sm:py-20 lg:py-24">
+        <div className="mb-9 max-w-2xl sm:mb-12">
+          <h2 className="font-display font-semibold text-2xl text-foreground leading-tight tracking-tight sm:text-4xl dark:text-white">
+            Everything between your app and the models.
+          </h2>
+        </div>
+        <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+          {/* Feature nodes (01-04) */}
           {contentNodes.map(
-            ({ icon: Icon, title, description, iconClasses, nodeId }) => (
-              <div
-                key={title}
-                className="relative rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6 dark:bg-white/[0.06]"
-              >
-                <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
-                  {nodeId}
-                </span>
-
+            ({ icon: Icon, title, description, iconClasses, nodeId }) => {
+              const accent = iconClasses.includes("secondary")
+                ? "text-secondary"
+                : "text-primary";
+              return (
                 <div
-                  className={`mb-3 flex size-9 items-center justify-center rounded-lg sm:mb-4 sm:size-10 ${iconClasses}`}
+                  key={title}
+                  className="group relative overflow-hidden rounded-lg border border-border/70 bg-foreground/[0.015] p-5 transition-colors hover:border-primary/40 sm:p-6 dark:bg-white/[0.02] dark:hover:bg-white/[0.035]"
                 >
-                  <Icon className="size-4 sm:size-5" />
+                  <span className="absolute top-4 right-4 font-mono text-[10px] text-muted-foreground/35 tracking-wider">
+                    {nodeId}
+                  </span>
+                  <Icon className={`size-5 ${accent}`} strokeWidth={1.6} />
+                  <h3 className="mt-4 font-medium text-base text-foreground sm:text-lg dark:text-white">
+                    {title}
+                  </h3>
+                  <p className="mt-1.5 text-muted-foreground text-sm leading-relaxed">
+                    {description}
+                  </p>
+                  {/* hover underline accent */}
+                  <span
+                    className={`absolute bottom-0 left-0 h-px w-0 transition-all duration-300 group-hover:w-full ${accent.replace("text-", "bg-")}`}
+                  />
                 </div>
-                <h3 className="font-semibold text-base text-foreground sm:text-lg dark:text-white">
-                  {title}
-                </h3>
-                <p className="mt-1.5 text-muted-foreground text-xs leading-relaxed sm:mt-2 sm:text-sm">
-                  {description}
-                </p>
-              </div>
-            ),
+              );
+            },
           )}
 
           {/* Routing diagram (node_05) */}
-          <div className="relative flex flex-col items-center rounded-xl border border-border bg-card/80 p-5 backdrop-blur-sm sm:p-6 dark:bg-white/[0.06]">
+          <div className="group relative flex flex-col items-center overflow-hidden rounded-lg border border-border/70 bg-foreground/[0.015] p-5 transition-colors hover:border-primary/40 sm:p-6 dark:bg-white/[0.02] dark:hover:bg-white/[0.035]">
             <span className="absolute top-3 right-3 font-mono text-[10px] text-muted-foreground/40 tracking-wider sm:top-4 sm:right-4">
               node_05
             </span>
@@ -374,10 +411,11 @@ const LandingHybrid: FC = () => {
               -- with built-in fallback chains
             </p>
             <RoutingDiagram />
+            <span className="absolute bottom-0 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
           </div>
 
           {/* Code snippet (node_06) */}
-          <div className="relative self-start overflow-hidden rounded-xl border border-border bg-card/80 backdrop-blur-sm dark:bg-white/[0.06]">
+          <div className="group relative self-start overflow-hidden rounded-lg border border-border/70 bg-foreground/[0.015] transition-colors hover:border-secondary/40 dark:bg-white/[0.02] dark:hover:bg-white/[0.035]">
             <div className="flex items-center gap-2 border-border border-b px-4 py-2 sm:px-5 sm:py-2.5">
               <div className="size-2 rounded-full bg-primary/20 sm:size-2.5" />
               <div className="size-2 rounded-full bg-secondary/20 sm:size-2.5" />
@@ -431,18 +469,19 @@ const LandingHybrid: FC = () => {
               </div>
               <div className="text-muted-foreground">{"}"}</div>
             </pre>
+            <span className="absolute bottom-0 left-0 h-px w-0 bg-secondary transition-all duration-300 group-hover:w-full" />
           </div>
         </div>
       </section>
 
       {/* Bottom CTA */}
       <section className="flex flex-col items-center px-4 pb-16 text-center sm:pb-20 lg:pb-24">
-        <h2 className="font-bold text-shimmer text-xl sm:text-2xl lg:text-3xl">
-          Ready to unify your AI stack?
+        <h2 className="font-bold font-display text-3xl text-foreground tracking-tight sm:text-4xl lg:text-5xl dark:text-white">
+          Point your SDK at Synapse.
         </h2>
-        <p className="mt-2 max-w-sm text-muted-foreground text-xs sm:mt-3 sm:max-w-md sm:text-sm">
-          Start routing requests through Synapse in minutes. Free tier included,
-          no credit card required
+        <p className="mt-3 max-w-md text-muted-foreground text-sm">
+          Keep your OpenAI or Anthropic client, change the base URL, and get
+          routing, failover, and metering for free.
         </p>
         <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-6 sm:gap-3">
           <InternalLink to="/dashboard" variant="unstyled">
