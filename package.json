@@ -9,7 +9,7 @@
     "url": "https://github.com/omnidotdev/synapse-app.git"
   },
   "type": "module",
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.3",
   "scripts": {
     "dev": "concurrently --kill-others --names \"GRAPHQL-CODEGEN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run graphql:generate:watch\" \"vite dev\"",
     "build": "vite build",
@@ -31,7 +31,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.5.15",
     "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
     "@faker-js/faker": "^10.6.0",
@@ -82,11 +82,11 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/nitro-v2-vite-plugin": "1.155.2",
     "@tanstack/react-query": "^5.103.1",
-    "@tanstack/react-router": "1.170.38",
+    "@tanstack/react-router": "1.170.41",
     "@tanstack/react-router-ssr-query": "1.167.3",
-    "@tanstack/react-start": "1.168.56",
+    "@tanstack/react-start": "1.168.60",
     "@tanstack/react-table": "8.21.3",
-    "better-auth": "1.7.5",
+    "better-auth": "1.7.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
