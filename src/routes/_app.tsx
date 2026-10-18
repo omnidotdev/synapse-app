@@ -5,11 +5,11 @@ import {
   useRouteContext,
 } from "@tanstack/react-router";
 
-import { OrganizationProvider } from "@/lib/context/organization.context";
+import { WorkspaceProvider } from "@/lib/context/workspace.context";
 import { EventsProvider } from "@/providers/EventsProvider";
 import { signOutLocal } from "@/server/functions/auth";
 
-import type { Organization } from "@/lib/context/organization.context";
+import type { Workspace } from "@/lib/context/workspace.context";
 
 // Noop provider for client-side (main @omnidotdev/providers entry requires Node.js)
 const eventsProvider = {
@@ -40,14 +40,14 @@ export const Route = createFileRoute("/_app")({
  */
 function AuthLayout() {
   const { organizations } = useRouteContext({ strict: false }) as {
-    organizations?: Organization[];
+    organizations?: Workspace[];
   };
 
   return (
-    <OrganizationProvider organizations={organizations ?? []}>
+    <WorkspaceProvider workspaces={organizations ?? []}>
       <EventsProvider provider={eventsProvider}>
         <Outlet />
       </EventsProvider>
-    </OrganizationProvider>
+    </WorkspaceProvider>
   );
 }

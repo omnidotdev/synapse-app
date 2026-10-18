@@ -7,9 +7,9 @@ import { Button } from "@omnidotdev/thornberry/button";
 import { Link, createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { Users } from "lucide-react";
 
-import CreateOrganizationButton from "@/components/organizations/CreateOrganizationButton";
+import CreateWorkspaceButton from "@/components/workspace/CreateWorkspaceButton";
 import authClient from "@/lib/auth/authClient";
-import { useOrganization } from "@/lib/context";
+import { useWorkspace } from "@/lib/context";
 import { signOutLocal } from "@/server/functions/auth";
 
 export const Route = createFileRoute("/_app/organizations/")({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_app/organizations/")({
  * Shows all organizations the user is a member of.
  */
 function OrganizationsPage() {
-  const { organizations } = useOrganization();
+  const { workspaces } = useWorkspace();
   // A degraded session (refresh-token grant failed) is authenticated but has no
   // access token, so organizations came back empty. Without a signal it renders
   // identically to a genuinely organization-less user; distinguish it so the
@@ -35,11 +35,11 @@ function OrganizationsPage() {
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="font-bold text-2xl">Workspaces</h1>
 
-        {organizations.length > 0 && <CreateOrganizationButton />}
+        {workspaces.length > 0 && <CreateWorkspaceButton />}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {organizations.map((org) => (
+        {workspaces.map((org) => (
           <Link
             key={org.id}
             to="/@{$workspaceSlug}"
@@ -74,7 +74,7 @@ function OrganizationsPage() {
         ))}
       </div>
 
-      {organizations.length === 0 &&
+      {workspaces.length === 0 &&
         (authDegraded ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center">
             <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -113,7 +113,7 @@ function OrganizationsPage() {
             <p className="text-muted-foreground text-sm">
               No workspaces yet. Create one to get started.
             </p>
-            <CreateOrganizationButton />
+            <CreateWorkspaceButton />
           </div>
         ))}
     </div>

@@ -8,7 +8,7 @@ import {
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
-import { useOrganization } from "@/lib/context";
+import { useWorkspace } from "@/lib/context";
 import {
   formatFeatureKey,
   formatFeatureValue,
@@ -60,12 +60,12 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/billing")({
  */
 function WorkspaceBillingPage() {
   const { workspaceSlug } = Route.useParams();
-  const { organizations } = useOrganization();
+  const { workspaces } = useWorkspace();
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
 
   const tier = getTierFromEntitlements(entitlements);
-  const org = organizations.find((o) => o.slug === workspaceSlug);
+  const org = workspaces.find((o) => o.slug === workspaceSlug);
 
   if (!org) return null;
 

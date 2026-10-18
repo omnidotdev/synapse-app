@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { useOrgPermissions, useOrganization } from "@/lib/context";
+import { useOrgPermissions, useWorkspace } from "@/lib/context";
 import {
   deleteOrganization,
   updateOrganization,
@@ -22,10 +22,10 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/settings")({
  */
 function WorkspaceSettingsPage() {
   const { workspaceSlug } = Route.useParams();
-  const { organizations } = useOrganization();
+  const { workspaces } = useWorkspace();
   const navigate = useNavigate();
 
-  const org = organizations.find((o) => o.slug === workspaceSlug);
+  const org = workspaces.find((o) => o.slug === workspaceSlug);
   const isPersonal = org?.type === "personal";
   const isOwner = org?.roles.includes("owner") ?? false;
   const {

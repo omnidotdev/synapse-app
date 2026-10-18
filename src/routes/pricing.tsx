@@ -32,7 +32,7 @@ import { getOrgSubscription } from "@/server/functions/subscriptions";
 
 import type { Subscription } from "@omnidotdev/providers/billing";
 import type { Price } from "@/components/pricing";
-import type { Organization } from "@/lib/context/organization.context";
+import type { Workspace } from "@/lib/context/workspace.context";
 
 const searchSchema = z.object({
   tier: z
@@ -154,7 +154,7 @@ const TeamTierCard = ({
   teamPrice: Price | null;
   interval: "month" | "year";
   orgSubscriptions: Record<string, Subscription | null>;
-  organizations: Organization[];
+  organizations: Workspace[];
 }) => {
   const isCurrentPlan = tier === "Team";
 

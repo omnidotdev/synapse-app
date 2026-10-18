@@ -35,14 +35,14 @@ import cn from "@/lib/utils";
 import { createCheckoutWithWorkspace } from "@/server/functions/subscriptions";
 
 import type { Price, Subscription } from "@omnidotdev/providers/billing";
-import type { Organization } from "@/lib/context/organization.context";
+import type { Workspace } from "@/lib/context/workspace.context";
 
 export type { Price };
 
 type Props = {
   price: Price;
   orgSubscriptions?: Record<string, Subscription | null>;
-  organizations?: Organization[];
+  organizations?: Workspace[];
 };
 
 // Synapse tier hierarchy for upgrade logic
