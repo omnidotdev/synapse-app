@@ -1,3 +1,4 @@
+import { accountUrl } from "@omnidotdev/providers/react";
 import {
   CardContent,
   CardDescription,
@@ -10,6 +11,7 @@ import { Loader2Icon } from "lucide-react";
 
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { RouteErrorFallback } from "@/components/layout";
+import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
 import { fetchSession } from "@/server/functions/auth";
@@ -25,6 +27,8 @@ const ProfilePage = () => {
     Route.useLoaderData();
 
   const tier = getTierFromEntitlements(entitlements);
+
+  const manageAccountUrl = accountUrl(ACCOUNT_URL);
 
   return (
     <div className="mx-auto flex h-full max-w-7xl flex-col text-pretty px-4 py-8 text-center sm:text-start">
@@ -71,16 +75,18 @@ const ProfilePage = () => {
                 </span>
               </div>
             )}
-            <div className="pt-2">
-              <a
-                href="https://identity.omni.dev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary text-sm hover:underline"
-              >
-                Manage Account
-              </a>
-            </div>
+            {manageAccountUrl && (
+              <div className="pt-2">
+                <a
+                  href={manageAccountUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary text-sm hover:underline"
+                >
+                  Manage Account
+                </a>
+              </div>
+            )}
           </CardContent>
         </CardRoot>
       </div>
