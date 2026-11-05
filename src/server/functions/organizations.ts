@@ -6,49 +6,14 @@ import gatekeeperOrg from "@/lib/config/gatekeeper";
 import { authMiddleware } from "@/server/middleware";
 import { requirePermission } from "./authorization";
 
-export type { GatekeeperOrganization as Organization } from "@omnidotdev/providers/auth";
-
-const createOrganizationSchema = z.object({
-  name: z.string().min(3, "Workspace name must be at least 3 characters"),
-  slug: z.string().optional(),
-});
+// Workspace creation and handle-availability checks are funneled to the account
+// hub (account.omni.dev/workspaces), the single ecosystem surface that owns
+// them, so this app no longer exposes its own create/check server functions.
+// Only the read and management paths below remain.
 
 const getOrganizationBySlugSchema = z.object({
   slug: z.string().min(1),
 });
-
-/**
- * Create a new organization via Gatekeeper
- */
-export const createOrganization = createServerFn({ method: "POST" })
-  .inputValidator((data) => createOrganizationSchema.parse(data))
-  .middleware([authMiddleware])
-  .handler(async ({ data, context }) => {
-    const accessToken = context.session.accessToken;
-
-    if (!accessToken) {
-      throw new Error("No access token available");
-    }
-
-    return gatekeeperOrg.createOrganization(data, accessToken);
-  });
-
-const checkOrganizationHandleSchema = z.object({
-  slug: z.string().min(1),
-});
-
-/**
- * Check whether an organization handle (slug) is available across the ecosystem
- * namespace. Backs live validation in the create-organization form. Public
- * check, so no auth middleware
- */
-export const checkOrganizationHandleAvailability = createServerFn({
-  method: "GET",
-})
-  .inputValidator((data) => checkOrganizationHandleSchema.parse(data))
-  .handler(async ({ data }) => {
-    return gatekeeperOrg.checkNamespaceAvailability(data.slug);
-  });
 
 /**
  * Get an organization by slug.

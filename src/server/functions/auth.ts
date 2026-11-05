@@ -13,12 +13,16 @@ import {
 } from "@/lib/config/env.config";
 
 /**
- * Fetch the current user session.
- * Returns session with user info if authenticated, null otherwise.
+ * Resolve the current session and its organizations.
+ *
+ * `forceRefreshOrgs` bypasses getAuth's in-memory org display cache and
+ * re-hydrates the list live from userinfo, so a workspace created out-of-band
+ * (in the account portal) is reflected immediately instead of after the cache
+ * TTL. The fresh result is written back, so subsequent normal reads benefit too.
  */
-export const fetchSession = createServerFn().handler(async () => {
+const loadSession = async (forceRefreshOrgs = false) => {
   const request = getRequest();
-  const session = await getAuth(request);
+  const session = await getAuth(request, { forceRefreshOrgs });
 
   if (!session) {
     return { session: null, organizations: [], authDegraded: false };
@@ -35,7 +39,22 @@ export const fetchSession = createServerFn().handler(async () => {
     organizations: session.organizations,
     authDegraded: isSessionDegraded(session),
   };
-});
+};
+
+/**
+ * Fetch the current user session.
+ * Returns session with user info if authenticated, null otherwise.
+ */
+export const fetchSession = createServerFn().handler(() => loadSession());
+
+/**
+ * Fetch the session with a live organization re-hydration (bypasses the org
+ * display cache). Used by the workspaces list so a workspace just created in
+ * the account portal appears without waiting out the cache TTL.
+ */
+export const fetchFreshSession = createServerFn().handler(() =>
+  loadSession(true),
+);
 
 const clearAuthCacheCookie = () => {
   setCookie(authCache.cookieName, "", { maxAge: 0, path: "/" });

@@ -1,41 +1,72 @@
+import { workspacesUrl } from "@omnidotdev/providers/react";
 import {
   AvatarFallback,
   AvatarImage,
   AvatarRoot,
 } from "@omnidotdev/thornberry/avatar";
-import { Button } from "@omnidotdev/thornberry/button";
-import { Link, createFileRoute, useRouteContext } from "@tanstack/react-router";
-import { Users } from "lucide-react";
+import { Button, buttonVariants } from "@omnidotdev/thornberry/button";
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
+import { Plus, RefreshCw, Users } from "lucide-react";
 
-import CreateWorkspaceButton from "@/components/workspace/CreateWorkspaceButton";
 import authClient from "@/lib/auth/authClient";
-import { useWorkspace } from "@/lib/context";
-import { signOutLocal } from "@/server/functions/auth";
+import { ACCOUNT_URL } from "@/lib/config/env.config";
+import { fetchFreshSession, signOutLocal } from "@/server/functions/auth";
 
 export const Route = createFileRoute("/_app/organizations/")({
-  component: OrganizationsPage,
+  // Re-hydrate organizations live (bypassing the display cache) so a workspace
+  // just created in the account portal shows on arrival, rather than waiting
+  // out getAuth's org cache TTL. Invalidating the route re-runs this.
+  loader: async () => {
+    const { organizations, authDegraded } = await fetchFreshSession();
+    return { organizations, authDegraded };
+  },
+  component: WorkspacesPage,
 });
 
 /**
- * Organizations list page.
- * Shows all organizations the user is a member of.
+ * Workspaces list page.
+ *
+ * Shows all workspaces the user is a member of. Workspace creation and
+ * management is funneled to the account hub (account.omni.dev/workspaces), the
+ * single ecosystem surface that owns it, so this page lists and links out
+ * rather than embedding its own creation flow.
  */
-function OrganizationsPage() {
-  const { workspaces } = useWorkspace();
-  // A degraded session (refresh-token grant failed) is authenticated but has no
-  // access token, so organizations came back empty. Without a signal it renders
-  // identically to a genuinely organization-less user; distinguish it so the
-  // user gets a re-login prompt instead of a dead-end empty state.
-  const { authDegraded } = useRouteContext({ strict: false }) as {
-    authDegraded?: boolean;
-  };
+function WorkspacesPage() {
+  const router = useRouter();
+  const { organizations: workspaces, authDegraded } = Route.useLoaderData();
+
+  // The account hub owns workspace creation; link out to it. Rendered only when
+  // the hub URL is configured (optional env), so a missing config degrades to
+  // no button rather than a dead link.
+  const newWorkspaceHref = workspacesUrl(ACCOUNT_URL);
+  const NewWorkspaceLink = newWorkspaceHref
+    ? ({ className }: { className?: string }) => (
+        <a href={newWorkspaceHref} className={buttonVariants({ className })}>
+          <Plus className="size-4" />
+          New workspace
+        </a>
+      )
+    : () => null;
 
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="font-bold text-2xl">Workspaces</h1>
 
-        {workspaces.length > 0 && <CreateWorkspaceButton />}
+        {workspaces.length > 0 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Refresh workspaces"
+              title="Refresh workspaces"
+              onClick={() => router.invalidate()}
+            >
+              <RefreshCw className="size-4" />
+            </Button>
+            <NewWorkspaceLink />
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -110,10 +141,22 @@ function OrganizationsPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
-            <p className="text-muted-foreground text-sm">
-              No workspaces yet. Create one to get started.
-            </p>
-            <CreateWorkspaceButton />
+            <div>
+              <h2 className="font-semibold text-lg">No workspaces yet</h2>
+              <p className="mx-auto mt-1 max-w-sm text-muted-foreground text-sm">
+                A workspace is where your projects live. Create one in your Omni
+                account, or explore the plans first.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <NewWorkspaceLink />
+              <Link
+                to="/pricing"
+                className="inline-flex h-9 items-center gap-2 rounded-md border bg-background px-4 font-medium text-sm shadow-xs transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                Explore plans
+              </Link>
+            </div>
           </div>
         ))}
     </div>
