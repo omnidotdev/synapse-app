@@ -13,7 +13,7 @@ const workspaceIdSchema = z.object({
 /**
  * List active API keys scoped to a workspace
  */
-export const listWorkspaceApiKeys = createServerFn()
+export const listWorkspaceApiKeys = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => workspaceIdSchema.parse(data))
   .handler(async ({ data, context }): Promise<ApiKey[]> => {
@@ -51,7 +51,7 @@ const createKeySchema = z.object({
 /**
  * Create a new API key scoped to a workspace
  */
-export const createWorkspaceApiKey = createServerFn()
+export const createWorkspaceApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => createKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<CreateApiKeyResult> => {
@@ -85,7 +85,7 @@ const revokeKeySchema = z.object({
 /**
  * Revoke an API key
  */
-export const revokeWorkspaceApiKey = createServerFn()
+export const revokeWorkspaceApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => revokeKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {

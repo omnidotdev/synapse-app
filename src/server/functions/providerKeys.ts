@@ -20,7 +20,7 @@ interface SetProviderKeyResult {
 /**
  * List provider keys for the current user
  */
-export const listProviderKeys = createServerFn()
+export const listProviderKeys = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<ProviderKey[]> => {
     const { accessToken } = context.session;
@@ -61,7 +61,7 @@ const setKeySchema = z.object({
 /**
  * Set (upsert) a provider key for the current user
  */
-export const setProviderKey = createServerFn()
+export const setProviderKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => setKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<SetProviderKeyResult> => {
@@ -89,7 +89,7 @@ const removeKeySchema = z.object({
 /**
  * Remove a provider key by ID
  */
-export const removeProviderKey = createServerFn()
+export const removeProviderKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => removeKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {

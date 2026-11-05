@@ -34,7 +34,7 @@ interface CreateApiKeyResult {
 /**
  * List active API keys for the current user
  */
-export const listApiKeys = createServerFn()
+export const listApiKeys = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<ApiKey[]> => {
     const { accessToken } = context.session;
@@ -74,7 +74,7 @@ const createKeySchema = z.object({
 /**
  * Create a new API key
  */
-export const createApiKey = createServerFn()
+export const createApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => createKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<CreateApiKeyResult> => {
@@ -103,7 +103,7 @@ const linkProviderSchema = z.object({
 /**
  * Link a provider key to a Synapse API key
  */
-export const linkProviderKey = createServerFn()
+export const linkProviderKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => linkProviderSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
@@ -123,7 +123,7 @@ export const linkProviderKey = createServerFn()
 /**
  * Unlink a provider key from a Synapse API key
  */
-export const unlinkProviderKey = createServerFn()
+export const unlinkProviderKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => linkProviderSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
@@ -147,7 +147,7 @@ const revokeKeySchema = z.object({
 /**
  * Revoke an API key
  */
-export const revokeApiKey = createServerFn()
+export const revokeApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => revokeKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {

@@ -72,7 +72,7 @@ const batchCheckSchema = z.object({ checks: z.array(checkSchema) });
  * Returns true if authz is not configured (graceful degradation).
  * @knipignore
  */
-export const checkPermission = createServerFn()
+export const checkPermission = createServerFn({ method: "POST" })
   .inputValidator((data) => checkSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<boolean> => {
@@ -93,7 +93,7 @@ export const checkPermission = createServerFn()
  * Returns an array of booleans corresponding to each check.
  * All return true if authz is not configured.
  */
-export const batchCheckPermissions = createServerFn()
+export const batchCheckPermissions = createServerFn({ method: "POST" })
   .inputValidator((data) => batchCheckSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<boolean[]> => {

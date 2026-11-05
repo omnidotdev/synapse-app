@@ -19,7 +19,7 @@ const getOrganizationBySlugSchema = z.object({
  * Get an organization by slug.
  * Used when JWT claims are stale and don't include a newly created org
  */
-export const getOrganizationBySlug = createServerFn({ method: "GET" })
+export const getOrganizationBySlug = createServerFn({ method: "POST" })
   .inputValidator((data) => getOrganizationBySlugSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }) => {
@@ -36,7 +36,7 @@ export const getOrganizationBySlug = createServerFn({ method: "GET" })
  * Fetch an organization by slug without authentication.
  * Used for public board access when no JWT is available
  */
-export const fetchOrganizationBySlug = createServerFn()
+export const fetchOrganizationBySlug = createServerFn({ method: "POST" })
   .inputValidator((data) => getOrganizationBySlugSchema.parse(data))
   .handler(async ({ data }) => {
     try {
@@ -56,7 +56,7 @@ const updateOrgSchema = z.object({
 /**
  * Update organization details via Better Auth
  */
-export const updateOrganization = createServerFn()
+export const updateOrganization = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => updateOrgSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
@@ -97,7 +97,7 @@ export const updateOrganization = createServerFn()
 /**
  * Delete an organization via Better Auth
  */
-export const deleteOrganization = createServerFn()
+export const deleteOrganization = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) =>
     z.object({ organizationId: z.string().min(1) }).parse(data),

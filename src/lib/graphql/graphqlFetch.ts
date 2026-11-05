@@ -8,7 +8,7 @@ import { authMiddleware } from "@/server/middleware";
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import type { Variables } from "graphql-request";
 
-const getAccessToken = createServerFn()
+const getAccessToken = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => context.session.accessToken);
 
