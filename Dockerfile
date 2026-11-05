@@ -34,4 +34,5 @@ COPY --from=builder --chown=synapse:synapse /app/.output ./.output
 
 USER synapse
 EXPOSE 3000
-CMD ["node", ".output/server/index.mjs"]
+# Raise the max request-header size (default 16KB) so large many-workspace auth cookies do not trip HTTP 431
+CMD ["node", "--max-http-header-size=65536", ".output/server/index.mjs"]

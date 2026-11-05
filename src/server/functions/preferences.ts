@@ -53,7 +53,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 /**
  * Fetch user preferences
  */
-export const getUserPreferences = createServerFn()
+export const getUserPreferences = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<UserPreferences> => {
     const { accessToken } = context.session;
@@ -90,7 +90,7 @@ const updateSchema = z.object({
 /**
  * Update user preferences
  */
-export const updateUserPreferences = createServerFn()
+export const updateUserPreferences = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => updateSchema.parse(data))
   .handler(async ({ data, context }): Promise<UserPreferences> => {

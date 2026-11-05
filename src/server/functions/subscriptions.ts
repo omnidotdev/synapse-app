@@ -52,7 +52,7 @@ const requireAccessToken = (accessToken: string | undefined): string => {
 /**
  * Get subscription details for an entity.
  */
-export const getSubscription = createServerFn()
+export const getSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
@@ -186,7 +186,7 @@ export const renewSubscription = createServerFn({ method: "POST" })
 /**
  * Get subscription for an organization.
  */
-export const getOrgSubscription = createServerFn()
+export const getOrgSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => organizationSchema.parse(data))
   .handler(async ({ data, context }) => {

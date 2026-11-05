@@ -37,7 +37,7 @@ const dateRangeSchema = z.object({
 /**
  * Fetch usage breakdown with model and daily aggregation
  */
-export const getUsageBreakdown = createServerFn()
+export const getUsageBreakdown = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => dateRangeSchema.parse(data))
   .handler(async ({ data, context }): Promise<UsageBreakdown> => {

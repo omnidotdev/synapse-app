@@ -39,7 +39,7 @@ const findMeter = (meters: UsageMeter[], key: string) =>
 /**
  * Fetch usage summary with named meter values.
  */
-export const getUsageSummary = createServerFn()
+export const getUsageSummary = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => entitySchema.parse(data))
   .handler(async ({ data, context }): Promise<UsageSummary> => {

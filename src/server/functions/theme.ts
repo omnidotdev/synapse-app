@@ -7,12 +7,14 @@ const storageKey = "_preferred-theme";
 
 export type Theme = z.infer<typeof postThemeValidator>;
 
-export const getThemeServerFn = createServerFn().handler(async () => {
-  const raw = getCookie(storageKey);
-  const parsed = postThemeValidator.safeParse(raw);
+export const getThemeServerFn = createServerFn({ method: "POST" }).handler(
+  async () => {
+    const raw = getCookie(storageKey);
+    const parsed = postThemeValidator.safeParse(raw);
 
-  return parsed.success ? parsed.data : "light";
-});
+    return parsed.success ? parsed.data : "light";
+  },
+);
 
 export const setThemeServerFn = createServerFn({ method: "POST" })
   .inputValidator(postThemeValidator)
