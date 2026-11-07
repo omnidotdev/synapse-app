@@ -26,7 +26,7 @@ describe("pricing config", () => {
   test("overage rates match SSOT", () => {
     expect(pricing.free.overageRatePer1k).toBe(0);
     expect(pricing.pro.overageRatePer1k).toBe(20);
-    expect(pricing.team.overageRatePer1k).toBe(0);
+    expect(pricing.team.overageRatePer1k).toBe(10);
   });
 
   test("yearly prices are less than 12x monthly", () => {

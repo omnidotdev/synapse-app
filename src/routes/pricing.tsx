@@ -64,7 +64,7 @@ const FREE_PRICE: Price = {
 };
 
 const TEAM_FEATURES = [
-  { name: "Unlimited requests" },
+  { name: "1M requests/mo, then $0.10 per 1K" },
   { name: "Pay-as-you-go managed credits (15% margin)" },
   { name: "Unlimited API keys" },
   { name: "Smart routing (cost, quality, latency)" },

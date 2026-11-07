@@ -18,7 +18,7 @@ const pricing = {
   team: {
     monthlyPrice: 7900,
     yearlyPrice: 75800,
-    overageRatePer1k: 0,
+    overageRatePer1k: 10,
   },
 } as const;
 
