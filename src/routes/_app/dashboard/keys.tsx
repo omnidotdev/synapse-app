@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { RouteErrorFallback } from "@/components/layout";
 import createMetaTags from "@/lib/util/createMetaTags";
 import getMaxApiKeys from "@/lib/util/getMaxApiKeys";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import {
   createApiKey,
   linkProviderKey,
@@ -49,15 +50,14 @@ export const Route = createFileRoute("/_app/dashboard/keys")({
   }),
   errorComponent: RouteErrorFallback,
   loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+    const { session, organizations } = await fetchSession();
+    const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+    if (!session?.user.identityProviderId || !personalWorkspaceId) {
       return { entitlements: null };
     }
+    // The key limit is the personal workspace's, which these keys belong to
     const entitlements = await getEntitlements({
-      data: {
-        entityType: "user",
-        entityId: session.user.identityProviderId,
-      },
+      data: { entityType: "organization", entityId: personalWorkspaceId },
     }).catch(() => null);
     return { entitlements };
   },

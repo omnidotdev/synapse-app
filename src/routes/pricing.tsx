@@ -25,6 +25,7 @@ import { hasBilling } from "@/lib/config/env.config";
 import pricing from "@/lib/config/pricing.config";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getPrices } from "@/server/functions/prices";
@@ -348,13 +349,13 @@ export const Route = createFileRoute("/pricing")({
 
     const { session, organizations } = sessionData;
 
+    // The current plan is the personal workspace's, which Synapse checkout
+    // subscribes for a personal purchase
     let tier: string | null = null;
-    if (session?.user.identityProviderId) {
+    const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+    if (session?.user.identityProviderId && personalWorkspaceId) {
       const entitlements = await getEntitlements({
-        data: {
-          entityType: "user",
-          entityId: session.user.identityProviderId,
-        },
+        data: { entityType: "organization", entityId: personalWorkspaceId },
       }).catch(() => null);
 
       tier = getTierFromEntitlements(entitlements);

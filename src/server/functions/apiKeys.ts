@@ -32,20 +32,34 @@ interface CreateApiKeyResult {
 }
 
 /**
- * List active API keys for the current user
+ * The caller's personal workspace id: the default home (and billing entity)
+ * for keys created outside a team workspace
+ */
+const personalWorkspaceId = (
+  organizations: { id: string; type?: string }[],
+): string | null =>
+  organizations.find((org) => org.type === "personal")?.id ?? null;
+
+/**
+ * List the active API keys in the current user's personal workspace
  */
 export const listApiKeys = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<ApiKey[]> => {
     const { accessToken } = context.session;
+    const organizationId = personalWorkspaceId(context.organizations);
+
+    if (!organizationId) {
+      throw new Error("Sign in again to load your workspace");
+    }
 
     const data = await graphql<{
       observer: { apiKeys: ApiKey[] };
     }>(
       accessToken,
-      `query {
+      `query PersonalApiKeys($organizationId: UUID!) {
         observer {
-          apiKeys {
+          apiKeys(organizationId: $organizationId) {
             id
             name
             keyHint
@@ -62,6 +76,7 @@ export const listApiKeys = createServerFn({ method: "POST" })
           }
         }
       }`,
+      { organizationId },
     );
 
     return data.observer?.apiKeys ?? [];
@@ -72,13 +87,19 @@ const createKeySchema = z.object({
 });
 
 /**
- * Create a new API key
+ * Create a new API key in the current user's personal workspace, which it
+ * then bills
  */
 export const createApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => createKeySchema.parse(data))
   .handler(async ({ data, context }): Promise<CreateApiKeyResult> => {
     const { accessToken } = context.session;
+    const organizationId = personalWorkspaceId(context.organizations);
+
+    if (!organizationId) {
+      throw new Error("Sign in again to load your workspace");
+    }
 
     const result = await graphql<{ generateApiKey: CreateApiKeyResult }>(
       accessToken,
@@ -89,7 +110,7 @@ export const createApiKey = createServerFn({ method: "POST" })
           keyHint
         }
       }`,
-      { input: { name: data.name, mode: "byok" } },
+      { input: { name: data.name, mode: "byok", organizationId } },
     );
 
     return result.generateApiKey;

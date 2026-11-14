@@ -1,6 +1,10 @@
 import { createAuthzProvider } from "@omnidotdev/providers/authz";
 
-import { AUTHZ_API_URL, AUTHZ_ENABLED } from "@/lib/config/env.config";
+import {
+  AUTHZ_API_URL,
+  AUTHZ_ENABLED,
+  AUTHZ_SERVICE_KEY,
+} from "@/lib/config/env.config";
 
 import type { AuthzProvider } from "@omnidotdev/providers/authz";
 
@@ -15,7 +19,11 @@ const getAuthz = (): AuthzProvider | null => {
     return null;
   }
 
-  instance = createAuthzProvider({ apiUrl: AUTHZ_API_URL });
+  // The PDP authenticates every check with the service key
+  instance = createAuthzProvider({
+    apiUrl: AUTHZ_API_URL,
+    serviceKey: AUTHZ_SERVICE_KEY,
+  });
   return instance;
 };
 

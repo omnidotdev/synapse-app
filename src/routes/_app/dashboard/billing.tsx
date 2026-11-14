@@ -7,6 +7,7 @@ import {
 } from "@omnidotdev/thornberry/card";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import SpendingLimitCard from "@/components/dashboard/SpendingLimitCard";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import {
@@ -15,6 +16,7 @@ import {
   getTierFromEntitlements,
 } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -28,18 +30,20 @@ export const Route = createFileRoute("/_app/dashboard/billing")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+    const { session, organizations } = await fetchSession();
+    const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+    if (!session?.user.identityProviderId || !personalWorkspaceId) {
       return {
         subscription: null,
         entitlements: null,
-        entityType: "user",
+        entityType: "organization",
         entityId: "",
       };
     }
 
-    const entityType = "user";
-    const entityId = session.user.identityProviderId;
+    // Synapse checkout subscribes the personal workspace
+    const entityType = "organization";
+    const entityId = personalWorkspaceId;
 
     const [subscription, entitlements] = await Promise.all([
       getSubscription({ data: { entityType, entityId } }).catch(() => null),
@@ -90,6 +94,14 @@ function BillingPage() {
           </CardRoot>
         )}
       </div>
+
+      {tier && tier !== "Free" && entityId && (
+        <div className="flex flex-col gap-4">
+          <h2 className="font-semibold text-lg">Spending Limit</h2>
+          {/* The personal workspace's owner is always its admin */}
+          <SpendingLimitCard organizationId={entityId} canEdit />
+        </div>
+      )}
 
       {entitlements?.entitlements && entitlements.entitlements.length > 0 && (
         <div className="flex flex-col gap-4">

@@ -6,7 +6,7 @@ import {
   BILLING_SERVICE_API_KEY,
 } from "@/lib/config/env.config";
 import { authMiddleware } from "@/server/middleware";
-import { requirePermission } from "./authorization";
+import { requireEntityAccess } from "./authorization";
 
 const entitySchema = z.object({
   entityType: z.enum(["user", "organization"]),
@@ -44,14 +44,12 @@ export const getUsageSummary = createServerFn({ method: "POST" })
   .inputValidator((data) => entitySchema.parse(data))
   .handler(async ({ data, context }): Promise<UsageSummary> => {
     // Enforce viewer permission for org/workspace-scoped usage
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "member",
-      );
-    }
+    await requireEntityAccess(
+      context,
+      data.entityType,
+      data.entityId,
+      "member",
+    );
 
     if (!BILLING_BASE_URL) {
       return {

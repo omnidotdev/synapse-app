@@ -57,14 +57,18 @@ const daysAgo = (n: number) => {
 };
 
 export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/usage")({
-  loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+  loader: async ({ params }) => {
+    const { session, organizations } = await fetchSession();
+    const workspace = organizations.find(
+      (org) => org.slug === params.workspaceSlug,
+    );
+    if (!session?.user.identityProviderId || !workspace) {
       return { usage: null, entitlements: null };
     }
 
-    const entityType = "user";
-    const entityId = session.user.identityProviderId;
+    // Usage is metered against the workspace its keys bill
+    const entityType = "organization";
+    const entityId = workspace.id;
 
     const [usage, entitlements] = await Promise.all([
       getUsageSummary({

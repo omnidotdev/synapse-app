@@ -7,6 +7,7 @@ import {
 } from "@omnidotdev/thornberry/card";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
+import SpendingLimitCard from "@/components/dashboard/SpendingLimitCard";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { useWorkspace } from "@/lib/context";
 import {
@@ -55,6 +56,9 @@ export const Route = createFileRoute("/_app/@{$workspaceSlug}/~/billing")({
   component: WorkspaceBillingPage,
 });
 
+/** Workspace roles that may change billing settings (UX only; enforced server-side) */
+const ADMIN_ROLES = new Set(["owner", "admin"]);
+
 /**
  * Workspace billing page.
  */
@@ -101,6 +105,16 @@ function WorkspaceBillingPage() {
           </CardRoot>
         )}
       </div>
+
+      {tier && tier !== "Free" && (
+        <div className="flex flex-col gap-4">
+          <h2 className="font-semibold text-lg">Spending Limit</h2>
+          <SpendingLimitCard
+            organizationId={entityId}
+            canEdit={org.roles.some((role) => ADMIN_ROLES.has(role))}
+          />
+        </div>
+      )}
 
       {entitlements?.entitlements && entitlements.entitlements.length > 0 && (
         <div className="flex flex-col gap-4">

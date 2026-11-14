@@ -4,7 +4,7 @@ import { z } from "zod";
 import { AUTH_BASE_URL } from "@/lib/config/env.config";
 import gatekeeperOrg from "@/lib/config/gatekeeper";
 import { authMiddleware } from "@/server/middleware";
-import { requirePermission } from "./authorization";
+import { requirePermission, wardenSubject } from "./authorization";
 
 // Workspace creation and handle-availability checks are funneled to the account
 // hub (account.omni.dev/workspaces), the single ecosystem surface that owns
@@ -61,7 +61,7 @@ export const updateOrganization = createServerFn({ method: "POST" })
   .inputValidator((data) => updateOrgSchema.parse(data))
   .handler(async ({ data, context }): Promise<boolean> => {
     await requirePermission(
-      context.session.user.id,
+      wardenSubject(context.session),
       "organization",
       data.organizationId,
       "admin",
@@ -104,7 +104,7 @@ export const deleteOrganization = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }): Promise<boolean> => {
     await requirePermission(
-      context.session.user.id,
+      wardenSubject(context.session),
       "organization",
       data.organizationId,
       "admin",
