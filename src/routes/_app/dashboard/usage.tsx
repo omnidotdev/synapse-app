@@ -23,6 +23,7 @@ import UsageProgress from "@/components/dashboard/UsageProgress";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import createMetaTags from "@/lib/util/createMetaTags";
 import getAnalyticsRetentionDays from "@/lib/util/getAnalyticsRetentionDays";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getUsageSummary } from "@/server/functions/usage";
@@ -64,13 +65,14 @@ export const Route = createFileRoute("/_app/dashboard/usage")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+    const { session, organizations } = await fetchSession();
+    const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+    if (!session?.user.identityProviderId || !personalWorkspaceId) {
       return { usage: null, entitlements: null };
     }
 
-    const entityType = "user";
-    const entityId = session.user.identityProviderId;
+    const entityType = "organization";
+    const entityId = personalWorkspaceId;
 
     const [usage, entitlements] = await Promise.all([
       getUsageSummary({

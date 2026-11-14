@@ -14,6 +14,7 @@ import { RouteErrorFallback } from "@/components/layout";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
 import { getSubscription } from "@/server/functions/subscriptions";
@@ -144,18 +145,20 @@ export const Route = createFileRoute("/_app/profile")({
   pendingComponent: ProfilePending,
   loader: async () => {
     try {
-      const { session } = await fetchSession();
-      if (!session?.user.identityProviderId) {
+      const { session, organizations } = await fetchSession();
+      const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+      if (!session?.user.identityProviderId || !personalWorkspaceId) {
         return {
           subscription: null,
           entitlements: null,
-          entityType: "user" as const,
+          entityType: "organization" as const,
           entityId: "",
         };
       }
 
-      const entityType = "user" as const;
-      const entityId = session.user.identityProviderId;
+      // Synapse checkout subscribes the personal workspace
+      const entityType = "organization" as const;
+      const entityId = personalWorkspaceId;
 
       const [subscription, entitlements] = await Promise.all([
         getSubscription({ data: { entityType, entityId } }).catch(() => null),
@@ -167,7 +170,7 @@ export const Route = createFileRoute("/_app/profile")({
       return {
         subscription: null,
         entitlements: null,
-        entityType: "user" as const,
+        entityType: "organization" as const,
         entityId: "",
       };
     }

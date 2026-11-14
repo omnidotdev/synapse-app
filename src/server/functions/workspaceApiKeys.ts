@@ -11,7 +11,7 @@ const workspaceIdSchema = z.object({
 });
 
 /**
- * List active API keys scoped to a workspace
+ * List the active API keys that belong to a workspace (every member's)
  */
 export const listWorkspaceApiKeys = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -23,9 +23,9 @@ export const listWorkspaceApiKeys = createServerFn({ method: "POST" })
       observer: { apiKeys: ApiKey[] };
     }>(
       accessToken,
-      `query WorkspaceApiKeys($workspaceId: UUID!) {
+      `query WorkspaceApiKeys($organizationId: UUID!) {
         observer {
-          apiKeys(workspaceId: $workspaceId) {
+          apiKeys(organizationId: $organizationId) {
             id
             name
             keyHint
@@ -37,7 +37,7 @@ export const listWorkspaceApiKeys = createServerFn({ method: "POST" })
           }
         }
       }`,
-      { workspaceId: data.workspaceId },
+      { organizationId: data.workspaceId },
     );
 
     return result.observer?.apiKeys ?? [];
@@ -49,7 +49,7 @@ const createKeySchema = z.object({
 });
 
 /**
- * Create a new API key scoped to a workspace
+ * Create a new API key in a workspace, which it then bills
  */
 export const createWorkspaceApiKey = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -70,7 +70,7 @@ export const createWorkspaceApiKey = createServerFn({ method: "POST" })
         input: {
           name: data.name,
           mode: "byok",
-          workspaceId: data.workspaceId,
+          organizationId: data.workspaceId,
         },
       },
     );

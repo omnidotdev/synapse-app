@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import getBilling from "@/lib/providers/billing";
 import { authMiddleware } from "@/server/middleware";
-import { requirePermission } from "./authorization";
+import { requireEntityAccess } from "./authorization";
 
 import type { EntitlementsResponse } from "@omnidotdev/providers/billing";
 
@@ -27,14 +27,12 @@ export const getEntitlements = createServerFn({ method: "POST" })
   .inputValidator((data) => entitySchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<EntitlementsResponse | null> => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "member",
-      );
-    }
+    await requireEntityAccess(
+      context,
+      data.entityType,
+      data.entityId,
+      "member",
+    );
 
     return getBilling().getEntitlements(
       data.entityType,
@@ -52,14 +50,12 @@ export const checkEntitlement = createServerFn({ method: "POST" })
   .inputValidator((data) => checkEntitlementSchema.parse(data))
   .middleware([authMiddleware])
   .handler(async ({ data, context }): Promise<string | null> => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "member",
-      );
-    }
+    await requireEntityAccess(
+      context,
+      data.entityType,
+      data.entityId,
+      "member",
+    );
 
     return getBilling().checkEntitlement(
       data.entityType,

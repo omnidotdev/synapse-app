@@ -12,6 +12,64 @@ import type {
 } from "@omnidotdev/providers";
 
 /**
+ * The Warden subject for a session: the identity provider (Gatekeeper) user
+ * id, which is what Warden keys organization roles by. The Better Auth
+ * `user.id` is this app's own local id, which Warden never recognizes, so a
+ * check against it always denies
+ */
+export const wardenSubject = (session: {
+  user: { identityProviderId?: string | null };
+}): string => {
+  const subject = session.user.identityProviderId;
+
+  if (!subject) {
+    throw new Error("Forbidden: sign in again to verify your workspace access");
+  }
+
+  return subject;
+};
+
+/** The slice of the server-function context an entity access check reads */
+interface AccessContext {
+  session: { user: { identityProviderId?: string | null } };
+  organizations: { id: string; type?: string }[];
+}
+
+/**
+ * Enforce that the caller may act on a billing entity, server-side. Throws if
+ * denied.
+ *
+ * - `user`: only the caller themselves
+ * - `organization`: the caller's own personal workspace (from the verified
+ *   session claims; it is the workspace-level twin of the user entity), or any
+ *   other workspace where Warden grants `permission`
+ */
+export const requireEntityAccess = async (
+  context: AccessContext,
+  entityType: "user" | "organization",
+  entityId: string,
+  permission: WardenRelation<"organization">,
+): Promise<void> => {
+  const subject = wardenSubject(context.session);
+
+  if (entityType === "user") {
+    if (entityId !== subject) {
+      throw new Error("Forbidden: not your account");
+    }
+
+    return;
+  }
+
+  const personalWorkspace = context.organizations.find(
+    (org) => org.type === "personal",
+  );
+
+  if (personalWorkspace?.id === entityId) return;
+
+  await requirePermission(subject, "organization", entityId, permission);
+};
+
+/**
  * Enforce a permission check server-side. Throws if denied.
  * No-ops gracefully if authz is not configured.
  */
@@ -80,7 +138,7 @@ export const checkPermission = createServerFn({ method: "POST" })
     if (!authz) return true;
 
     return authz.checkPermission(
-      context.session.user.id,
+      wardenSubject(context.session),
       data.resourceType,
       data.resourceId,
       // validated against the resource type by checkSchema's refine
@@ -100,11 +158,13 @@ export const batchCheckPermissions = createServerFn({ method: "POST" })
     const authz = getAuthz();
     if (!authz) return data.checks.map(() => true);
 
+    const userId = wardenSubject(context.session);
+
     // permission validated against the resource type by checkSchema's refine
     const checks = data.checks.map(
       (check): PermissionCheck =>
         ({
-          userId: context.session.user.id,
+          userId,
           resourceType: check.resourceType,
           resourceId: check.resourceId,
           permission: check.permission,

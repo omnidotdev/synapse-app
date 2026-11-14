@@ -22,6 +22,8 @@ export const {
   // authorization
   VITE_AUTHZ_API_URL: AUTHZ_API_URL,
   VITE_AUTHZ_ENABLED: AUTHZ_ENABLED,
+  // Warden service key (server-only): the PDP rejects unauthenticated checks
+  AUTHZ_SERVICE_KEY,
   // synapse (server-only, no VITE_ prefix so it reads at runtime, not build time)
   SYNAPSE_API_URL,
 } = env;
@@ -60,6 +62,10 @@ if (typeof window === "undefined") {
     console.warn("BILLING_BASE_URL not set, billing disabled");
   if (!AUTHZ_API_URL)
     console.warn("AUTHZ_API_URL not set, authorization disabled");
+  else if (!AUTHZ_SERVICE_KEY)
+    console.warn(
+      "AUTHZ_SERVICE_KEY not set, workspace permission checks will be denied",
+    );
   if (!SYNAPSE_API_URL)
     console.warn("SYNAPSE_API_URL not set, notifications disabled");
 }

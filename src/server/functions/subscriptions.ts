@@ -5,7 +5,7 @@ import app from "@/lib/config/app.config";
 import { BASE_URL } from "@/lib/config/env.config";
 import getBilling from "@/lib/providers/billing";
 import { authMiddleware } from "@/server/middleware";
-import { requirePermission } from "./authorization";
+import { requireEntityAccess } from "./authorization";
 
 const checkoutSchema = z.object({
   priceId: z.string().startsWith("price_"),
@@ -56,14 +56,12 @@ export const getSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "member",
-      );
-    }
+    await requireEntityAccess(
+      context,
+      data.entityType,
+      data.entityId,
+      "member",
+    );
 
     return getBilling().getSubscription(
       data.entityType,
@@ -119,14 +117,12 @@ export const getBillingPortalUrl = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "member",
-      );
-    }
+    await requireEntityAccess(
+      context,
+      data.entityType,
+      data.entityId,
+      "member",
+    );
 
     return getBilling().getBillingPortalUrl(
       data.entityType,
@@ -144,14 +140,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "admin",
-      );
-    }
+    await requireEntityAccess(context, data.entityType, data.entityId, "admin");
 
     return getBilling().cancelSubscription(
       data.entityType,
@@ -167,14 +156,7 @@ export const renewSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => subscriptionSchema.parse(data))
   .handler(async ({ data, context }) => {
-    if (data.entityType !== "user") {
-      await requirePermission(
-        context.session.user.id,
-        data.entityType,
-        data.entityId,
-        "admin",
-      );
-    }
+    await requireEntityAccess(context, data.entityType, data.entityId, "admin");
 
     return getBilling().renewSubscription(
       data.entityType,
@@ -190,8 +172,8 @@ export const getOrgSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .inputValidator((data) => organizationSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await requirePermission(
-      context.session.user.id,
+    await requireEntityAccess(
+      context,
       "organization",
       data.organizationId,
       "member",
@@ -215,8 +197,8 @@ export const createCheckoutWithWorkspace = createServerFn({ method: "POST" })
     // Gate it so a user cannot start checkout against an org they don't admin.
     // The `createWorkspace` path makes a new org for the caller, so no check.
     if (data.workspaceId) {
-      await requirePermission(
-        context.session.user.id,
+      await requireEntityAccess(
+        context,
         "organization",
         data.workspaceId,
         "admin",

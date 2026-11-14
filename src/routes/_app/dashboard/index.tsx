@@ -12,6 +12,7 @@ import UpgradeBanner from "@/components/dashboard/UpgradeBanner";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
+import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
 import { listApiKeys } from "@/server/functions/apiKeys";
 import { fetchSession } from "@/server/functions/auth";
 import { getEntitlements } from "@/server/functions/entitlements";
@@ -26,8 +27,9 @@ export const Route = createFileRoute("/_app/dashboard/")({
   errorComponent: RouteErrorFallback,
   pendingComponent: DashboardPending,
   loader: async () => {
-    const { session } = await fetchSession();
-    if (!session?.user.identityProviderId) {
+    const { session, organizations } = await fetchSession();
+    const personalWorkspaceId = getPersonalWorkspaceId(organizations);
+    if (!session?.user.identityProviderId || !personalWorkspaceId) {
       return {
         usage: null,
         subscription: null,
@@ -37,8 +39,10 @@ export const Route = createFileRoute("/_app/dashboard/")({
       };
     }
 
-    const entityType = "user";
-    const entityId = session.user.identityProviderId;
+    // Plan and usage belong to the personal workspace, which Synapse checkout
+    // subscribes and personal keys bill
+    const entityType = "organization";
+    const entityId = personalWorkspaceId;
 
     const [usage, subscription, entitlements, apiKeys, providerKeys] =
       await Promise.all([
