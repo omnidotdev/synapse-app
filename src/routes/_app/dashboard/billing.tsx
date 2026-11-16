@@ -10,6 +10,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import SpendingLimitCard from "@/components/dashboard/SpendingLimitCard";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DashboardPending, RouteErrorFallback } from "@/components/layout";
+import { useWorkspace } from "@/lib/context";
 import {
   formatFeatureKey,
   formatFeatureValue,
@@ -41,7 +42,8 @@ export const Route = createFileRoute("/_app/dashboard/billing")({
       };
     }
 
-    // Synapse checkout subscribes the personal workspace
+    // A personal plan bought on the account hub subscribes the personal
+    // workspace
     const entityType = "organization";
     const entityId = personalWorkspaceId;
 
@@ -61,6 +63,7 @@ export const Route = createFileRoute("/_app/dashboard/billing")({
 function BillingPage() {
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
+  const { personalWorkspace } = useWorkspace();
 
   const tier = getTierFromEntitlements(entitlements);
 
@@ -80,6 +83,8 @@ function BillingPage() {
             subscription={subscription}
             entityType={entityType}
             entityId={entityId}
+            workspaceSlug={personalWorkspace?.slug}
+            returnPath="/dashboard/billing"
           />
         ) : (
           <CardRoot className="p-6">

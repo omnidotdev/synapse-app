@@ -1,4 +1,5 @@
 import { Format } from "@ark-ui/react";
+import { workspacesUrl } from "@omnidotdev/providers/react";
 import { Button } from "@omnidotdev/thornberry/button";
 import {
   CardContent,
@@ -25,14 +26,12 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { BuildingIcon, CheckIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
 
-import CreateWorkspaceModal from "@/components/pricing/CreateWorkspaceModal";
 import authClient from "@/lib/auth/authClient";
-import { BASE_URL } from "@/lib/config/env.config";
+import { upgradePlanUrl } from "@/lib/billing/hubLinks";
+import { ACCOUNT_URL, BASE_URL } from "@/lib/config/env.config";
 import { capitalizeFirstLetter } from "@/lib/util";
 import cn from "@/lib/utils";
-import { createCheckoutWithWorkspace } from "@/server/functions/subscriptions";
 
 import type { Price, Subscription } from "@omnidotdev/providers/billing";
 import type { Workspace } from "@/lib/context/workspace.context";
@@ -57,6 +56,11 @@ const normalizeTier = (raw: string | undefined): Tier => {
   return "free";
 };
 
+/**
+ * Price card. A paid plan is bought on the Omni account hub, the one place
+ * Omni plans are sold: picking a workspace opens the hub's confirm step for
+ * that plan and workspace, which runs checkout and returns here
+ */
 const PriceCard = ({
   price,
   orgSubscriptions = {},
@@ -65,8 +69,6 @@ const PriceCard = ({
   const { auth } = useRouteContext({ strict: false });
   const navigate = useNavigate();
   const search = useSearch({ strict: false }) as { tier?: string };
-  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const tier = normalizeTier(price.metadata?.tier);
   const isProTier = tier === "pro";
@@ -103,48 +105,26 @@ const PriceCard = ({
   // Auto-open dropdown when returning from sign-in with tier param
   const shouldAutoOpen = search.tier === tier && !!auth;
 
-  const { mutateAsync: initiateCheckout } = useMutation({
-    mutationFn: async (params: {
-      workspaceId?: string;
-      createWorkspace?: { name: string; slug: string };
-    }) => {
-      setIsCheckoutLoading(true);
+  const interval = price.recurring?.interval === "year" ? "year" : "month";
 
-      // Use `window.location.origin` as a reliable fallback since `BASE_URL`
-      // may be empty when Vite statically replaces `import.meta.env` at build time
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : BASE_URL;
+  // The account hub's confirm step for this plan, for a workspace or (none
+  // given) letting the hub ask
+  const planUrl = (workspaceSlug?: string) =>
+    upgradePlanUrl(ACCOUNT_URL, BASE_URL, {
+      plan: tier,
+      interval,
+      workspaceSlug,
+    });
 
-      return createCheckoutWithWorkspace({
-        data: {
-          priceId: price.id,
-          successUrl: `${origin}/@__SLUG__/~/billing`,
-          cancelUrl: `${origin}/pricing`,
-          ...params,
-        },
-      });
-    },
-    onSuccess: (result) => {
-      if (result?.checkoutUrl) {
-        window.location.href = result.checkoutUrl;
-      }
-    },
-    onError: () => {
-      setIsCheckoutLoading(false);
-    },
-  });
-
+  // Handle workspace selection from dropdown. A new workspace is created on
+  // the account hub's workspaces console, the one place workspaces are made
   const handleWorkspaceSelect = (workspaceId: string) => {
-    if (workspaceId === "create-new") {
-      setIsCreateModalOpen(true);
-    } else {
-      initiateCheckout({ workspaceId });
-    }
-  };
+    const href =
+      workspaceId === "create-new"
+        ? workspacesUrl(ACCOUNT_URL)
+        : planUrl(allOrgs.find((org) => org.id === workspaceId)?.slug);
 
-  const handleCreateWorkspace = (name: string, slug: string) => {
-    setIsCreateModalOpen(false);
-    initiateCheckout({ createWorkspace: { name, slug } });
+    if (href) window.location.assign(href);
   };
 
   const handleClick = () => {
@@ -158,9 +138,10 @@ const PriceCard = ({
       return;
     }
 
-    // Paid tier without orgs - open create workspace modal
+    // Paid tier without orgs: the hub explains a plan needs a workspace
     if (!allOrgs.length) {
-      setIsCreateModalOpen(true);
+      const href = planUrl();
+      if (href) window.location.assign(href);
       return;
     }
   };
@@ -175,75 +156,98 @@ const PriceCard = ({
   };
 
   return (
-    <>
-      <CardRoot
-        key={price.product.name}
-        className={cn(
-          "flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
-          isProTier && "border-primary/30",
-        )}
-      >
-        <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
-          <div className="flex flex-1 flex-col">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-lg">
-                {capitalizeFirstLetter(price.product.name)}
-              </CardTitle>
+    <CardRoot
+      key={price.product.name}
+      className={cn(
+        "flex w-full max-w-lg flex-col overflow-hidden transition-all duration-300 lg:min-w-80",
+        isProTier && "border-primary/30",
+      )}
+    >
+      <CardHeader className="bg-muted pb-3 lg:min-h-50.5 dark:bg-surface-elevated">
+        <div className="flex flex-1 flex-col">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg">
+              {capitalizeFirstLetter(price.product.name)}
+            </CardTitle>
 
-              {isProTier && (
-                <span className="rounded-full bg-primary px-2.5 py-0.5 font-medium text-white text-xs">
-                  Recommended
-                </span>
-              )}
-            </div>
-
-            <CardDescription className="mt-2 mb-4 flex-1">
-              {price.product.description}
-            </CardDescription>
-
-            {price.unit_amount != null && (
-              <p className="font-semibold text-lg">
-                <span className="text-gradient">
-                  <Format.Number
-                    value={price.unit_amount / 100}
-                    style="currency"
-                    currency="USD"
-                    notation="compact"
-                    compactDisplay="short"
-                  />
-                </span>
-
-                <span className="pl-1 font-normal text-muted-foreground text-sm">
-                  /{price.recurring ? price.recurring.interval : "forever"}
-                </span>
-              </p>
+            {isProTier && (
+              <span className="rounded-full bg-primary px-2.5 py-0.5 font-medium text-white text-xs">
+                Recommended
+              </span>
             )}
           </div>
 
-          {showDropdown ? (
-            <MenuRoot
-              defaultOpen={shouldAutoOpen}
-              onSelect={({ value }) => handleWorkspaceSelect(value)}
-            >
-              <MenuTrigger asChild>
-                <Button variant={buttonVariant} disabled={isCheckoutLoading}>
-                  {isCheckoutLoading ? "Loading..." : getButtonContent()}
-                </Button>
-              </MenuTrigger>
-              <MenuPositioner className="!w-[var(--reference-width)]">
-                <MenuContent className="w-full">
-                  {allOrgs.length > 0 && (
-                    <>
-                      <MenuItemGroup>
-                        <MenuItemGroupLabel className="text-muted-foreground">
-                          Your workspaces
-                        </MenuItemGroupLabel>
+          <CardDescription className="mt-2 mb-4 flex-1">
+            {price.product.description}
+          </CardDescription>
 
-                        {upgradeableOrgs.map((org) => (
+          {price.unit_amount != null && (
+            <p className="font-semibold text-lg">
+              <span className="text-gradient">
+                <Format.Number
+                  value={price.unit_amount / 100}
+                  style="currency"
+                  currency="USD"
+                  notation="compact"
+                  compactDisplay="short"
+                />
+              </span>
+
+              <span className="pl-1 font-normal text-muted-foreground text-sm">
+                /{price.recurring ? price.recurring.interval : "forever"}
+              </span>
+            </p>
+          )}
+        </div>
+
+        {showDropdown ? (
+          <MenuRoot
+            defaultOpen={shouldAutoOpen}
+            onSelect={({ value }) => handleWorkspaceSelect(value)}
+          >
+            <MenuTrigger asChild>
+              <Button variant={buttonVariant}>{getButtonContent()}</Button>
+            </MenuTrigger>
+            <MenuPositioner className="!w-[var(--reference-width)]">
+              <MenuContent className="w-full">
+                {allOrgs.length > 0 && (
+                  <>
+                    <MenuItemGroup>
+                      <MenuItemGroupLabel className="text-muted-foreground">
+                        Your workspaces
+                      </MenuItemGroupLabel>
+
+                      {upgradeableOrgs.map((org) => (
+                        <MenuItem
+                          key={org.id}
+                          value={org.id}
+                          className="cursor-pointer"
+                        >
+                          <MenuItemText className="flex w-full items-center gap-2">
+                            <BuildingIcon
+                              size={16}
+                              className="text-muted-foreground"
+                            />
+                            <span className="flex-1 truncate font-medium text-sm">
+                              {org.slug}
+                            </span>
+                            <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-xs dark:text-primary-300">
+                              Upgrade
+                            </span>
+                          </MenuItemText>
+                        </MenuItem>
+                      ))}
+
+                      {nonUpgradeableOrgs.map((org) => {
+                        const orgTier = getOrgTier(org.id);
+                        const isSameTier = orgTier === tier;
+
+                        return (
                           <MenuItem
                             key={org.id}
                             value={org.id}
-                            className="cursor-pointer"
+                            disabled
+                            className="opacity-60"
                           >
                             <MenuItemText className="flex w-full items-center gap-2">
                               <BuildingIcon
@@ -253,100 +257,56 @@ const PriceCard = ({
                               <span className="flex-1 truncate font-medium text-sm">
                                 {org.slug}
                               </span>
-                              <span className="rounded bg-primary/10 px-1.5 py-0.5 text-primary text-xs dark:text-primary-300">
-                                Upgrade
+                              <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
+                                {isSameTier
+                                  ? "Current plan"
+                                  : capitalizeFirstLetter(orgTier)}
                               </span>
                             </MenuItemText>
                           </MenuItem>
-                        ))}
+                        );
+                      })}
+                    </MenuItemGroup>
 
-                        {nonUpgradeableOrgs.map((org) => {
-                          const orgTier = getOrgTier(org.id);
-                          const isSameTier = orgTier === tier;
+                    <MenuSeparator />
+                  </>
+                )}
 
-                          return (
-                            <MenuItem
-                              key={org.id}
-                              value={org.id}
-                              disabled
-                              className="opacity-60"
-                            >
-                              <MenuItemText className="flex w-full items-center gap-2">
-                                <BuildingIcon
-                                  size={16}
-                                  className="text-muted-foreground"
-                                />
-                                <span className="flex-1 truncate font-medium text-sm">
-                                  {org.slug}
-                                </span>
-                                <span className="rounded bg-muted px-1.5 py-0.5 text-muted-foreground text-xs">
-                                  {isSameTier
-                                    ? "Current plan"
-                                    : capitalizeFirstLetter(orgTier)}
-                                </span>
-                              </MenuItemText>
-                            </MenuItem>
-                          );
-                        })}
-                      </MenuItemGroup>
+                <MenuItemGroup>
+                  <MenuItem value="create-new" className="cursor-pointer">
+                    <MenuItemText className="flex w-full items-center gap-2">
+                      <PlusIcon size={16} className="text-muted-foreground" />
+                      <span className="font-medium text-sm">New workspace</span>
+                    </MenuItemText>
+                  </MenuItem>
+                </MenuItemGroup>
+              </MenuContent>
+            </MenuPositioner>
+          </MenuRoot>
+        ) : auth ? (
+          <Button variant={buttonVariant} onClick={handleClick}>
+            {getButtonContent()}
+          </Button>
+        ) : (
+          <Button
+            variant={buttonVariant}
+            disabled={isSignInPending}
+            onClick={() => signIn()}
+          >
+            Get Started
+          </Button>
+        )}
+      </CardHeader>
 
-                      <MenuSeparator />
-                    </>
-                  )}
-
-                  <MenuItemGroup>
-                    <MenuItem value="create-new" className="cursor-pointer">
-                      <MenuItemText className="flex w-full items-center gap-2">
-                        <PlusIcon size={16} className="text-muted-foreground" />
-                        <span className="font-medium text-sm">
-                          New workspace
-                        </span>
-                      </MenuItemText>
-                    </MenuItem>
-                  </MenuItemGroup>
-                </MenuContent>
-              </MenuPositioner>
-            </MenuRoot>
-          ) : auth ? (
-            <Button
-              variant={buttonVariant}
-              disabled={isCheckoutLoading}
-              onClick={handleClick}
-            >
-              {isCheckoutLoading ? "Loading..." : getButtonContent()}
-            </Button>
-          ) : (
-            <Button
-              variant={buttonVariant}
-              disabled={isSignInPending}
-              onClick={() => signIn()}
-            >
-              Get Started
-            </Button>
-          )}
-        </CardHeader>
-
-        <CardContent className="flex-1 p-4">
-          {price.product.marketing_features.map((feature) => (
-            <div
-              key={feature.name}
-              className="flex items-start gap-2 text-left"
-            >
-              <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
-              <p>{feature.name}</p>
-            </div>
-          ))}
-        </CardContent>
-      </CardRoot>
-
-      <CreateWorkspaceModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        tierName={capitalizeFirstLetter(tier)}
-        onSubmit={handleCreateWorkspace}
-        isLoading={isCheckoutLoading}
-      />
-    </>
+      <CardContent className="flex-1 p-4">
+        {price.product.marketing_features.map((feature) => (
+          <div key={feature.name} className="flex items-start gap-2 text-left">
+            <CheckIcon className="mt-0.5 size-4 shrink-0 text-primary" />
+            <p>{feature.name}</p>
+          </div>
+        ))}
+      </CardContent>
+    </CardRoot>
   );
 };
 

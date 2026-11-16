@@ -1,34 +1,38 @@
 import { Button } from "@omnidotdev/thornberry/button";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { EditIcon } from "lucide-react";
-import { toast } from "sonner";
 
-import { getBillingPortalUrl } from "@/server/functions/subscriptions";
+import { manageSubscriptionUrl } from "@/lib/billing/hubLinks";
+import { ACCOUNT_URL, BASE_URL } from "@/lib/config/env.config";
 
 interface Props {
-  entityType: string;
-  entityId: string;
+  /** Workspace whose subscription to manage */
+  workspaceSlug: string;
+  /** Page to return to, the workspace's billing page by default */
+  returnPath?: string;
 }
 
 /**
- * Manage subscription via billing portal.
+ * Manage a workspace's subscription (plan, payment method, invoices) on the
+ * Omni account hub, which opens the billing portal and returns to the page the
+ * user left. Hidden when no account hub is configured
  */
-const ManageSubscription = ({ entityType, entityId }: Props) => {
-  const navigate = useNavigate();
-
-  const { mutateAsync: manageSubscription } = useMutation({
-    mutationFn: async () =>
-      await getBillingPortalUrl({
-        data: { entityType, entityId },
-      }),
-    onSuccess: (url) => navigate({ href: url, reloadDocument: true }),
-    onError: (error) => toast.error(error.message),
+const ManageSubscription = ({ workspaceSlug, returnPath }: Props) => {
+  const href = manageSubscriptionUrl(ACCOUNT_URL, BASE_URL, {
+    workspaceSlug,
+    returnPath,
   });
 
+  if (!href) return null;
+
   return (
-    <Button variant="ghost" size="icon" onClick={() => manageSubscription()}>
-      <EditIcon className="text-blue-500" />
+    <Button variant="ghost" size="icon" asChild>
+      <a
+        href={href}
+        aria-label="Manage subscription"
+        title="Manage subscription"
+      >
+        <EditIcon className="text-blue-500" />
+      </a>
     </Button>
   );
 };

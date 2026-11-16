@@ -89,6 +89,7 @@ function WorkspaceBillingPage() {
             subscription={subscription}
             entityType={entityType}
             entityId={entityId}
+            workspaceSlug={org.slug}
           />
         ) : (
           <CardRoot>

@@ -1,34 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import app from "@/lib/config/app.config";
-import { BASE_URL } from "@/lib/config/env.config";
 import getBilling from "@/lib/providers/billing";
 import { authMiddleware } from "@/server/middleware";
 import { requireEntityAccess } from "./authorization";
-
-const checkoutSchema = z.object({
-  priceId: z.string().startsWith("price_"),
-  successUrl: z.string().url().optional(),
-  cancelUrl: z.string().url().optional(),
-});
-
-const checkoutWithWorkspaceSchema = z
-  .object({
-    priceId: z.string().startsWith("price_"),
-    successUrl: z.string().url(),
-    cancelUrl: z.string().url(),
-    workspaceId: z.string().uuid().optional(),
-    createWorkspace: z
-      .object({
-        name: z.string().min(1).max(100),
-        slug: z.string().min(1).max(100).optional(),
-      })
-      .optional(),
-  })
-  .refine((data) => data.workspaceId || data.createWorkspace, {
-    message: "Either workspaceId or createWorkspace is required",
-  });
 
 const subscriptionSchema = z.object({
   entityType: z.enum(["user", "organization"]),
@@ -50,7 +25,8 @@ const requireAccessToken = (accessToken: string | undefined): string => {
 };
 
 /**
- * Get subscription details for an entity.
+ * Get subscription details for an entity. Buying and managing a plan happen on
+ * the Omni account hub (see `lib/billing/hubLinks`), not here
  */
 export const getSubscription = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -66,69 +42,6 @@ export const getSubscription = createServerFn({ method: "POST" })
     return getBilling().getSubscription(
       data.entityType,
       data.entityId,
-      requireAccessToken(context.session.accessToken),
-    );
-  });
-
-/**
- * Create a checkout session for a new subscription.
- * Uses the user's existing personal organization rather than creating a new one.
- * @knipignore
- */
-export const getCheckoutUrl = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .inputValidator((data) => checkoutSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    try {
-      const accessToken = requireAccessToken(context.session.accessToken);
-
-      const personalOrg = context.organizations.find(
-        (org: { type: string }) => org.type === "personal",
-      );
-
-      if (!personalOrg) {
-        return { error: "No personal workspace found" };
-      }
-
-      const result = await getBilling().createCheckoutWithWorkspace({
-        appId: app.name.toLowerCase(),
-        priceId: data.priceId,
-        successUrl: data.successUrl ?? `${BASE_URL}/pricing`,
-        cancelUrl: data.cancelUrl ?? `${BASE_URL}/pricing`,
-        accessToken,
-        workspaceId: personalOrg.id,
-      });
-
-      return { url: result.checkoutUrl };
-    } catch (error) {
-      return {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create checkout session",
-      };
-    }
-  });
-
-/**
- * Get billing portal URL for managing subscription.
- */
-export const getBillingPortalUrl = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .inputValidator((data) => subscriptionSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    await requireEntityAccess(
-      context,
-      data.entityType,
-      data.entityId,
-      "member",
-    );
-
-    return getBilling().getBillingPortalUrl(
-      data.entityType,
-      data.entityId,
-      app.name.toLowerCase(),
-      `${BASE_URL}/profile`,
       requireAccessToken(context.session.accessToken),
     );
   });
@@ -184,34 +97,4 @@ export const getOrgSubscription = createServerFn({ method: "POST" })
       data.organizationId,
       requireAccessToken(context.session.accessToken),
     );
-  });
-
-/**
- * Create a checkout session with workspace selection or creation.
- */
-export const createCheckoutWithWorkspace = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .inputValidator((data) => checkoutWithWorkspaceSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    // `workspaceId` is an existing org id (billing treats workspace == org).
-    // Gate it so a user cannot start checkout against an org they don't admin.
-    // The `createWorkspace` path makes a new org for the caller, so no check.
-    if (data.workspaceId) {
-      await requireEntityAccess(
-        context,
-        "organization",
-        data.workspaceId,
-        "admin",
-      );
-    }
-
-    return getBilling().createCheckoutWithWorkspace({
-      appId: app.name.toLowerCase(),
-      priceId: data.priceId,
-      successUrl: data.successUrl,
-      cancelUrl: data.cancelUrl,
-      accessToken: requireAccessToken(context.session.accessToken),
-      workspaceId: data.workspaceId,
-      createWorkspace: data.createWorkspace,
-    });
   });

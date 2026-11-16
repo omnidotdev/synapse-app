@@ -12,6 +12,7 @@ import { Loader2Icon } from "lucide-react";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { RouteErrorFallback } from "@/components/layout";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
+import { useWorkspace } from "@/lib/context";
 import { getTierFromEntitlements } from "@/lib/util";
 import createMetaTags from "@/lib/util/createMetaTags";
 import getPersonalWorkspaceId from "@/lib/util/personalWorkspace";
@@ -26,6 +27,7 @@ const ProfilePage = () => {
   const { auth } = Route.useRouteContext();
   const { subscription, entitlements, entityType, entityId } =
     Route.useLoaderData();
+  const { personalWorkspace } = useWorkspace();
 
   const tier = getTierFromEntitlements(entitlements);
 
@@ -104,6 +106,8 @@ const ProfilePage = () => {
               subscription={subscription}
               entityType={entityType}
               entityId={entityId}
+              workspaceSlug={personalWorkspace?.slug}
+              returnPath="/profile"
             />
           ) : (
             <p className="text-muted-foreground">
@@ -156,7 +160,8 @@ export const Route = createFileRoute("/_app/profile")({
         };
       }
 
-      // Synapse checkout subscribes the personal workspace
+      // A personal plan bought on the account hub subscribes the personal
+      // workspace
       const entityType = "organization" as const;
       const entityId = personalWorkspaceId;
 
