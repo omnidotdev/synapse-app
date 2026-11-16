@@ -159,7 +159,8 @@ const TeamTierCard = ({
 }) => {
   const isCurrentPlan = tier === "Team";
 
-  // When a Stripe price exists for Team, render via PriceCard for checkout
+  // When a Stripe price exists for Team, render via PriceCard, which buys it
+  // on the account hub
   if (teamPrice) {
     return (
       <PriceCard
@@ -349,8 +350,8 @@ export const Route = createFileRoute("/pricing")({
 
     const { session, organizations } = sessionData;
 
-    // The current plan is the personal workspace's, which Synapse checkout
-    // subscribes for a personal purchase
+    // The current plan is the personal workspace's, which a personal plan
+    // purchase subscribes
     let tier: string | null = null;
     const personalWorkspaceId = getPersonalWorkspaceId(organizations);
     if (session?.user.identityProviderId && personalWorkspaceId) {

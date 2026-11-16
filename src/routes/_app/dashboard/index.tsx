@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_app/dashboard/")({
       };
     }
 
-    // Plan and usage belong to the personal workspace, which Synapse checkout
+    // Plan and usage belong to the personal workspace, which a personal plan
     // subscribes and personal keys bill
     const entityType = "organization";
     const entityId = personalWorkspaceId;

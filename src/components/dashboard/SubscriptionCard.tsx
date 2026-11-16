@@ -18,6 +18,10 @@ interface SubscriptionCardProps {
   subscription: Subscription;
   entityType: string;
   entityId: string;
+  /** Workspace the subscription belongs to, for managing it on the account hub */
+  workspaceSlug?: string;
+  /** Page the account hub returns to after managing the subscription */
+  returnPath?: string;
 }
 
 /**
@@ -28,11 +32,14 @@ const formatDate = (timestamp: number) =>
 
 /**
  * Subscription card displaying plan details with manage/cancel actions.
+ * Managing the plan happens on the Omni account hub
  */
 const SubscriptionCard = ({
   subscription,
   entityType,
   entityId,
+  workspaceSlug,
+  returnPath,
 }: SubscriptionCardProps) => {
   const isPendingCancellation = subscription.cancelAt !== null;
 
@@ -43,7 +50,12 @@ const SubscriptionCard = ({
           {subscription.product?.name ?? "Subscription"}
         </CardTitle>
         <div className="flex gap-1">
-          <ManageSubscription entityType={entityType} entityId={entityId} />
+          {workspaceSlug && (
+            <ManageSubscription
+              workspaceSlug={workspaceSlug}
+              returnPath={returnPath}
+            />
+          )}
           {isPendingCancellation ? (
             <RenewSubscription entityType={entityType} entityId={entityId} />
           ) : (
