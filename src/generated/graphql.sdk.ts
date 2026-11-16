@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { GraphQLClient, RequestOptions } from 'graphql-request';
+import { GraphQLClient, type RequestOptions } from 'graphql-request';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -16,6 +16,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A floating point number that requires more precision than IEEE 754 binary 64 */
+  BigFloat: { input: unknown; output: unknown; }
   /** A location in a connection that can be used for resuming pagination. */
   Cursor: { input: string; output: string; }
   /**
@@ -34,15 +36,18 @@ export type ApiKey = Node & {
   __typename?: 'ApiKey';
   /** Reads and enables pagination through a set of `ApiKeyProvider`. */
   apiKeyProviders: ApiKeyProviderConnection;
+  appId?: Maybe<Scalars['String']['output']>;
+  billingEntityId?: Maybe<Scalars['String']['output']>;
+  billingEntityType?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
   expiresAt?: Maybe<Scalars['Datetime']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
-  keyHash: Scalars['String']['output'];
   keyHint: Scalars['String']['output'];
   lastUsedAt?: Maybe<Scalars['Datetime']['output']>;
   mode: Scalars['String']['output'];
   name: Scalars['String']['output'];
+  organizationId?: Maybe<Scalars['UUID']['output']>;
   revokedAt?: Maybe<Scalars['Datetime']['output']>;
   rowId: Scalars['UUID']['output'];
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
@@ -80,8 +85,8 @@ export type ApiKeyUsageEventsArgs = {
 
 /** A condition to be used against `ApiKey` object types. All fields are tested for equality and combined with a logical ‘and.’ */
 export type ApiKeyCondition = {
-  /** Checks for equality with the object’s `keyHash` field. */
-  keyHash?: InputMaybe<Scalars['String']['input']>;
+  /** Checks for equality with the object’s `organizationId` field. */
+  organizationId?: InputMaybe<Scalars['UUID']['input']>;
   /** Checks for equality with the object’s `rowId` field. */
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   /** Checks for equality with the object’s `userId` field. */
@@ -118,12 +123,12 @@ export type ApiKeyFilter = {
   apiKeyProviders?: InputMaybe<ApiKeyToManyApiKeyProviderFilter>;
   /** Some related `apiKeyProviders` exist. */
   apiKeyProvidersExist?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Filter by the object’s `keyHash` field. */
-  keyHash?: InputMaybe<StringFilter>;
   /** Negates the expression. */
   not?: InputMaybe<ApiKeyFilter>;
   /** Checks for any expressions in this list. */
   or?: InputMaybe<Array<ApiKeyFilter>>;
+  /** Filter by the object’s `organizationId` field. */
+  organizationId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `rowId` field. */
   rowId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `usageEvents` relation. */
@@ -151,9 +156,9 @@ export type ApiKeyInfo = {
 
 /** Methods to use when ordering `ApiKey`. */
 export enum ApiKeyOrderBy {
-  KeyHashAsc = 'KEY_HASH_ASC',
-  KeyHashDesc = 'KEY_HASH_DESC',
   Natural = 'NATURAL',
+  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
+  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
   PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
   PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
   RowIdAsc = 'ROW_ID_ASC',
@@ -294,6 +299,12 @@ export type DatetimeFilter = {
 export type GenerateApiKeyInput = {
   mode: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  /**
+   * Workspace (organization) the key belongs to and bills. Required unless
+   * `workspaceId` names a Synapse workspace resource, whose organization
+   * the key then inherits
+   */
+  organizationId?: InputMaybe<Scalars['UUID']['input']>;
   workspaceId?: InputMaybe<Scalars['UUID']['input']>;
 };
 
@@ -339,6 +350,11 @@ export type Mutation = {
   revokeApiKey?: Maybe<Scalars['Boolean']['output']>;
   /** Encrypt and upsert a BYOK provider key. */
   setProviderKey?: Maybe<ProviderKeyInfo>;
+  /**
+   * Set a workspace's hard spending limit in cents (workspace admins only).
+   * Raising it above the overage already owed resumes paused requests.
+   */
+  setSpendingLimit: SpendingLimit;
   /** Unlink a provider key from an API key. */
   unlinkProviderKey?: Maybe<Scalars['Boolean']['output']>;
   /** Update user preferences. Creates preferences row if it doesn't exist. */
@@ -397,6 +413,13 @@ export type MutationSetProviderKeyArgs = {
 
 
 /** The root mutation type which contains root level fields which mutate data. */
+export type MutationSetSpendingLimitArgs = {
+  hardLimitCents: Scalars['Int']['input'];
+  organizationId: Scalars['UUID']['input'];
+};
+
+
+/** The root mutation type which contains root level fields which mutate data. */
 export type MutationUnlinkProviderKeyArgs = {
   apiKeyId: Scalars['UUID']['input'];
   providerKeyId: Scalars['UUID']['input'];
@@ -423,7 +446,11 @@ export type Node = {
 
 export type Observer = {
   __typename?: 'Observer';
-  /** List active API keys for the current user, optionally filtered by workspace. */
+  /**
+   * List active API keys. With `organizationId`, every key that belongs to
+   * that workspace (members only); otherwise the current user's own keys,
+   * optionally filtered by Synapse workspace resource.
+   */
   apiKeys: Array<ApiKeyInfo>;
   email: Scalars['String']['output'];
   id: Scalars['UUID']['output'];
@@ -432,11 +459,19 @@ export type Observer = {
   preferences?: Maybe<UserPreferences>;
   /** List provider keys for the current user. */
   providerKeys: Array<ProviderKeyInfo>;
+  /** A workspace's Synapse spending limit (workspace members only). */
+  spendingLimit?: Maybe<SpendingLimit>;
 };
 
 
 export type ObserverApiKeysArgs = {
+  organizationId?: InputMaybe<Scalars['UUID']['input']>;
   workspaceId?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+
+export type ObserverSpendingLimitArgs = {
+  organizationId: Scalars['UUID']['input'];
 };
 
 /** Information about pagination in a connection. */
@@ -463,7 +498,6 @@ export type ProviderKey = Node & {
   /** Reads and enables pagination through a set of `ApiKeyProvider`. */
   apiKeyProviders: ApiKeyProviderConnection;
   createdAt?: Maybe<Scalars['Datetime']['output']>;
-  encryptedKey: Scalars['String']['output'];
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   keyHint: Scalars['String']['output'];
@@ -582,34 +616,12 @@ export type ProviderKeyToManyApiKeyProviderFilter = {
 /** The root query type which gives access points into the data universe. */
 export type Query = Node & {
   __typename?: 'Query';
-  /** Get a single `ApiKey`. */
-  apiKey?: Maybe<ApiKey>;
-  /** Reads a single `ApiKey` using its globally unique `ID`. */
-  apiKeyById?: Maybe<ApiKey>;
-  /** Get a single `ApiKey`. */
-  apiKeyByKeyHash?: Maybe<ApiKey>;
-  /** Get a single `ApiKeyProvider`. */
-  apiKeyProvider?: Maybe<ApiKeyProvider>;
-  /** Reads a single `ApiKeyProvider` using its globally unique `ID`. */
-  apiKeyProviderById?: Maybe<ApiKeyProvider>;
-  /** Reads and enables pagination through a set of `ApiKeyProvider`. */
-  apiKeyProviders?: Maybe<ApiKeyProviderConnection>;
-  /** Reads and enables pagination through a set of `ApiKey`. */
-  apiKeys?: Maybe<ApiKeyConnection>;
   /** The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`. */
   id: Scalars['ID']['output'];
-  /** Fetches an object given its globally unique `ID`. */
-  node?: Maybe<Node>;
   /** The currently authenticated user. Returns null if not authenticated. */
   observer?: Maybe<Observer>;
   /** List workspaces for an organization */
   orgWorkspaces: Array<WorkspaceResult>;
-  /** Get a single `ProviderKey`. */
-  providerKey?: Maybe<ProviderKey>;
-  /** Reads a single `ProviderKey` using its globally unique `ID`. */
-  providerKeyById?: Maybe<ProviderKey>;
-  /** Reads and enables pagination through a set of `ProviderKey`. */
-  providerKeys?: Maybe<ProviderKeyConnection>;
   /**
    * Exposes the root query type nested one level down. This is helpful for Relay 1
    * which can only query top level fields if they are in a particular form.
@@ -620,97 +632,6 @@ export type Query = Node & {
    * Optionally filter by workspaceId for workspace-scoped usage.
    */
   usageBreakdown?: Maybe<UsageBreakdown>;
-  /** Get a single `UsageEvent`. */
-  usageEvent?: Maybe<UsageEvent>;
-  /** Reads a single `UsageEvent` using its globally unique `ID`. */
-  usageEventById?: Maybe<UsageEvent>;
-  /** Reads and enables pagination through a set of `UsageEvent`. */
-  usageEvents?: Maybe<UsageEventConnection>;
-  /** Get a single `User`. */
-  user?: Maybe<User>;
-  /** Reads a single `User` using its globally unique `ID`. */
-  userById?: Maybe<User>;
-  /** Get a single `User`. */
-  userByIdentityProviderId?: Maybe<User>;
-  /** Get a single `UserPreference`. */
-  userPreference?: Maybe<UserPreference>;
-  /** Reads a single `UserPreference` using its globally unique `ID`. */
-  userPreferenceById?: Maybe<UserPreference>;
-  /** Get a single `UserPreference`. */
-  userPreferenceByUserId?: Maybe<UserPreference>;
-  /** Reads and enables pagination through a set of `UserPreference`. */
-  userPreferences?: Maybe<UserPreferenceConnection>;
-  /** Reads and enables pagination through a set of `User`. */
-  users?: Maybe<UserConnection>;
-  /** Get a single `Workspace`. */
-  workspace?: Maybe<Workspace>;
-  /** Reads a single `Workspace` using its globally unique `ID`. */
-  workspaceById?: Maybe<Workspace>;
-  /** Reads and enables pagination through a set of `Workspace`. */
-  workspaces?: Maybe<WorkspaceConnection>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyByKeyHashArgs = {
-  keyHash: Scalars['String']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyProviderArgs = {
-  apiKeyId: Scalars['UUID']['input'];
-  providerKeyId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyProviderByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeyProvidersArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<ApiKeyProviderCondition>;
-  filter?: InputMaybe<ApiKeyProviderFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<ApiKeyProviderOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryApiKeysArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<ApiKeyCondition>;
-  filter?: InputMaybe<ApiKeyFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<ApiKeyOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryNodeArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -721,152 +642,26 @@ export type QueryOrgWorkspacesArgs = {
 
 
 /** The root query type which gives access points into the data universe. */
-export type QueryProviderKeyArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryProviderKeyByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryProviderKeysArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<ProviderKeyCondition>;
-  filter?: InputMaybe<ProviderKeyFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<ProviderKeyOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
 export type QueryUsageBreakdownArgs = {
   endDate: Scalars['String']['input'];
   startDate: Scalars['String']['input'];
   workspaceId?: InputMaybe<Scalars['String']['input']>;
 };
 
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUsageEventArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUsageEventByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUsageEventsArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<UsageEventCondition>;
-  filter?: InputMaybe<UsageEventFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<UsageEventOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserByIdentityProviderIdArgs = {
-  identityProviderId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserPreferenceArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserPreferenceByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserPreferenceByUserIdArgs = {
-  userId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUserPreferencesArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<UserPreferenceCondition>;
-  filter?: InputMaybe<UserPreferenceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<UserPreferenceOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryUsersArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<UserCondition>;
-  filter?: InputMaybe<UserFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<UserOrderBy>>;
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryWorkspaceArgs = {
-  rowId: Scalars['UUID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryWorkspaceByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-/** The root query type which gives access points into the data universe. */
-export type QueryWorkspacesArgs = {
-  after?: InputMaybe<Scalars['Cursor']['input']>;
-  before?: InputMaybe<Scalars['Cursor']['input']>;
-  condition?: InputMaybe<WorkspaceCondition>;
-  filter?: InputMaybe<WorkspaceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<WorkspaceOrderBy>>;
-};
-
 export type SetProviderKeyInput = {
   key: Scalars['String']['input'];
   provider: Scalars['String']['input'];
+};
+
+export type SpendingLimit = {
+  __typename?: 'SpendingLimit';
+  /** Overage owed this period, in cents, as last settled */
+  currentSpendCents: Scalars['Int']['output'];
+  /** Hard monthly cap on request overage, in cents (null when unset) */
+  hardLimitCents?: Maybe<Scalars['Int']['output']>;
+  organizationId: Scalars['UUID']['output'];
+  /** Whether requests past the included allowance are paused at the limit */
+  suspended: Scalars['Boolean']['output'];
 };
 
 /** A filter to be used against String fields. All fields are combined with a logical ‘and.’ */
@@ -990,11 +785,13 @@ export type UsageEvent = Node & {
   /** Reads a single `ApiKey` that is related to this `UsageEvent`. */
   apiKey?: Maybe<ApiKey>;
   apiKeyId: Scalars['UUID']['output'];
-  costCents: Scalars['Int']['output'];
+  costCents: Scalars['BigFloat']['output'];
   createdAt?: Maybe<Scalars['Datetime']['output']>;
+  dedupeKey?: Maybe<Scalars['String']['output']>;
   /** A globally unique identifier. Can be used in various places throughout the system to identify this single value. */
   id: Scalars['ID']['output'];
   inputTokens: Scalars['Int']['output'];
+  modality: Scalars['String']['output'];
   mode: Scalars['String']['output'];
   model: Scalars['String']['output'];
   outputTokens: Scalars['Int']['output'];
@@ -1015,6 +812,8 @@ export type UsageEventCondition = {
   apiKeyId?: InputMaybe<Scalars['UUID']['input']>;
   /** Checks for equality with the object’s `createdAt` field. */
   createdAt?: InputMaybe<Scalars['Datetime']['input']>;
+  /** Checks for equality with the object’s `dedupeKey` field. */
+  dedupeKey?: InputMaybe<Scalars['String']['input']>;
   /** Checks for equality with the object’s `rowId` field. */
   rowId?: InputMaybe<Scalars['UUID']['input']>;
   /** Checks for equality with the object’s `userId` field. */
@@ -1053,6 +852,8 @@ export type UsageEventFilter = {
   apiKeyId?: InputMaybe<UuidFilter>;
   /** Filter by the object’s `createdAt` field. */
   createdAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `dedupeKey` field. */
+  dedupeKey?: InputMaybe<StringFilter>;
   /** Negates the expression. */
   not?: InputMaybe<UsageEventFilter>;
   /** Checks for any expressions in this list. */
@@ -1071,6 +872,8 @@ export enum UsageEventOrderBy {
   ApiKeyIdDesc = 'API_KEY_ID_DESC',
   CreatedAtAsc = 'CREATED_AT_ASC',
   CreatedAtDesc = 'CREATED_AT_DESC',
+  DedupeKeyAsc = 'DEDUPE_KEY_ASC',
+  DedupeKeyDesc = 'DEDUPE_KEY_DESC',
   Natural = 'NATURAL',
   PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
   PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
@@ -1138,36 +941,6 @@ export type UserUsageEventsArgs = {
   orderBy?: InputMaybe<Array<UsageEventOrderBy>>;
 };
 
-/** A condition to be used against `User` object types. All fields are tested for equality and combined with a logical ‘and.’ */
-export type UserCondition = {
-  /** Checks for equality with the object’s `identityProviderId` field. */
-  identityProviderId?: InputMaybe<Scalars['UUID']['input']>;
-  /** Checks for equality with the object’s `rowId` field. */
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
-/** A connection to a list of `User` values. */
-export type UserConnection = {
-  __typename?: 'UserConnection';
-  /** A list of edges which contains the `User` and cursor to aid in pagination. */
-  edges: Array<Maybe<UserEdge>>;
-  /** A list of `User` objects. */
-  nodes: Array<Maybe<User>>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-  /** The count of *all* `User` you could get from the connection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** A `User` edge in the connection. */
-export type UserEdge = {
-  __typename?: 'UserEdge';
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['Cursor']['output']>;
-  /** The `User` at the end of the edge. */
-  node?: Maybe<User>;
-};
-
 /** A filter to be used against `User` object types. All fields are combined with a logical ‘and.’ */
 export type UserFilter = {
   /** Checks for all expressions in this list. */
@@ -1198,17 +971,6 @@ export type UserFilter = {
   userPreferenceExists?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Methods to use when ordering `User`. */
-export enum UserOrderBy {
-  IdentityProviderIdAsc = 'IDENTITY_PROVIDER_ID_ASC',
-  IdentityProviderIdDesc = 'IDENTITY_PROVIDER_ID_DESC',
-  Natural = 'NATURAL',
-  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
-  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
-  RowIdAsc = 'ROW_ID_ASC',
-  RowIdDesc = 'ROW_ID_DESC'
-}
-
 export type UserPreference = Node & {
   __typename?: 'UserPreference';
   defaultProvider?: Maybe<Scalars['String']['output']>;
@@ -1221,39 +983,6 @@ export type UserPreference = Node & {
   /** Reads a single `User` that is related to this `UserPreference`. */
   user?: Maybe<User>;
   userId: Scalars['UUID']['output'];
-};
-
-/**
- * A condition to be used against `UserPreference` object types. All fields are
- * tested for equality and combined with a logical ‘and.’
- */
-export type UserPreferenceCondition = {
-  /** Checks for equality with the object’s `rowId` field. */
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  /** Checks for equality with the object’s `userId` field. */
-  userId?: InputMaybe<Scalars['UUID']['input']>;
-};
-
-/** A connection to a list of `UserPreference` values. */
-export type UserPreferenceConnection = {
-  __typename?: 'UserPreferenceConnection';
-  /** A list of edges which contains the `UserPreference` and cursor to aid in pagination. */
-  edges: Array<Maybe<UserPreferenceEdge>>;
-  /** A list of `UserPreference` objects. */
-  nodes: Array<Maybe<UserPreference>>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-  /** The count of *all* `UserPreference` you could get from the connection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** A `UserPreference` edge in the connection. */
-export type UserPreferenceEdge = {
-  __typename?: 'UserPreferenceEdge';
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['Cursor']['output']>;
-  /** The `UserPreference` at the end of the edge. */
-  node?: Maybe<UserPreference>;
 };
 
 /** A filter to be used against `UserPreference` object types. All fields are combined with a logical ‘and.’ */
@@ -1271,17 +1000,6 @@ export type UserPreferenceFilter = {
   /** Filter by the object’s `userId` field. */
   userId?: InputMaybe<UuidFilter>;
 };
-
-/** Methods to use when ordering `UserPreference`. */
-export enum UserPreferenceOrderBy {
-  Natural = 'NATURAL',
-  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
-  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
-  RowIdAsc = 'ROW_ID_ASC',
-  RowIdDesc = 'ROW_ID_DESC',
-  UserIdAsc = 'USER_ID_ASC',
-  UserIdDesc = 'USER_ID_DESC'
-}
 
 export type UserPreferences = {
   __typename?: 'UserPreferences';
@@ -1333,70 +1051,6 @@ export type Workspace = Node & {
   updatedAt?: Maybe<Scalars['Datetime']['output']>;
 };
 
-/**
- * A condition to be used against `Workspace` object types. All fields are tested
- * for equality and combined with a logical ‘and.’
- */
-export type WorkspaceCondition = {
-  /** Checks for equality with the object’s `organizationId` field. */
-  organizationId?: InputMaybe<Scalars['UUID']['input']>;
-  /** Checks for equality with the object’s `rowId` field. */
-  rowId?: InputMaybe<Scalars['UUID']['input']>;
-  /** Checks for equality with the object’s `slug` field. */
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** A connection to a list of `Workspace` values. */
-export type WorkspaceConnection = {
-  __typename?: 'WorkspaceConnection';
-  /** A list of edges which contains the `Workspace` and cursor to aid in pagination. */
-  edges: Array<Maybe<WorkspaceEdge>>;
-  /** A list of `Workspace` objects. */
-  nodes: Array<Maybe<Workspace>>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-  /** The count of *all* `Workspace` you could get from the connection. */
-  totalCount: Scalars['Int']['output'];
-};
-
-/** A `Workspace` edge in the connection. */
-export type WorkspaceEdge = {
-  __typename?: 'WorkspaceEdge';
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['Cursor']['output']>;
-  /** The `Workspace` at the end of the edge. */
-  node?: Maybe<Workspace>;
-};
-
-/** A filter to be used against `Workspace` object types. All fields are combined with a logical ‘and.’ */
-export type WorkspaceFilter = {
-  /** Checks for all expressions in this list. */
-  and?: InputMaybe<Array<WorkspaceFilter>>;
-  /** Negates the expression. */
-  not?: InputMaybe<WorkspaceFilter>;
-  /** Checks for any expressions in this list. */
-  or?: InputMaybe<Array<WorkspaceFilter>>;
-  /** Filter by the object’s `organizationId` field. */
-  organizationId?: InputMaybe<UuidFilter>;
-  /** Filter by the object’s `rowId` field. */
-  rowId?: InputMaybe<UuidFilter>;
-  /** Filter by the object’s `slug` field. */
-  slug?: InputMaybe<StringFilter>;
-};
-
-/** Methods to use when ordering `Workspace`. */
-export enum WorkspaceOrderBy {
-  Natural = 'NATURAL',
-  OrganizationIdAsc = 'ORGANIZATION_ID_ASC',
-  OrganizationIdDesc = 'ORGANIZATION_ID_DESC',
-  PrimaryKeyAsc = 'PRIMARY_KEY_ASC',
-  PrimaryKeyDesc = 'PRIMARY_KEY_DESC',
-  RowIdAsc = 'ROW_ID_ASC',
-  RowIdDesc = 'ROW_ID_DESC',
-  SlugAsc = 'SLUG_ASC',
-  SlugDesc = 'SLUG_DESC'
-}
-
 export type WorkspaceResult = {
   __typename?: 'WorkspaceResult';
   createdAt: Scalars['Datetime']['output'];
@@ -1407,19 +1061,7 @@ export type WorkspaceResult = {
   slug: Scalars['String']['output'];
 };
 
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
-
-export type UsersQuery = { __typename?: 'Query', users?: { __typename?: 'UserConnection', totalCount: number } | null };
-
-
-export const UsersDocument = gql`
-    query Users {
-  users {
-    totalCount
-  }
-}
-    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -1428,9 +1070,7 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    Users(variables?: UsersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<UsersQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UsersQuery>({ document: UsersDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'Users', 'query', variables);
-    }
+
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;
