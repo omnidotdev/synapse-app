@@ -5,19 +5,13 @@ import {
   CardTitle,
 } from "@omnidotdev/thornberry/card";
 
-import {
-  CancelSubscription,
-  ManageSubscription,
-  RenewSubscription,
-} from "@/components/profile";
+import { ManageSubscription } from "@/components/profile";
 import { formatSubscriptionStatus } from "@/lib/util";
 
 import type { Subscription } from "@omnidotdev/providers/billing";
 
 interface SubscriptionCardProps {
   subscription: Subscription;
-  entityType: string;
-  entityId: string;
   /** Workspace the subscription belongs to, for managing it on the account hub */
   workspaceSlug?: string;
   /** Page the account hub returns to after managing the subscription */
@@ -31,13 +25,11 @@ const formatDate = (timestamp: number) =>
   new Date(timestamp * 1000).toLocaleDateString();
 
 /**
- * Subscription card displaying plan details with manage/cancel actions.
- * Managing the plan happens on the Omni account hub
+ * Subscription card displaying plan details. Managing the plan (changing,
+ * canceling, or renewing it) happens on the Omni account hub
  */
 const SubscriptionCard = ({
   subscription,
-  entityType,
-  entityId,
   workspaceSlug,
   returnPath,
 }: SubscriptionCardProps) => {
@@ -49,19 +41,12 @@ const SubscriptionCard = ({
         <CardTitle className="text-lg">
           {subscription.product?.name ?? "Subscription"}
         </CardTitle>
-        <div className="flex gap-1">
-          {workspaceSlug && (
-            <ManageSubscription
-              workspaceSlug={workspaceSlug}
-              returnPath={returnPath}
-            />
-          )}
-          {isPendingCancellation ? (
-            <RenewSubscription entityType={entityType} entityId={entityId} />
-          ) : (
-            <CancelSubscription entityType={entityType} entityId={entityId} />
-          )}
-        </div>
+        {workspaceSlug && (
+          <ManageSubscription
+            workspaceSlug={workspaceSlug}
+            returnPath={returnPath}
+          />
+        )}
       </CardHeader>
       <CardContent>
         <dl className="grid grid-cols-2 gap-2 text-sm">

@@ -65,8 +65,7 @@ const ADMIN_ROLES = new Set(["owner", "admin"]);
 function WorkspaceBillingPage() {
   const { workspaceSlug } = Route.useParams();
   const { workspaces } = useWorkspace();
-  const { subscription, entitlements, entityType, entityId } =
-    Route.useLoaderData();
+  const { subscription, entitlements, entityId } = Route.useLoaderData();
 
   const tier = getTierFromEntitlements(entitlements);
   const org = workspaces.find((o) => o.slug === workspaceSlug);
@@ -87,8 +86,6 @@ function WorkspaceBillingPage() {
         {subscription ? (
           <SubscriptionCard
             subscription={subscription}
-            entityType={entityType}
-            entityId={entityId}
             workspaceSlug={org.slug}
           />
         ) : (

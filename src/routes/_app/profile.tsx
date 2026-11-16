@@ -25,8 +25,7 @@ import { getSubscription } from "@/server/functions/subscriptions";
  */
 const ProfilePage = () => {
   const { auth } = Route.useRouteContext();
-  const { subscription, entitlements, entityType, entityId } =
-    Route.useLoaderData();
+  const { subscription, entitlements } = Route.useLoaderData();
   const { personalWorkspace } = useWorkspace();
 
   const tier = getTierFromEntitlements(entitlements);
@@ -104,8 +103,6 @@ const ProfilePage = () => {
           {subscription ? (
             <SubscriptionCard
               subscription={subscription}
-              entityType={entityType}
-              entityId={entityId}
               workspaceSlug={personalWorkspace?.slug}
               returnPath="/profile"
             />
