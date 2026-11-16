@@ -47,38 +47,6 @@ export const getSubscription = createServerFn({ method: "POST" })
   });
 
 /**
- * Cancel a subscription.
- */
-export const cancelSubscription = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .inputValidator((data) => subscriptionSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    await requireEntityAccess(context, data.entityType, data.entityId, "admin");
-
-    return getBilling().cancelSubscription(
-      data.entityType,
-      data.entityId,
-      requireAccessToken(context.session.accessToken),
-    );
-  });
-
-/**
- * Renew a subscription (remove scheduled cancellation).
- */
-export const renewSubscription = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .inputValidator((data) => subscriptionSchema.parse(data))
-  .handler(async ({ data, context }) => {
-    await requireEntityAccess(context, data.entityType, data.entityId, "admin");
-
-    return getBilling().renewSubscription(
-      data.entityType,
-      data.entityId,
-      requireAccessToken(context.session.accessToken),
-    );
-  });
-
-/**
  * Get subscription for an organization.
  */
 export const getOrgSubscription = createServerFn({ method: "POST" })

@@ -61,8 +61,7 @@ export const Route = createFileRoute("/_app/dashboard/billing")({
  * Billing management page.
  */
 function BillingPage() {
-  const { subscription, entitlements, entityType, entityId } =
-    Route.useLoaderData();
+  const { subscription, entitlements, entityId } = Route.useLoaderData();
   const { personalWorkspace } = useWorkspace();
 
   const tier = getTierFromEntitlements(entitlements);
@@ -81,8 +80,6 @@ function BillingPage() {
         {subscription ? (
           <SubscriptionCard
             subscription={subscription}
-            entityType={entityType}
-            entityId={entityId}
             workspaceSlug={personalWorkspace?.slug}
             returnPath="/dashboard/billing"
           />
