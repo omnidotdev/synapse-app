@@ -49,7 +49,6 @@ const setKeySchema = z.object({
     "openai",
     "anthropic",
     "google",
-    "nvidia",
     "deepgram",
     "elevenlabs",
     "groq",
