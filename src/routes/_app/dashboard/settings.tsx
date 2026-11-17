@@ -61,7 +61,6 @@ const VAULT_PROVIDERS = [
   { value: "openai", label: "OpenAI" },
   { value: "anthropic", label: "Anthropic" },
   { value: "google", label: "Google" },
-  { value: "nvidia", label: "NVIDIA" },
   { value: "deepgram", label: "Deepgram" },
   { value: "elevenlabs", label: "ElevenLabs" },
   { value: "groq", label: "Groq" },
