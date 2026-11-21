@@ -5,6 +5,7 @@ import {
   CardRoot,
   CardTitle,
 } from "@omnidotdev/thornberry/card";
+import { NativeSelect } from "@omnidotdev/thornberry/native-select";
 import {
   Table,
   TableBody,
@@ -119,18 +120,18 @@ function AddProviderKeyForm({ onClose }: { onClose: () => void }) {
           <label htmlFor="provider-select" className="font-medium text-sm">
             Provider
           </label>
-          <select
+          <NativeSelect
             id="provider-select"
             value={provider}
             onChange={(e) => setProvider(e.target.value)}
-            className="rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:border-primary"
+            className="w-full"
           >
             {VAULT_PROVIDERS.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
               </option>
             ))}
-          </select>
+          </NativeSelect>
         </div>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="provider-key" className="font-medium text-sm">
@@ -322,18 +323,18 @@ function SettingsPage() {
             <label htmlFor="default-provider" className="font-medium text-sm">
               Default provider
             </label>
-            <select
+            <NativeSelect
               id="default-provider"
               value={defaultProvider}
               onChange={(e) => setDefaultProvider(e.target.value)}
-              className="rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:border-primary"
+              className="w-full"
             >
               {PROVIDERS.map((p) => (
                 <option key={p.value} value={p.value}>
                   {p.label}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
             <p className="text-muted-foreground text-xs">
               Choose which provider to route requests to by default.
               &quot;Auto&quot; uses Synapse&apos;s smart routing.
