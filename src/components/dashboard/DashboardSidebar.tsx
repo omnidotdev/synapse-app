@@ -97,7 +97,7 @@ const DashboardSidebar = () => {
         <nav
           ref={scrollRef}
           onScroll={updateScrollState}
-          className="scrollbar-hide overflow-x-auto rounded-xl border border-border bg-card p-1"
+          className="no-scrollbar overflow-x-auto rounded-xl border border-border bg-card p-1"
         >
           <ul className="flex w-max gap-1 px-1">
             {navItems.map((item) => (
