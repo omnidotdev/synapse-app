@@ -1,3 +1,4 @@
+import { GLOBAL_HOTKEYS, useHotkeys } from "@omnidotdev/thornberry/use-hotkeys";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   BarChart3Icon,
@@ -7,6 +8,7 @@ import {
   SettingsIcon,
   UsersIcon,
 } from "lucide-react";
+import { useState } from "react";
 
 import cn from "@/lib/utils";
 
@@ -79,9 +81,15 @@ const WorkspaceSidebar = ({ workspaceSlug }: WorkspaceSidebarProps) => {
   const matchRoute = useMatchRoute();
   const navItems = buildNavItems(workspaceSlug);
   const baseTo = "/@{$workspaceSlug}";
+  const [isHidden, setIsHidden] = useState(false);
+
+  // `b` hides and shows the sidebar
+  useHotkeys(GLOBAL_HOTKEYS.toggleSidebar, () =>
+    setIsHidden((hidden) => !hidden),
+  );
 
   return (
-    <nav className="hidden w-48 shrink-0 md:block">
+    <nav className={cn("hidden w-48 shrink-0", !isHidden && "md:block")}>
       <div className="rounded-xl border border-border bg-card p-2">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ to, params, label, icon }) => {

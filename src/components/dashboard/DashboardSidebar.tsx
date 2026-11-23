@@ -1,3 +1,4 @@
+import { GLOBAL_HOTKEYS, useHotkeys } from "@omnidotdev/thornberry/use-hotkeys";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   BarChart3Icon,
@@ -64,6 +65,12 @@ const DashboardSidebar = () => {
   const scrollRef = useRef<HTMLElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+
+  // `b` hides and shows the desktop sidebar
+  useHotkeys(GLOBAL_HOTKEYS.toggleSidebar, () =>
+    setIsHidden((hidden) => !hidden),
+  );
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
@@ -90,7 +97,7 @@ const DashboardSidebar = () => {
         <nav
           ref={scrollRef}
           onScroll={updateScrollState}
-          className="scrollbar-hide overflow-x-auto rounded-xl border border-border bg-card p-1"
+          className="no-scrollbar overflow-x-auto rounded-xl border border-border bg-card p-1"
         >
           <ul className="flex w-max gap-1 px-1">
             {navItems.map((item) => (
@@ -119,7 +126,12 @@ const DashboardSidebar = () => {
       </div>
 
       {/* Desktop sidebar */}
-      <nav className="relative z-10 hidden w-48 shrink-0 md:block">
+      <nav
+        className={cn(
+          "relative z-10 hidden w-48 shrink-0",
+          !isHidden && "md:block",
+        )}
+      >
         <div className="rounded-xl border border-border bg-card p-2">
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => (
