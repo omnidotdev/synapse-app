@@ -1,3 +1,4 @@
+import { redactSessionToken } from "@omnidotdev/providers/auth";
 import { getCookie } from "@tanstack/react-start/server";
 import { betterAuth } from "better-auth";
 import { customSession, genericOAuth } from "better-auth/plugins";
@@ -74,6 +75,9 @@ plugins.push(
     };
   }),
 );
+
+// Keep the session token out of get-session, which page scripts can read
+plugins.push(redactSessionToken());
 
 plugins.push(tanstackStartCookies());
 
