@@ -30,7 +30,7 @@ import { getThemeServerFn } from "@/server/functions/theme";
 import type { OrganizationClaim } from "@omnidotdev/providers/auth";
 import type { QueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
-import type { GetAuthSession } from "@/lib/auth/getAuth";
+import type { ClientSession } from "@/lib/auth/clientSession";
 
 /** Stable query key for session data */
 const SESSION_QUERY_KEY = ["session"] as const;
@@ -43,7 +43,7 @@ const SESSION_STALE_TIME = 2 * 60 * 1000;
  */
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  auth: GetAuthSession | null;
+  auth: ClientSession | null;
   organizations: OrganizationClaim[];
   authDegraded: boolean;
 }>()({
