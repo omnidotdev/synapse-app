@@ -30,7 +30,10 @@ const ProfilePage = () => {
 
   const tier = getTierFromEntitlements(entitlements);
 
-  const manageAccountUrl = accountUrl(ACCOUNT_URL);
+  // The hub opens as the account Synapse is signed in as
+  const manageAccountUrl = accountUrl(ACCOUNT_URL, {
+    loginHint: auth?.user?.identityProviderId,
+  });
 
   return (
     <div className="mx-auto flex h-full max-w-7xl flex-col text-pretty px-4 py-8 text-center sm:text-start">

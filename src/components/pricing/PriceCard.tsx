@@ -28,6 +28,7 @@ import {
 import { BuildingIcon, CheckIcon, PlusIcon } from "lucide-react";
 
 import authClient from "@/lib/auth/authClient";
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import { upgradePlanUrl } from "@/lib/billing/hubLinks";
 import { ACCOUNT_URL, BASE_URL } from "@/lib/config/env.config";
 import { capitalizeFirstLetter } from "@/lib/util";
@@ -107,6 +108,9 @@ const PriceCard = ({
 
   const interval = price.recurring?.interval === "year" ? "year" : "month";
 
+  // Hub links open the hub as the account Synapse is signed in as
+  const loginHint = useHubLoginHint();
+
   // The account hub's confirm step for this plan, for a workspace or (none
   // given) letting the hub ask
   const planUrl = (workspaceSlug?: string) =>
@@ -114,6 +118,7 @@ const PriceCard = ({
       plan: tier,
       interval,
       workspaceSlug,
+      loginHint,
     });
 
   // Handle workspace selection from dropdown. A new workspace is created on
@@ -121,7 +126,7 @@ const PriceCard = ({
   const handleWorkspaceSelect = (workspaceId: string) => {
     const href =
       workspaceId === "create-new"
-        ? workspacesUrl(ACCOUNT_URL)
+        ? workspacesUrl(ACCOUNT_URL, { loginHint })
         : planUrl(allOrgs.find((org) => org.id === workspaceId)?.slug);
 
     if (href) window.location.assign(href);

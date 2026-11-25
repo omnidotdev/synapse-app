@@ -7,8 +7,9 @@ import type { HubPlanInterval } from "@omnidotdev/providers/react";
  * product sells plans and credits. Synapse shows its own pricing, but its plan
  * and Manage subscription actions link to the hub, which confirms the plan
  * (names and prices from Aether), runs checkout or the billing portal, and
- * returns here. Each helper is empty when no account hub is configured, so the
- * action is hidden rather than dead
+ * returns here. Each link carries the signed-in account's subject as
+ * `loginHint`, so the hub opens as the same account. Each helper is empty when
+ * no account hub is configured, so the action is hidden rather than dead
  */
 
 const PRODUCT = "synapse";
@@ -57,7 +58,14 @@ export const upgradePlanUrl = (
     plan,
     interval,
     workspaceSlug,
-  }: { plan: string; interval: HubPlanInterval; workspaceSlug?: string },
+    loginHint,
+  }: {
+    plan: string;
+    interval: HubPlanInterval;
+    workspaceSlug?: string;
+    /** The signed-in account's subject */
+    loginHint?: string | null;
+  },
 ): string =>
   hubPlanUrl(accountBaseUrl, {
     product: PRODUCT,
@@ -68,6 +76,7 @@ export const upgradePlanUrl = (
       baseUrl,
       workspaceSlug ? workspaceBillingPath(workspaceSlug) : "/pricing",
     ),
+    loginHint,
   });
 
 /**
@@ -82,10 +91,13 @@ export const manageSubscriptionUrl = (
   {
     workspaceSlug,
     returnPath,
+    loginHint,
   }: {
     workspaceSlug: string;
     /** Page to return to, the workspace's billing page by default */
     returnPath?: string;
+    /** The signed-in account's subject */
+    loginHint?: string | null;
   },
 ): string =>
   hubManageUrl(accountBaseUrl, {
@@ -95,4 +107,5 @@ export const manageSubscriptionUrl = (
       baseUrl,
       returnPath ?? workspaceBillingPath(workspaceSlug),
     ),
+    loginHint,
   });
