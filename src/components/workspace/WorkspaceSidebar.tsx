@@ -8,6 +8,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 
+import WorkspaceSwitcher from "@/components/workspace/WorkspaceSwitcher";
 import cn from "@/lib/utils";
 
 import type { ReactNode } from "react";
@@ -82,6 +83,9 @@ const WorkspaceSidebar = ({ workspaceSlug }: WorkspaceSidebarProps) => {
 
   return (
     <nav className="hidden w-48 shrink-0 md:block">
+      <div className="mb-3">
+        <WorkspaceSwitcher />
+      </div>
       <div className="rounded-xl border border-border bg-card p-2">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ to, params, label, icon }) => {
