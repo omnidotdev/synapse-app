@@ -1,6 +1,7 @@
 import { Button } from "@omnidotdev/thornberry/button";
 import { SettingsIcon } from "lucide-react";
 
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import { manageSubscriptionUrl } from "@/lib/billing/hubLinks";
 import { ACCOUNT_URL, BASE_URL } from "@/lib/config/env.config";
 
@@ -18,9 +19,13 @@ interface Props {
  * configured
  */
 const ManageSubscription = ({ workspaceSlug, returnPath }: Props) => {
+  // The hub opens as the account Synapse is signed in as
+  const loginHint = useHubLoginHint();
+
   const href = manageSubscriptionUrl(ACCOUNT_URL, BASE_URL, {
     workspaceSlug,
     returnPath,
+    loginHint,
   });
 
   if (!href) return null;

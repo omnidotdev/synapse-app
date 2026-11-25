@@ -78,7 +78,7 @@
     "@fontsource/dm-mono": "5.3.0",
     "@fontsource/dm-sans": "5.3.0",
     "@icons-pack/react-simple-icons": "^13.15.1",
-    "@omnidotdev/providers": "github:omnidotdev/providers#v0.7.0",
+    "@omnidotdev/providers": "github:omnidotdev/providers#v0.8.0",
     "@omnidotdev/thornberry": "github:omnidotdev/thornberry#4a4aabc8681cc56eedcd967c71774499a2fbe235",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",

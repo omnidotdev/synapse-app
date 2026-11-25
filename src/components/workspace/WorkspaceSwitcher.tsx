@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { LayoutGridIcon } from "lucide-react";
 
+import useHubLoginHint from "@/lib/auth/useHubLoginHint";
 import { ACCOUNT_URL } from "@/lib/config/env.config";
 import { workspaceSwitchTarget } from "@/lib/workspace/switchTarget";
 
@@ -40,6 +41,7 @@ const WorkspaceSwitcher = () => {
   const { organizations: workspaces = [] } = useRouteContext({
     strict: false,
   }) as { organizations?: Workspace[] };
+  const loginHint = useHubLoginHint();
 
   if (!workspaceSlug || !workspaces.length) return null;
 
@@ -61,7 +63,7 @@ const WorkspaceSwitcher = () => {
   };
 
   // Empty when the account hub is not configured, which hides the manage link
-  const manageUrl = workspacesUrl(ACCOUNT_URL) || undefined;
+  const manageUrl = workspacesUrl(ACCOUNT_URL, { loginHint }) || undefined;
 
   return (
     <SharedWorkspaceSwitcher
