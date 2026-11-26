@@ -1,4 +1,7 @@
-import { redactSessionToken } from "@omnidotdev/providers/auth";
+import {
+  createOmniOAuthConfig,
+  redactSessionToken,
+} from "@omnidotdev/providers/auth";
 import { getCookie } from "@tanstack/react-start/server";
 import { betterAuth } from "better-auth";
 import { customSession, genericOAuth } from "better-auth/plugins";
@@ -20,18 +23,15 @@ const oauthConfigs: Parameters<typeof genericOAuth>[0]["config"] = [];
 
 if (AUTH_CLIENT_ID && AUTH_CLIENT_SECRET && AUTH_BASE_URL) {
   oauthConfigs.push({
-    providerId: "omni",
-    clientId: AUTH_CLIENT_ID,
-    clientSecret: AUTH_CLIENT_SECRET,
-    // Set URLs explicitly instead of using discoveryUrl — BA overrides
-    // tokenUrl with the discovery doc's token_endpoint, which uses the
-    // external URL unreachable from inside Docker
-    authorizationUrl: `${AUTH_BASE_URL}/oauth2/authorize`,
-    tokenUrl: `${AUTH_INTERNAL_URL}/oauth2/token`,
-    userInfoUrl: `${AUTH_INTERNAL_URL}/userinfo`,
-    scopes: ["openid", "profile", "email", "offline_access", "organization"],
-    accessType: "offline",
-    pkce: true,
+    ...createOmniOAuthConfig({
+      clientId: AUTH_CLIENT_ID,
+      clientSecret: AUTH_CLIENT_SECRET,
+      authBaseUrl: AUTH_BASE_URL,
+      authInternalUrl: AUTH_INTERNAL_URL ?? AUTH_BASE_URL,
+    }),
+    // better-auth 1.7 rejects a function-valued authorizationUrlParams
+    // from the shared config; disable it to preserve the sign-in flow
+    authorizationUrlParams: undefined,
     // better-auth 1.7 tightened the mapped-user return type; the IDP's custom
     // `email_verified`/`picture` claims arrive untyped, so coerce them
     mapProfileToUser: (profile) => ({

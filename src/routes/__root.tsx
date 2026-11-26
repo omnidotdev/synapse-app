@@ -53,18 +53,23 @@ export const Route = createRootRouteWithContext<{
       // session instead of re-fetching on every route change. This prevents
       // a race where a transient fetch failure returns auth:null and the
       // _app guard redirects the user away from protected routes.
-      const { session, organizations, authDegraded } =
+      const { session, organizations, authDegraded, authBaseUrl } =
         await queryClient.ensureQueryData({
           queryKey: SESSION_QUERY_KEY,
           queryFn: () => fetchSession(),
           staleTime: SESSION_STALE_TIME,
         });
 
-      return { auth: session, organizations, authDegraded };
+      return { auth: session, organizations, authDegraded, authBaseUrl };
     } catch {
       // Gracefully degrade so public pages (landing, pricing) still render
       // when the auth service is unreachable or misconfigured
-      return { auth: null, organizations: [], authDegraded: false };
+      return {
+        auth: null,
+        organizations: [],
+        authDegraded: false,
+        authBaseUrl: undefined,
+      };
     }
   },
   head: () => ({
