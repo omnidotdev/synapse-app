@@ -10,7 +10,11 @@ const mockSignIn = mock(async (_params: unknown) => {
   calls.push("signIn");
 });
 
+// Keep the module's other exports: bun's module mocks are process-wide, so a
+// mock carrying only signOutLocal breaks later files that import fetchSession
+const actualAuth = await import("@/server/functions/auth");
 mock.module("@/server/functions/auth", () => ({
+  ...actualAuth,
   signOutLocal: mockSignOutLocal,
 }));
 
